@@ -15,3 +15,5 @@ This tutorial takes as given that you have access to a running TAP VPC (version 
 ## 1. Loading the data into the Data Catalog
 
 1. First, log in to the console for your TAP VPC. It should look something like this:
+
+![Data Catalog](/data-catalog.png)
