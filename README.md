@@ -1,5 +1,5 @@
 # readmissions-risk-scorer
-Temporary repo for the Intel-TAP readmission risk scoring model reference architecture
+This is a temporary repo for the Intel-TAP readmission risk scoring model reference architecture
 
 This intent is for this repo to be a one-stop source for everything you need to take your own hispital patient data, load that data into TAP, extract and process the relevant features, and train a model to preidct which patients are likely to be readmitted withing some amount of time.
 
