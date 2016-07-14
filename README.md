@@ -12,3 +12,6 @@ This tutorial takes as given that you have access to a running TAP VPC (version 
 4. Then, we will discuss how to tune model parameters, evaluate the models performance, and disucuss common risks and 'gotchas' to be aware of when modeling.
 5. Finally, we will show how to deploy the model as a REST api so that medical staff can begin identifying which patients are most at risk of readmission.
 
+## 1. Loading the data into the Data Catalog
+
+1. First, log in to the console for your TAP VPC. It should look something like this:
