@@ -53,8 +53,6 @@ c. `DRGCODES.csv` - contains the cormorbidity features `DRG_MORTALITY` and `DRG_
 ```python
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
-from pyspark.sql.types import *
-from pyspark.sql.functions import datediff, round as Round
 ```
 
 5. Since we are working with csv files the `spark-csv` package is extremely useful ([spark-csv docs here])(https://github.com/databricks/spark-csv). Specifically, it allows us to read csv files directly into dataframes and enables labor saving features like automatically infering schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
@@ -77,5 +75,12 @@ Notice that we also explicitly pass the `client` for the `--deploy-mode` argumen
 sc = SparkContext()
 sqlContext = SQLContext(sc)
 ```
-7. Now, we are reading to read in our `CSV` data from HDFS. First, we need the HDFS uri for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: `hdfs://nameservice1/org/intel/hdfsbroker/userspace/6f072e40-74b6-4da9-8e8a-34a203915d9d/9b14ae53-20ca-4dd4-b65e-68f0c72783cb/000000_1`
+7. Now, we are reading to read in our `CSV` data from HDFS. First, we need the HDFS uri for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: `hdfs://nameservice1/org/intel/hdfsbroker/userspace/6f072e40-74b6-4da9-8e8a-34a203915d9d/9b14ae53-20ca-4dd4-b65e-68f0c72783cb/000000_1`. Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
+```python
+hdfsPathAdmissions = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/9997ff80-b53f-46c4-9dca-f76cc56c876a/000000_1"
+hdfsPathPatients = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/d82b3a1e-de79-4312-98be-1499e25e25c6/000000_1"
+hdfsPathCodes = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/e69a6c0a-5507-4cec-a184-c2a480ee2a6a/000000_1"
+```
+
+
 
