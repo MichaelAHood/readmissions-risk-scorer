@@ -331,7 +331,108 @@ q5 = """SELECT
 
 patients = sqlContext.sql(q5)
 ```
-9. 
+9. Let's calculate the patients age, I rounded the age to 1 decimal place to account for any a more granular representation of the qualitative differences in health that may exist between between really young children (i.e. < 3 months) and slightly older -- but perhaps more healthy -- young children (i.e. 6-12 months).
+```python
+from pyspark.sql.functions import datediff, round as Round
+
+df3 = patients.withColumn('AGE', Round(datediff(patients.ADMITTIME, patients.DOB)/365, 1))
+sqlContext.registerDataFrameAsTable(df3, "patients_with_target")
+```
+10. Extract some useful info from the comorbidity scores.
+```python
+sqlContext.registerDataFrameAsTable(df_drgcodes, "drg_codes")
+
+q6 = """SELECT 
+           HADM_ID, 
+           IF (AVG(DRG_SEVERITY) IS NULL, 0, AVG(DRG_SEVERITY)) as AVG_DRG_SEVERITY,
+           IF (AVG(DRG_MORTALITY) IS NULL, 0, AVG(DRG_SEVERITY)) as AVG_DRG_MORTALITY
+        FROM drg_codes 
+        GROUP BY HADM_ID"""
+
+ccInfo = sqlContext.sql(q6)
+sqlContext.registerDataFrameAsTable(ccInfo, "cc_info")
+```
+11. Join the comorbidity scores to the admission data to create a working dataset ready for cleaning.
+```python
+q7 = """SELECT
+            p.ADMISSION_TYPE, 
+            p.ETHNICITY,
+            p.INSURANCE,
+            p.LANGUAGE,
+            p.MARITAL_STATUS,
+            p.GENDER,
+            p.AGE,
+            c.AVG_DRG_SEVERITY,
+            c.AVG_DRG_MORTALITY,
+            p.DAYS_TO_READMISSION
+        FROM patients_with_target p
+        LEFT JOIN cc_info c ON p.HADM_ID = c.HADM_ID
+"""
+
+workingData = sqlContext.sql(q7)
+sqlContext.registerDataFrameAsTable(workingData, "working_data")
+```
+
+12. Consolidate ETHNICITY, LANGUAGE, and MARITAL_STATUS labels and select the columns that we want to use for modeling.
+```python
+q8 = """
+    SELECT 
+        ADMISSION_TYPE,
+        INSURANCE,
+        GENDER,
+        IF (AGE > 200, 91, AGE) as AGE,
+        AVG_DRG_SEVERITY,
+        AVG_DRG_MORTALITY,
+        CASE
+            WHEN ETHNICITY LIKE 'WHITE%' OR 
+                 ETHNICITY LIKE 'EUROPEAN%' OR
+                 ETHNICITY LIKE 'PORTUGUESE%' THEN 'white/european'
+            WHEN ETHNICITY LIKE 'BLACK%' OR 
+                 ETHNICITY LIKE 'AFRICAN%' THEN 'black/african'
+            WHEN ETHNICITY LIKE 'HISPANIC%' OR 
+                 ETHNICITY LIKE 'LATINO%' THEN 'hispanic/latino'
+            WHEN ETHNICITY LIKE '%MIDDLE EASTERN%' THEN 'mideastern'
+            WHEN ETHNICITY LIKE 'ASIAN%' OR
+                 ETHNICITY LIKE '%ASIAN - INDIAN%' THEN 'asian/indian'
+            ELSE 'other' 
+            END as ETHN,
+        CASE 
+          WHEN ADMISSION_TYPE='NEWBORN' THEN 'newborn'
+          WHEN LANGUAGE='ENGL' THEN 'english'
+          WHEN LANGUAGE='' THEN 'unknown'
+          ELSE 'other'
+          END as LANG,
+        CASE
+          WHEN MARITAL_STATUS LIKE 'NEWBORN' THEN 'MARITAL-NEWBORN'
+          WHEN MARITAL_STATUS LIKE '' OR MARITAL_STATUS LIKE 'LIFE PARTNER' THEN 'MARITAL-OTHER'
+          WHEN MARITAL_STATUS LIKE 'UNKNOWN%' THEN 'MARITAL-UNKNOWN'
+          ELSE MARITAL_STATUS
+          END as STATUS,
+        DAYS_TO_READMISSION
+    FROM working_data
+"""
+
+data = sqlContext.sql(q8)
+data.show(10)
+
+"""
++--------------+---------+------+----+----------------+-----------------+--------------+-------+-------------+-------------------+
+|ADMISSION_TYPE|INSURANCE|GENDER| AGE|AVG_DRG_SEVERITY|AVG_DRG_MORTALITY|          ETHN|   LANG|       STATUS|DAYS_TO_READMISSION|
++--------------+---------+------+----+----------------+-----------------+--------------+-------+-------------+-------------------+
+|     EMERGENCY| Medicare|     F|76.3|             2.0|              2.0| black/african|english|      WIDOWED|                  0|
+|       NEWBORN|  Private|     M| 0.0|             0.0|              0.0|white/european|newborn|MARITAL-OTHER|                  0|
+|     EMERGENCY|  Private|     F|49.9|             3.0|              3.0|white/european|english|      MARRIED|                 66|
+|      ELECTIVE| Medicare|     F|72.6|             0.0|              0.0|         other|unknown|      MARRIED|                  0|
+|      ELECTIVE|  Private|     F|59.5|             2.0|              2.0| black/african|english|       SINGLE|                  0|
+|       NEWBORN|  Private|     M| 0.0|             1.0|              1.0|         other|newborn|MARITAL-OTHER|                  0|
+|     EMERGENCY| Medicare|     M|73.2|             3.0|              3.0|  asian/indian|  other|      WIDOWED|                  0|
+|     EMERGENCY| Medicaid|     M|19.1|             4.0|              4.0|white/european|english|MARITAL-OTHER|                  0|
+|     EMERGENCY|  Private|     M|24.7|             0.0|              0.0|white/european|english|      MARRIED|                  0|
+|       NEWBORN|  Private|     F| 0.0|             2.0|              2.0|white/european|newborn|MARITAL-OTHER|                  0|
++--------------+---------+------+----+----------------+-----------------+--------------+-------+-------------+-------------------+
+only showing top 10 rows
+"""
+```
 
 # 3. Training, Testing, Validating, and Deploying a Machine Learning Model with ATK
 
