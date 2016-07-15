@@ -50,9 +50,10 @@ c. `DRGCODES.csv` - contains the cormorbidity features `DRG_MORTALITY` and `DRG_
 3. TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that your battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use. *Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
 
 4. Start by making some standard `pyspark` imports:
-`from pyspark import SparkContext, SparkConf
+```python
+from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
-from pyspark.sql.functions import datediff, round as Round`
+from pyspark.sql.functions import datediff, round as Round```
 
 
