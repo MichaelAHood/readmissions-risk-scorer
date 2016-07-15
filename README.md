@@ -29,7 +29,7 @@ a. `ADMISSIONS.csv` - contains the unique patient id (`SUBJECT_ID`), unique admi
 
 b. `PATIENTS.csv` - contains features like the patient's id (`SUBJECT_ID`), gender (`GENDER`), date of birth (`DOB`) from which we can derive the patients age at a given hospital admission.
 
-c. `DRGCODES.csv` - contains the cormorbidity features `DRG_MORTALITY` and `DRG_SEVERITY`. These are data that essentially represent how severe, complicated, and dangerous a patients condition is. 
+c. `DRGCODES.csv` - contains the cormorbidity features `DRG_MORTALITY` and `DRG_SEVERITY`. These are data that essentially represent how severe, complicated, and dangerous a patient's condition is. 
 
 **Note**: We also have access to a rich set of electronic chart data that contains entries for daily blood pressure, heartrate, various types of urinalysis data, and thousands of other medical results and biomarker data. I have deliberately not included this data for the reason that for any given type of entry on the electronic record only a subset of the patients have that specific type of data record. For example, there are over 40,000 unique patients comprising nearly 59,000 unique admissions. If I want to train a model that uses features such as heartrate, bodyweight, and bloodpressure data, I need to find the set of patients such that most of the patients have that heartrate AND bodyweight AND bloodpressure data. As you add more features, the set of patients that have all of those features quickly becomes smaller and smaller. There are many ways you can address this shortcomming such as imputation of missing values, or only selecting chart data that nearly all the patients have in their record. I chose to use comorbidity info (contained in `DRGCODES.csv`) because it can be thought of as a lower dimensional representation of the many different biomarkers that come along with a given diagnosis.
 
@@ -62,16 +62,20 @@ from pyspark.sql.functions import datediff, round as Round
 ```python
 os.environ['PYSPARK_SUBMIT_ARGS'] = "--deploy-mode client \
                                      --packages com.databricks:spark-csv_2.10:1.4.0 \
+                                     --driver-memory 2G \
+                                     --num-executors 4 \
+                                     --executor-memory 8G\
                                      pyspark-shell"
 ```
 Notice that we also explicitly pass the `client` for the `--deploy-mode` argument. This will allow us to use spark in the cell based REPL workflow that makes Jupyter notebooks so useful for data analysis.
 
 **Note:** For exploratory data analysis and investigating a dataset I prefer to use `spark-submit` to set the parameters for the SparkContext. You can also edit the `spark-defaults.conf` to edit the defaults, adjusting paramters like `--num-executors`, `--driver-memory`, `--executor-memory`, and `--num-executors`, etc. `spark-submit` has the benefit that the arguments you pass override whatever their corresponding value is in `spark-defaults.conf`. The `SparkConf` object also gives you a lot of control over the specific resources and properties your Spark application has. You can read more [here](http://spark.apache.org/docs/latest/submitting-applications.html).  
 
-6. Let's create the SparkContext and the SQLContext. SQLContext allows us to create Spark Dataframes, enabling us to SQL queries against our dataframes. Dataframes also allow us to use pandas style dataframe operations when it is more appropriate. Additionally, you can use `map`, `filter`, `reduceByKey`, `flatMap`, etc. on dataframes, just like you can with RDDs. 
+6. Let's create the `SparkContext` and the `SQLContext`. `SQLContext` allows us to create Spark Dataframes, enabling us to use SQL queries against our dataframes. Dataframes also allow us to use `pandas` style dataframe operations when it is more appropriate. Additionally, you can use `map`, `filter`, `reduceByKey`, `flatMap`, etc. on dataframes, just like you can with RDDs. 
 
 ```python
 sc = SparkContext()
 sqlContext = SQLContext(sc)
 ```
+7. Now, we are reading to read in our `CSV` data from HDFS. First, we need the HDFS uri for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: `hdfs://nameservice1/org/intel/hdfsbroker/userspace/6f072e40-74b6-4da9-8e8a-34a203915d9d/9b14ae53-20ca-4dd4-b65e-68f0c72783cb/000000_1`
 
