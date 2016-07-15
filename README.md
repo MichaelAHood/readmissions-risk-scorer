@@ -122,6 +122,6 @@ root
  |-- EDOUTTIME: timestamp (nullable = true)
  |-- DIAGNOSIS: string (nullable = true)
  |-- HOSPITAL_EXPIRE_FLAG: integer (nullable = true)
- |-- HAS_IOEVENTS_DATA: integer (nullable = true)
- |-- HAS_CHARTEVENTS_DATA: integer (nullable = true)
+ |- HAS_IOEVENTS_DATA: integer (nullable = true)
+ |- HAS_CHARTEVENTS_DATA: integer (nullable = true)
 ```
