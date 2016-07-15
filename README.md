@@ -317,7 +317,7 @@ sqlContext.sql("select COUNT(*) as num_patients from admissions_target").show()
 +------------+
 """
 ```
-8. Now, we will extract the patients gender and age from the `PATIENTS` table.
+8. Now, we will extract the patients gender and age from the `PATIENTS` table -- exlcusing the patients who died during their stay.
 ```python
 sqlContext.registerDataFrameAsTable(df_patients, "patients")
 
