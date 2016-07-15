@@ -76,9 +76,9 @@ sc = SparkContext()
 sqlContext = SQLContext(sc)
 ```
 7. Now, we are reading to read in our `CSV` data from HDFS. First, we need the HDFS uri for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: 
+
 ![Finding file URIs in the Data Catalog](hdfs-uri.png)
 
-```
 8. Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
 ```python
 hdfsPathAdmissions = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/9997ff80-b53f-46c4-9dca-f76cc56c876a/000000_1"
