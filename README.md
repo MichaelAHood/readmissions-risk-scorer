@@ -5,6 +5,11 @@ This intent is for this repo to be a one-stop source for everything you need to 
 
 This tutorial takes as given that you have access to a running TAP VPC (version 0.7), have access to patient data in CSV format, have permissions to upload data to the HDFS data catalog, and can create Jupyter notebook instances.
 
+Additionally, there are several assumptions about skills and familiarity with technology, specifically:
+  * You are familiar with iPython or Jupyter notebooks.
+  * You are familiar with Spark
+  * You can write SQL queries
+
 ## Overview
 1. First, we will cover how to upload patient data to the Data Catalog.
 2. Second, we will demonstrate how to create a Jupyter notebook running Pyspark and load the patient data for analysis.
@@ -18,7 +23,7 @@ This tutorial takes as given that you have access to a running TAP VPC (version 
 
 ![Data Catalog](/data-catalog.png)
 
-* To load your data, select the "Submit Transfer" tab. You upload data files directly from your local machine or you can pass a link. You can also `ssh` or `sftp` into `cdh-launcher` from there you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS). For our purposes, uploading data to the Data Catalog with the browser based console is probably the quickest and easiest way.
+* To load your data, select the "Submit Transfer" tab. You upload data files directly from your local machine or you can pass a link. You can also `ssh` or `sftp` into `cdh-launcher` and from there you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS). For our purposes, uploading data to the Data Catalog with the browser based console is probably the quickest and easiest way.
 
 For this exercise, I am using the MIMIC-III dataset, which can be accessed at: https://mimic.physionet.org/
 
@@ -31,7 +36,7 @@ b. `PATIENTS.csv` - contains features like the patient's id (`SUBJECT_ID`), gend
 
 c. `DRGCODES.csv` - contains the comorbidity features `DRG_MORTALITY` and `DRG_SEVERITY`. These are data that essentially represent how severe, complicated, and dangerous a patient's condition is. 
 
-**Note**: We also have access to a rich set of electronic chart data that contains entries for daily blood pressure, heart rate, various types of urinalysis data, and thousands of other medical results and biomarker data. I have deliberately not included this data for the reason that for any given type of entry on the electronic record only a subset of the patients have that specific type of data record. For example, there are over 40,000 unique patients comprising nearly 59,000 unique admissions. If I want to train a model that uses features such as heart rate, body weight, and blood pressure data, I need to find the set of patients such that most of the patients have that heart rate AND body weight AND blood pressure data. As you add more features, the set of patients that have all of those features quickly becomes smaller and smaller. There are many ways you can address this shortcoming such as imputation of missing values, or only selecting chart data that nearly all the patients have in their record. I chose to use comorbidity info (contained in `DRGCODES.csv`) because it can be thought of as a lower dimensional representation of the many different biomarkers that come along with a given diagnosis.
+(Move to footnote)**Note**: We also have access to a rich set of electronic chart data that contains entries for daily blood pressure, heart rate, various types of urinalysis data, and thousands of other medical results and biomarker data. I have deliberately not included this data for the reason that for any given type of entry on the electronic record only a subset of the patients have that specific type of data record. For example, there are over 40,000 unique patients comprising nearly 59,000 unique admissions. If I want to train a model that uses features such as heart rate, body weight, and blood pressure data, I need to find the set of patients such that most of the patients have that heart rate AND body weight AND blood pressure data. As you add more features, the set of patients that have all of those features quickly becomes smaller and smaller. There are many ways you can address this shortcoming such as imputation of missing values, or only selecting chart data that nearly all the patients have in their record. I chose to use comorbidity info (contained in `DRGCODES.csv`) because it can be thought of as a lower dimensional representation of the many different biomarkers that come along with a given diagnosis.
 
 * Name the files whatever you want to call them and give them any appropriate labels, e.g. Healthcare.
 
@@ -45,7 +50,7 @@ c. `DRGCODES.csv` - contains the comorbidity features `DRG_MORTALITY` and `DRG_S
 
 ![Creating a Jupyter Notebook](/jupyter.png)
 
-* Give your notebook a name and click on the "Create New Instance" button. It can take a few seconds while the Docker host spins up a container running your shiny new Jupyter notebook.
+* Give your notebook a name and click on the "Create New Instance" button. It can take a few seconds while the Docker host spins up a container running your Jupyter notebook.
 
 * TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that your battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use. *Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
 
@@ -75,11 +80,11 @@ Notice that we also explicitly pass the `client` for the `--deploy-mode` argumen
 sc = SparkContext()
 sqlContext = SQLContext(sc)
 ```
-* Now, we are reading to read in our `CSV` data from HDFS. First, we need the HDFS uri for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: 
+* In order to load our `CSV` files, we need the HDFS uris for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: 
 
 ![Finding file URIs in the Data Catalog](hdfs-uri.png)
 
-* Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
+* The below URIs are palacehodlers. Copy and paste the your **targetUri** for each file in the **Data Catalog** that you want to load:
 ```python
 hdfsPathAdmissions = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/9997ff80-b53f-46c4-9dca-f76cc56c876a/000000_1"
 hdfsPathPatients = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/d82b3a1e-de79-4312-98be-1499e25e25c6/000000_1"
@@ -125,7 +130,7 @@ root
  |- HAS_IOEVENTS_DATA: integer (nullable = true)
  |- HAS_CHARTEVENTS_DATA: integer (nullable = true)
 ```
-**Note:** If the schema is not what you want, you can always pass an explicit schema, vice using the inferschema option ([creating a schema](http://spark.apache.org/docs/latest/sql-programming-guide.html#programmatically-specifying-the-schema)).
+**Note:** If the schema is not what you want, you can always pass an explicit schema, instead of using the inferschema option ([creating a schema](http://spark.apache.org/docs/latest/sql-programming-guide.html#programmatically-specifying-the-schema)).
 Another option is to create new columns of the right type that are derived from the columns that were incorrectly cast. It is important to keep in mind that Spark dataframes and RDDs are immutable objects, so you cannot cast an existing object to a different type, you have to create an entire new column with a different name.
 
 Let's check to see what the `ADMISSIONS` data looks like:
@@ -161,11 +166,11 @@ threeRows.show()
 +------+----------+-------+--------------------+--------------------+---------+--------------+--------------------+-------------------+---------+--------+------------+--------------+--------------------+--------------------+--------------------+--------------------+--------------------+-----------------+--------------------+
 """
 ```
-* We have now loaded the data that we intend to work with. In the next section we will begin data processing in preparation for modeling.
+* We have now loaded the data that we intend to work with. In the next section we will begin processing in preparation for modeling.
 
 # 3. Data Processing
 
-* Looking at out admission table, we know that there is unique entry for each hospital admission. In this table the unique `SUBJECT_ID` can show up multiple times -- corresponding to distinct hospital admissions (`HADM_ID`).
+* Looking at our admission table, we know that there is unique entry for each hospital admission. In this table the unique `SUBJECT_ID` can show up multiple times -- corresponding to distinct hospital admissions (`HADM_ID`).
 
 Let's find the number of admissions for each patient.
 ```python
@@ -372,7 +377,9 @@ q7 = """SELECT
 workingData = sqlContext.sql(q7)
 sqlContext.registerDataFrameAsTable(workingData, "working_data")
 ```
-* Consolidate ETHNICITY, LANGUAGE, and MARITAL_STATUS labels and select the columns that we want to use for modeling.
+#4 Preparing Features for Modeling
+
+*Consolidate ETHNICITY, LANGUAGE, and MARITAL_STATUS labels and select the columns that we want to use for modeling.
 ```python
 q8 = """
     SELECT 
