@@ -173,7 +173,7 @@ q1 = """SELECT SUBJECT_ID, COUNT(*) AS NUM_ADMISSIONS
         FROM admissions 
         GROUP BY SUBJECT_ID"""
 ```
-We can create a new DataFrame `admissionCounts` that is the result of running the above SQL query. Notice, that nothing happens becuse we have not yet asked Spark to perofrm any action. We are merely describing a set of transformations that Spark will perform once we actually take an action and ask for a result.
+2. We can create a new DataFrame `admissionCounts` that is the result of running the above SQL query. Notice, that nothing happens becuse we have not yet asked Spark to perofrm any action. We are merely describing a set of transformations that Spark will perform once we actually take an action and ask for a result.
 ```python
 admissionCounts = sqlContext.sql(q1)
 admissionCounts.show(7)
@@ -193,7 +193,31 @@ admissionCounts.show(7)
 only showing top 7 rows
 """
 ```
-Here I register a new table 'admissionCounts' to help keep things simple. SQL subqueries do not always work in SparkSQL, so it often both easier and the only way to actually subselect in SparkSQL. Also, the "tables" do not occupy any additional memory since they are not actually created until an action is taken that requires the data.
+3. Here I register a new table 'admissionCounts' to keep things simple. SQL subqueries do not always work in SparkSQL, so registering a DataFrame as a table or aliasing is often both easier and the only way to actually subselect in SparkSQL. Also, the "tables" do not occupy any additional memory since they are not created until an action is taken that requires the data.
 ```python
 sqlContext.registerDataFrameAsTable(admissionCounts, "admissioncounts")
+```
+4. Let's focus on identifying the patients that were readmitted.
+```python
+q2 = """SELECT a.ROW_ID, a.SUBJECT_ID, a.HADM_ID, a.ADMITTIME, a.DISCHTIME, b.NUM_ADMISSIONS
+        FROM admissions AS a, admissioncounts AS b  
+        WHERE a.SUBJECT_ID = b.SUBJECT_ID AND b.NUM_ADMISSIONS > 1
+        ORDER BY ADMITTIME ASC"""
+
+readmittedPatients = sqlContext.sql(q2)
+sqlContext.registerDataFrameAsTable(readmittedPatients, "readmitted_patients")
+readmittedPatients.show(5)
+
+"""
++------+----------+-------+--------------------+--------------------+--------------+
+|ROW_ID|SUBJECT_ID|HADM_ID|           ADMITTIME|           DISCHTIME|NUM_ADMISSIONS|
++------+----------+-------+--------------------+--------------------+--------------+
+| 25576|     20957| 113808|2100-06-24 22:37:...|2100-07-03 12:31:...|             4|
+|  5463|      4521| 167070|2100-06-28 19:29:...|2100-07-30 11:02:...|             3|
+| 11401|      9319| 137275|2100-07-01 12:00:...|2100-07-15 16:30:...|             2|
+| 38375|     31585| 125380|2100-07-02 19:28:...|2100-07-07 18:05:...|             3|
+| 15739|     12834| 107726|2100-07-14 20:52:...|2100-07-22 17:06:...|             2|
++------+----------+-------+--------------------+--------------------+--------------+
+only showing top 5 rows
+"""
 ```
