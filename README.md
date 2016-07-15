@@ -14,11 +14,11 @@ This tutorial takes as given that you have access to a running TAP VPC (version 
 
 ## 1. Loading the data into the Data Catalog
 
-1. First, log in to the console for your TAP VPC. It should look something like this:
+*. First, log in to the console for your TAP VPC. It should look something like this:
 
 ![Data Catalog](/data-catalog.png)
 
-2. To load your data, select the "Submit Transfer" tab. You upload data files directly from your local machine or you can pass a link. You can also `ssh` or `sftp` into `cdh-launcher` from there you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS). For our purposes, uploading data to the Data Catalog with the browser based console is probably the quickest and easiest way.
+*. To load your data, select the "Submit Transfer" tab. You upload data files directly from your local machine or you can pass a link. You can also `ssh` or `sftp` into `cdh-launcher` from there you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS). For our purposes, uploading data to the Data Catalog with the browser based console is probably the quickest and easiest way.
 
 For this exercise, I am using the MIMIC-III dataset, which can be accessed at: https://mimic.physionet.org/
 
@@ -33,11 +33,11 @@ c. `DRGCODES.csv` - contains the comorbidity features `DRG_MORTALITY` and `DRG_S
 
 **Note**: We also have access to a rich set of electronic chart data that contains entries for daily blood pressure, heart rate, various types of urinalysis data, and thousands of other medical results and biomarker data. I have deliberately not included this data for the reason that for any given type of entry on the electronic record only a subset of the patients have that specific type of data record. For example, there are over 40,000 unique patients comprising nearly 59,000 unique admissions. If I want to train a model that uses features such as heart rate, body weight, and blood pressure data, I need to find the set of patients such that most of the patients have that heart rate AND body weight AND blood pressure data. As you add more features, the set of patients that have all of those features quickly becomes smaller and smaller. There are many ways you can address this shortcoming such as imputation of missing values, or only selecting chart data that nearly all the patients have in their record. I chose to use comorbidity info (contained in `DRGCODES.csv`) because it can be thought of as a lower dimensional representation of the many different biomarkers that come along with a given diagnosis.
 
-3. Name the files whatever you want to call them and give them any appropriate labels, e.g. Healthcare.
+*. Name the files whatever you want to call them and give them any appropriate labels, e.g. Healthcare.
 
-4. Click "Upload" and wait. 
+*. Click "Upload" and wait. 
 
-5. You will have to do steps 3. and 4. for each file you want to upload to the Data Catalog.
+*. You will have to do steps 3. and 4. for each file you want to upload to the Data Catalog.
 
 ## 2. Create a Jupyter (iPython) notebook and load data into Spark 
 
