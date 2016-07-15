@@ -131,7 +131,7 @@ Another option is to create new columns of the right type that are derived from 
 Let's check to see what the `ADMISSIONS` data looks like:
 ```python
 df_patients.show(5)
-
+"""
 +------+----------+------+--------------------+--------------------+--------+--------------------+-----------+
 |ROW_ID|SUBJECT_ID|GENDER|                 DOB|                 DOD|DOD_HOSP|             DOD_SSN|EXPIRE_FLAG|
 +------+----------+------+--------------------+--------------------+--------+--------------------+-----------+
@@ -142,4 +142,5 @@ df_patients.show(5)
 |   616|       650|     M|2051-04-15 00:00:...|2111-12-28 00:00:...|    null|2111-12-28 00:00:...|          1|
 +------+----------+------+--------------------+--------------------+--------+--------------------+-----------+
 only showing top 5 rows
+"""
 ```
