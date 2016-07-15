@@ -60,6 +60,10 @@ from pyspark.sql.functions import datediff, round as Round
 5. Since we are working with csv files the `spark-csv` package is extremely useful. Specifically, it allows us to read csv files directly into dataframes and enables labor saving features like automatically infering schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
 
 ```python
-os.environ['PYSPARK_SUBMIT_ARGS'] = "--deploy-mode client --packages com.databricks:spark-csv_2.10:1.4.0 pyspark-shell"
+os.environ['PYSPARK_SUBMIT_ARGS'] = "--deploy-mode client \
+                                     --packages com.databricks:spark-csv_2.10:1.4.0 \
+                                     pyspark-shell"
 ```
+
+You can read more about `spark-submit` [here](http://spark.apache.org/docs/latest/submitting-applications.html).
 
