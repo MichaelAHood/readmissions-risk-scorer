@@ -18,11 +18,11 @@ This tutorial takes as given that you have access to a running TAP VPC (version 
 
 ![Data Catalog](/data-catalog.png)
 
-2. To load your data, select the "Submit Transfer" tab. You upload datafiles directly from your local machine or you can pass a link. You can also `ssh` or `sftp` into `cdh-launcher` from there you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS). For our purposes, uploading data to the Data Catalog with the browser based console is far and away the easiest way.
+2. To load your data, select the "Submit Transfer" tab. You upload datafiles directly from your local machine or you can pass a link. You can also `ssh` or `sftp` into `cdh-launcher` from there you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS). For our purposes, uploading data to the Data Catalog with the browser based console is probably the quickest and easiest way.
 
 For this exercise, I am using the MIMIC-III dataset, which can be accessed at: https://mimic.physionet.org/
 
-In this case, the data we are using are called `ADMISSIONS.csv`, `PATIENTS.csv`, and `DRGCODES.csv`. If you are using your own organization's data, I have provided a brief description of the above files and why we want it, so you can find the analogous tables in your own organization.
+In this case, the data we are using are called `ADMISSIONS.csv`, `PATIENTS.csv`, and `DRGCODES.csv`. If you are using your own organization's data, I have provided a brief description of the above files and why we want to use them. You can find the analogous tables in your own organization.
 
 a. `ADMISSIONS.csv` - contains the unique patient id (`SUBJECT_ID`), unique admission id (`HADM_ID`), the type of admissions (e.g. `EMERGENCY`, `ELECTIVE`, `NEWBORN` etc.), time of patient admission (`ADMITTIME`), time of patient discharge (`DISCHTIME`) and some socioeconomic and demographic features like `ETHNICITY`, `LANGUAGE`, `INSURANCE`, and
 `ADMIT_TYPE`, etc.
@@ -145,7 +145,7 @@ only showing top 5 rows
 """
 ```
 
-We can register our `ADMISSIONS` dataframe as the table `admissions` -- enabling us to query it with `SQL`:
+We can register our `ADMISSIONS` dataframe as the table `admissions` -- enabling us to query it with SQL:
 ```python
 sqlContext.registerDataFrameAsTable(df_admissions, "admissions")
 threeRows = sqlContext.sql("SELECT * FROM admissions LIMIT 3")
@@ -161,6 +161,39 @@ threeRows.show()
 +------+----------+-------+--------------------+--------------------+---------+--------------+--------------------+-------------------+---------+--------+------------+--------------+--------------------+--------------------+--------------------+--------------------+--------------------+-----------------+--------------------+
 """
 ```
+11. We have now loaded the data that we intend to work with. In the next section we will begin data processing in preparation for modeling.
 
+## 3. Data Processing
 
+1. Looking at out admission table, we know that there is unique entry for each hospital admission. In this table the unique `SUBJECT_ID` can show up multiple times -- corresponding to distinct hospital admissions (`HADM_ID`).
 
+Let's find the number of admissions for each patient.
+```python
+q1 = """SELECT SUBJECT_ID, COUNT(*) AS NUM_ADMISSIONS 
+        FROM admissions 
+        GROUP BY SUBJECT_ID"""
+```
+We can create a new DataFrame `admissionCounts` that is the result of running the above SQL query. Notice, that nothing happens becuse we have not yet asked Spark to perofrm any action. We are merely describing a set of transformations that Spark will perform once we actually take an action and ask for a result.
+```python
+admissionCounts = sqlContext.sql(q1)
+admissionCounts.show(7)
+
+"""
++----------+--------------+
+|SUBJECT_ID|NUM_ADMISSIONS|
++----------+--------------+
+|        31|             1|
+|       231|             2|
+|       631|             2|
+|       431|             1|
+|      1031|             1|
+|       831|             1|
+|      1431|             1|
++----------+--------------+
+only showing top 7 rows
+"""
+```
+Here I register a new table 'admissionCounts' to help keep things simple. SQL subqueries do not always work in SparkSQL, so it often both easier and the only way to actually subselect in SparkSQL. Also, the "tables" do not occupy any additional memory since they are not actually created until an action is taken that requires the data.
+```python
+sqlContext.registerDataFrameAsTable(admissionCounts, "admissioncounts")
+```
