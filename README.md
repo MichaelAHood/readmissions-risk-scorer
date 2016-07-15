@@ -18,7 +18,7 @@ This tutorial takes as given that you have access to a running TAP VPC (version 
 
 ![Data Catalog](/data-catalog.png)
 
-2. To load your data, select the "Submit Transfer" tab. You upload datafiles directly from your local machine or you can pass a link. You can also `<ssh>' or '<sftp>' into '<cdh-launcher>' from you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS).  
+2. To load your data, select the "Submit Transfer" tab. You upload datafiles directly from your local machine or you can pass a link. You can also `<ssh>` or `<sftp>` into `<cdh-launcher>` from you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS).  
 
 For this exercise, I am using the MIMIC-III dataset, which can be accessed at: https://mimic.physionet.org/
 
