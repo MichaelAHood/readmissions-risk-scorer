@@ -127,3 +127,19 @@ root
 ```
 **Note:** If the schema is not what you want, you can always pass an explicit schema, vice using the inferschema option ([creating a schema](http://spark.apache.org/docs/latest/sql-programming-guide.html#programmatically-specifying-the-schema)).
 Another option is to create new columns of the right type that are derived from the columns that were incorrectly cast. It is important to keep in mind that Spark dataframes and RDDs are immutable objects, so you cannot cast an existing object to a different type, you have to create an entire new column with a different name.
+
+Let's check to see what the `ADMISSIONS` data looks like:
+```python
+df_patients.show(5)
+
++------+----------+------+--------------------+--------------------+--------+--------------------+-----------+
+|ROW_ID|SUBJECT_ID|GENDER|                 DOB|                 DOD|DOD_HOSP|             DOD_SSN|EXPIRE_FLAG|
++------+----------+------+--------------------+--------------------+--------+--------------------+-----------+
+|   612|       646|     M|2128-01-05 00:00:...|                null|    null|                null|          0|
+|   613|       647|     M|2106-03-24 00:00:...|                null|    null|                null|          0|
+|   614|       648|     M|2139-07-13 00:00:...|                null|    null|                null|          0|
+|   615|       649|     M|2177-06-23 00:00:...|                null|    null|                null|          0|
+|   616|       650|     M|2051-04-15 00:00:...|2111-12-28 00:00:...|    null|2111-12-28 00:00:...|          1|
++------+----------+------+--------------------+--------------------+--------+--------------------+-----------+
+only showing top 5 rows
+```
