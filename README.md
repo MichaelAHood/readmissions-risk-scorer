@@ -18,13 +18,13 @@ This tutorial takes as given that you have access to a running TAP VPC (version 
 
 ![Data Catalog](/data-catalog.png)
 
-2. To load your data, select the "Submit Transfer" tab. You upload datafiles directly from your local machine or you can pass a link. You can also `<ssh>` or `<sftp>` into `<cdh-launcher>` from you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS).  
+2. To load your data, select the "Submit Transfer" tab. You upload datafiles directly from your local machine or you can pass a link. You can also `ssh` or `sftp` into `<cdh-launcher>` from you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS).  
 
 For this exercise, I am using the MIMIC-III dataset, which can be accessed at: https://mimic.physionet.org/
 
-In this case, the data we are using are called ADMISSIONS.csv, PATIENTS.csv, and DRGCODES.csv. If you are using your own organization's data, I have provided a brief description of the above files and why we want it, so you can find the analogous tables in your own organization.
+In this case, the data we are using are called `ADMISSIONS.csv`, `PATIENTS.csv`, and `DRGCODES.csv`. If you are using your own organization's data, I have provided a brief description of the above files and why we want it, so you can find the analogous tables in your own organization.
 
-a. ADMISSIONS.csv - contains the unique patient id ('SUBJECT_ID'), unique admission id ('HADM_ID'), the type of admissions (e.g. 'EMERGENCY', 'ELECTIVE', 'NEWBORN' etc.), time of patient admission ('ADMITTIME'), time of patient discharge ('DISCHTIME') and some socioeconomic and demographic features like 'ETHNICITY', 'LANGUAGE', 'INSURANCE', and
+a. `ADMISSIONS.csv` - contains the unique patient id (`SUBJECT_ID`), unique admission id (`HADM_ID`), the type of admissions (e.g. `EMERGENCY`, `ELECTIVE`, `NEWBORN` etc.), time of patient admission ('ADMITTIME'), time of patient discharge ('DISCHTIME') and some socioeconomic and demographic features like 'ETHNICITY', 'LANGUAGE', 'INSURANCE', and
 'ADMIT_TYPE', etc.
 
 b. PATIENTS.csv - contains features like the patient's id ('SUBJECT_ID'), gender ('GENDER'), date of birth ('DOB') frmo which we can derive the patients age at a given hospital admission.
