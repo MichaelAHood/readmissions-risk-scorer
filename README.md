@@ -57,13 +57,15 @@ from pyspark.sql.types import *
 from pyspark.sql.functions import datediff, round as Round
 ```
 
-5. Since we are working with csv files the `spark-csv` package is extremely useful [spark-csv docs here](https://github.com/databricks/spark-csv). Specifically, it allows us to read csv files directly into dataframes and enables labor saving features like automatically infering schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
+5. Since we are working with csv files the `spark-csv` package is extremely useful ([spark-csv docs here])(https://github.com/databricks/spark-csv). Specifically, it allows us to read csv files directly into dataframes and enables labor saving features like automatically infering schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
 
 ```python
 os.environ['PYSPARK_SUBMIT_ARGS'] = "--deploy-mode client \
                                      --packages com.databricks:spark-csv_2.10:1.4.0 \
                                      pyspark-shell"
 ```
+*Note:* For exploratory data analysis and investigating a dataset I prefer to use `spark-submit` to set the parameters for the SparkContext. You can also edit the `spark-defaults.conf` to edit the defaults, adjusting paramters like `--num-executors`, `--driver-memory`, `--executor-memory`, and `--num-executors`, etc. `spark-submit` has the benefit that the arguments you pass override whatever their corresponding value is in `spark-defaults.conf`. You can read more [here](http://spark.apache.org/docs/latest/submitting-applications.html).  
 
-You can read more about `spark-submit` [here](http://spark.apache.org/docs/latest/submitting-applications.html).
+Notice that we also explicitly pass the `client` for the `--deploy-mode` argument. This will allow us to use spark in the cell based REPL workflow that makes Jupyter notebooks so useful for data analysis. 
+
 
