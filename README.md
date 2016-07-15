@@ -250,5 +250,26 @@ timeShiftedRows.show(5)
 +------+------+----------+----------+-------------+-------------+--------------------+--------------------+--------------+
 only showing top 5 rows
 """
+```
+6. From here we can use the datefiff function to find the number of days between the `DISCHTIME` of one admission and the `ADMITTIME` of the next admission for each patient that was discharged and later readmitted.  
+```python
+from pyspark.sql.functions import datediff
 
-6.
+df2 = timeShiftedRows.withColumn('DAYS_UNTIL_READMISSION', datediff(timeShiftedRows.READMITTIME, timeShiftedRows.DISCHARGETIME))
+df2.show(5)
+
+"""
++------+------+----------+----------+-------------+-------------+--------------------+--------------------+--------------+----------------------+
+|ROW_ID|ROW_ID|SUBJECT_ID|SUBJECT_ID|DISCH_HADM_ID|ADMIT_HADM_ID|       DISCHARGETIME|         READMITTIME|NUM_ADMISSIONS|DAYS_UNTIL_READMISSION|
++------+------+----------+----------+-------------+-------------+--------------------+--------------------+--------------+----------------------+
+|    68|    67|        67|        67|       186474|       155252|2155-03-06 15:00:...|2157-12-02 00:45:...|             2|                  1002|
+|  1335|  1334|      1076|      1076|       144044|       170098|2173-12-13 15:15:...|2175-11-10 23:19:...|             3|                   697|
+|  2467|  2466|      2040|      2040|       124831|       125913|2145-12-13 18:09:...|2146-07-10 20:58:...|             3|                   209|
+|  2742|  2741|      2265|      2265|       147742|       100548|2125-10-26 13:28:...|2125-10-31 19:35:...|             5|                     5|
+|  3965|  3964|      3286|      3286|       133404|       136308|2189-12-25 13:02:...|2191-06-14 05:14:...|             2|                   536|
++------+------+----------+----------+-------------+-------------+--------------------+--------------------+--------------+----------------------+
+only showing top 5 rows
+"""
+
+sqlContext.registerDataFrameAsTable(df2, "target")
+```
