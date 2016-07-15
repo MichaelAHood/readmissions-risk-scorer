@@ -55,7 +55,7 @@ from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 ```
 
-5. Since we are working with csv files the `spark-csv` package is extremely useful ([spark-csv docs here])(https://github.com/databricks/spark-csv). Specifically, it allows us to read csv files directly into dataframes and enables labor saving features like automatically infering schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
+5. Since we are working with csv files the `spark-csv` package is extremely useful ([spark-csv docs here](https://github.com/databricks/spark-csv)). Specifically, it allows us to read csv files directly into dataframes and enables labor saving features like automatically infering schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
 
 ```python
 os.environ['PYSPARK_SUBMIT_ARGS'] = "--deploy-mode client \
@@ -125,5 +125,5 @@ root
  |- HAS_IOEVENTS_DATA: integer (nullable = true)
  |- HAS_CHARTEVENTS_DATA: integer (nullable = true)
 ```
-**Note:** If the schema is not what you want, you can always pass an explicit schema, vice using the inferschema option [creating a schema](http://spark.apache.org/docs/latest/sql-programming-guide.html#programmatically-specifying-the-schema).
+**Note:** If the schema is not what you want, you can always pass an explicit schema, vice using the inferschema option ([creating a schema](http://spark.apache.org/docs/latest/sql-programming-guide.html#programmatically-specifying-the-schema)).
 Another option is to create new columns of the right type that are derived from the columns that were incorrectly cast. It is important to keep in mind that Spark dataframes and RDDs are immutable objects, so you cannot cast an existing object to a different type, you have to create an entire new column with a different name.
