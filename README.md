@@ -34,7 +34,9 @@ c. `DRGCODES.csv` - contains the cormorbidity features `DRG_MORTALITY` and `DRG_
 **Note**: We also have access to a rich set of electronic chart data that contains entries for daily blood pressure, heartrate, various types of urinalysis data, and thousands of other medical results and biomarker data. I have deliberately not included this data for the reason that for any given type of entry on the electronic record only a subset of the patients have that specific type of data record. For example, there are over 40,000 unique patients comprising nearly 59,000 unique admissions. If I want to train a model that uses features such as heartrate, bodyweight, and bloodpressure data, I need to find the set of patients such that most of the patients have that heartrate AND bodyweight AND bloodpressure data. As you add more features, the set of patients that have all of those features quickly becomes smaller and smaller. There are many ways you can address this shortcomming such as imputation of missing values, or only selecting chart data that nearly all the patients have in their record. I chose to use comorbidity info (contained in DRGCODES.csv) because it can be thought of as a lower dimensional representation of the many different biomarkers that come along with a given diagnosis.
 
 3. Name the files whatever you want to call them and give them any appropriate labels, e.g. Healthcare.
+
 4. Click "Upload" and wait. 
+
 5. You will have to do steps 3. and 4. for each file you want to upload to the Data Catalog.
 
 ## 2. Create a Jupyter (iPython) notebook
