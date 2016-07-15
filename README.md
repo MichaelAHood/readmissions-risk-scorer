@@ -436,4 +436,8 @@ only showing top 10 rows
 
 # 3. Training, Testing, Validating, and Deploying a Machine Learning Model with ATK
 
-1. Click 
+1. Go back to the **TAP Console** and click on the **Data Science** subtab and again on the **TAP Analytics Toolkit** subtab. Click on the url for the running ATK instance and you should see something like:
+
+![ATK](/atk.png)
+
+2. Copy the `pip install <my-atk-uri>/client` line.
