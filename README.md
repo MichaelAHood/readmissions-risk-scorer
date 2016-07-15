@@ -43,7 +43,7 @@ c. `DRGCODES.csv` - contains the cormorbidity features `DRG_MORTALITY` and `DRG_
 
 1. Click on the "Data Science" tab on the right side of the console Dash Board. Click on the "Jupyter" tab.
 
-![Data Catalog](/jupyter.png)
+![Creating a Jupyter Notebook](/jupyter.png)
 
 2. Give your notebook a name and click on the "Create New Instance" button. It can take a few seconds while the Docker host spins up a container running your shiny new Jupyter notebook.
 
