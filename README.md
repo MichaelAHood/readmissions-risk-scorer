@@ -441,3 +441,28 @@ only showing top 10 rows
 ![ATK](/atk.png)
 
 2. Copy the `pip install <my-atk-uri>/client` line.
+3. Once you have installed the updated client module for `trustedanalytics`, import ATK and create the credentials file to connect to the server:
+```python
+import trustedanalytics as ta
+
+# Create ATK credentials file and connect to the ATK server
+ta.create_credentials_file('~/atk.creds')
+```
+This will send you through a promt that asks you for the server uri, your username, and your password.
+
+4. Create the schema for the ATK Frame to read in the CSV file:
+```python
+csv_schema = [
+              ("admission_type", unicode), 
+              ("insurance", ta.int32), 
+              ("gender", unicode),
+              ("age", ta.int32),
+              ("avg_severity", ta.int32),
+              ("avg_mortality", ta.int32),
+              ("ethnicity", unicode),
+              ("language", unicode),
+              ("days_to_readm", ta.int32)
+             ]
+
+csv_class = ta.CsvFile("/modeling-data.csv", schema=csv_schema, skip_header_lines=1)
+```
