@@ -12,7 +12,7 @@ This tutorial takes as given that you have access to a running TAP VPC (version 
 4. Then, we will discuss how to tune model parameters, evaluate the model's performance, and discuss common risks and 'gotchas' to be aware of when modeling.
 5. Finally, we will show how to deploy the model as a REST api so that medical staff can begin identifying which patients are most at risk of readmission.
 
-## 1. Loading the data into the Data Catalog
+# 1. Loading the data into the Data Catalog
 
 * First, log in to the console for your TAP VPC. It should look something like this:
 
@@ -39,23 +39,23 @@ c. `DRGCODES.csv` - contains the comorbidity features `DRG_MORTALITY` and `DRG_S
 
 * You will have to do steps 3. and 4. for each file you want to upload to the Data Catalog.
 
-## 2. Create a Jupyter (iPython) notebook and load data into Spark 
+# 2. Create a Jupyter (iPython) notebook and load data into Spark 
 
-1. Click on the "Data Science" tab on the right side of the console Dash Board. Click on the "Jupyter" tab.
+* Click on the "Data Science" tab on the right side of the console Dash Board. Click on the "Jupyter" tab.
 
 ![Creating a Jupyter Notebook](/jupyter.png)
 
-2. Give your notebook a name and click on the "Create New Instance" button. It can take a few seconds while the Docker host spins up a container running your shiny new Jupyter notebook.
+* Give your notebook a name and click on the "Create New Instance" button. It can take a few seconds while the Docker host spins up a container running your shiny new Jupyter notebook.
 
-3. TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that your battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use. *Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
+* TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that your battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use. *Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
 
-4. Start by making some standard `pyspark` imports:
+* Start by making some standard `pyspark` imports:
 ```python
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 ```
 
-5. Since we are working with csv files the `spark-csv` package is extremely useful ([spark-csv docs here](https://github.com/databricks/spark-csv)). Specifically, it allows us to read csv files directly into DataFrames and enables labor saving features like automatically inferring schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
+* Since we are working with csv files the `spark-csv` package is extremely useful ([spark-csv docs here](https://github.com/databricks/spark-csv)). Specifically, it allows us to read csv files directly into DataFrames and enables labor saving features like automatically inferring schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
 
 ```python
 os.environ['PYSPARK_SUBMIT_ARGS'] = "--deploy-mode client \
@@ -69,23 +69,23 @@ Notice that we also explicitly pass the `client` for the `--deploy-mode` argumen
 
 **Note:** For exploratory data analysis and investigating a dataset I prefer to use `spark-submit` to set the parameters for the SparkContext. You can also edit the `spark-defaults.conf` to edit the defaults, adjusting parameters like `--num-executors`, `--driver-memory`, `--executor-memory`, and `--num-executors`, etc. However, `spark-submit` has the benefit that the arguments you pass override whatever their corresponding value is in `spark-defaults.conf`. The `SparkConf` object also gives you a great deal of control over the specific resources and properties your Spark application has. You can read more [here](http://spark.apache.org/docs/latest/submitting-applications.html).  
 
-6. Let's create the `SparkContext` and the `SQLContext`. `SQLContext` allows us to create Spark DataFrames, enabling us to use SQL queries against our dataframes. DataFrames also allow us to use `pandas` style dataframe operations when it is more appropriate. Additionally, you can use `map`, `filter`, `reduceByKey`, `flatMap`, etc. on dataframes, just like you can with RDDs. 
+* Let's create the `SparkContext` and the `SQLContext`. `SQLContext` allows us to create Spark DataFrames, enabling us to use SQL queries against our dataframes. DataFrames also allow us to use `pandas` style dataframe operations when it is more appropriate. Additionally, you can use `map`, `filter`, `reduceByKey`, `flatMap`, etc. on dataframes, just like you can with RDDs. 
 
 ```python
 sc = SparkContext()
 sqlContext = SQLContext(sc)
 ```
-7. Now, we are reading to read in our `CSV` data from HDFS. First, we need the HDFS uri for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: 
+* Now, we are reading to read in our `CSV` data from HDFS. First, we need the HDFS uri for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: 
 
 ![Finding file URIs in the Data Catalog](hdfs-uri.png)
 
-8. Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
+* Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
 ```python
 hdfsPathAdmissions = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/9997ff80-b53f-46c4-9dca-f76cc56c876a/000000_1"
 hdfsPathPatients = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/d82b3a1e-de79-4312-98be-1499e25e25c6/000000_1"
 hdfsPathCodes = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/e69a6c0a-5507-4cec-a184-c2a480ee2a6a/000000_1"
 ```
-9. Use `spark-csv` to load the `CSV` files into Spark DataFrames:
+* Use `spark-csv` to load the `CSV` files into Spark DataFrames:
 ```python
 df_admissions = sqlContext.read.format('com.databricks.spark.csv').\
                                 options(header='true', inferSchema=True).\
@@ -99,7 +99,7 @@ df_drgcodes = sqlContext.read.format('com.databricks.spark.csv').\
                                 options(header='true', inferSchema=True).\
                                 load(hdfsPathCodes)
 ```
-10. Check the schema to make sure that data types and column names are what you want:
+* Check the schema to make sure that data types and column names are what you want:
 ```python
 df_admissions.printSchema()
 
@@ -161,11 +161,11 @@ threeRows.show()
 +------+----------+-------+--------------------+--------------------+---------+--------------+--------------------+-------------------+---------+--------+------------+--------------+--------------------+--------------------+--------------------+--------------------+--------------------+-----------------+--------------------+
 """
 ```
-11. We have now loaded the data that we intend to work with. In the next section we will begin data processing in preparation for modeling.
+* We have now loaded the data that we intend to work with. In the next section we will begin data processing in preparation for modeling.
 
-## 3. Data Processing
+# 3. Data Processing
 
-1. Looking at out admission table, we know that there is unique entry for each hospital admission. In this table the unique `SUBJECT_ID` can show up multiple times -- corresponding to distinct hospital admissions (`HADM_ID`).
+* Looking at out admission table, we know that there is unique entry for each hospital admission. In this table the unique `SUBJECT_ID` can show up multiple times -- corresponding to distinct hospital admissions (`HADM_ID`).
 
 Let's find the number of admissions for each patient.
 ```python
@@ -173,7 +173,7 @@ q1 = """SELECT SUBJECT_ID, COUNT(*) AS NUM_ADMISSIONS
         FROM admissions 
         GROUP BY SUBJECT_ID"""
 ```
-2. We can create a new DataFrame `admissionCounts` that is the result of running the above SQL query. Notice, that nothing happens because we have not yet asked Spark to perform any action. We are merely describing a set of transformations that Spark will perform once we actually take an action and ask for a result.
+* We can create a new DataFrame `admissionCounts` that is the result of running the above SQL query. Notice, that nothing happens because we have not yet asked Spark to perform any action. We are merely describing a set of transformations that Spark will perform once we actually take an action and ask for a result.
 ```python
 admissionCounts = sqlContext.sql(q1)
 admissionCounts.show(7)
@@ -193,11 +193,11 @@ admissionCounts.show(7)
 only showing top 7 rows
 """
 ```
-3. Here I register a new table 'admissionCounts' to keep things simple. SQL subqueries do not always work in SparkSQL, so registering a DataFrame as a table or aliasing is often both easier and the only way to actually subselect in SparkSQL. Also, the "tables" do not occupy any additional memory since they are not created until an action is taken that requires the data.
+* Here I register a new table 'admissionCounts' to keep things simple. SQL subqueries do not always work in SparkSQL, so registering a DataFrame as a table or aliasing is often both easier and the only way to actually subselect in SparkSQL. Also, the "tables" do not occupy any additional memory since they are not created until an action is taken that requires the data.
 ```python
 sqlContext.registerDataFrameAsTable(admissionCounts, "admissioncounts")
 ```
-4. Let's focus on identifying the patients that were readmitted.
+* Let's focus on identifying the patients that were readmitted.
 ```python
 q2 = """SELECT a.ROW_ID, a.SUBJECT_ID, a.HADM_ID, a.ADMITTIME, a.DISCHTIME, b.NUM_ADMISSIONS
         FROM admissions AS a, admissioncounts AS b  
@@ -221,7 +221,7 @@ readmittedPatients.show(5)
 only showing top 5 rows
 """
 ```
-5. With the subset of patients who have been admitted more than once we now join each patient's hospital admission data to the hospital admission data immediately proceding it. 
+* With the subset of patients who have been admitted more than once we now join each patient's hospital admission data to the hospital admission data immediately proceding it. 
 ```python
 q3 = """SELECT
             a.ROW_ID,
@@ -251,7 +251,7 @@ timeShiftedRows.show(5)
 only showing top 5 rows
 """
 ```
-6. From here we can use the datefiff function to find the number of days between the `DISCHTIME` of one admission and the `ADMITTIME` of the next admission for each patient that was discharged and later readmitted.  
+* From here we can use the datefiff function to find the number of days between the `DISCHTIME` of one admission and the `ADMITTIME` of the next admission for each patient that was discharged and later readmitted.  
 ```python
 from pyspark.sql.functions import datediff
 
@@ -273,7 +273,7 @@ only showing top 5 rows
 
 sqlContext.registerDataFrameAsTable(df2, "target")
 ```
-7. This query explicitly excludes anyone who dies in the hospital -- about 7000 people, in this dataset. It may be the case that you want to include people who die. We also only include people who have chartevents data because we may end up using that data later.
+* This query explicitly excludes anyone who dies in the hospital -- about 7000 people, in this dataset. It may be the case that you want to include people who die. We also only include people who have chartevents data because we may end up using that data later.
 ```python
 q4 = """SELECT 
             a.SUBJECT_ID, 
@@ -317,7 +317,7 @@ sqlContext.sql("select COUNT(*) as num_patients from admissions_target").show()
 +------------+
 """
 ```
-8. Now, we will extract the patient's gender and age from the `PATIENTS` table -- excluding the patients who died during their stay.
+* Now, we will extract the patient's gender and age from the `PATIENTS` table -- excluding the patients who died during their stay.
 ```python
 sqlContext.registerDataFrameAsTable(df_patients, "patients")
 
@@ -331,14 +331,14 @@ q5 = """SELECT
 
 patients = sqlContext.sql(q5)
 ```
-9. Let's calculate the patient's age, I rounded the age to 1 decimal place to account for any a more granular representation of the qualitative differences in health that may exist between between really young children (i.e. < 3 months) and slightly older -- but perhaps more healthy -- young children (i.e. 6-12 months).
+* Let's calculate the patient's age, I rounded the age to 1 decimal place to account for any a more granular representation of the qualitative differences in health that may exist between between really young children (i.e. < 3 months) and slightly older -- but perhaps more healthy -- young children (i.e. 6-12 months).
 ```python
 from pyspark.sql.functions import datediff, round as Round
 
 df3 = patients.withColumn('AGE', Round(datediff(patients.ADMITTIME, patients.DOB)/365, 1))
 sqlContext.registerDataFrameAsTable(df3, "patients_with_target")
 ```
-10. Extract some useful info from the comorbidity scores.
+* Extract some useful info from the comorbidity scores.
 ```python
 sqlContext.registerDataFrameAsTable(df_drgcodes, "drg_codes")
 
@@ -352,7 +352,7 @@ q6 = """SELECT
 ccInfo = sqlContext.sql(q6)
 sqlContext.registerDataFrameAsTable(ccInfo, "cc_info")
 ```
-11. Join the comorbidity scores to the admission data to create a working dataset ready for cleaning.
+* Join the comorbidity scores to the admission data to create a working dataset ready for cleaning.
 ```python
 q7 = """SELECT
             p.ADMISSION_TYPE, 
@@ -372,8 +372,7 @@ q7 = """SELECT
 workingData = sqlContext.sql(q7)
 sqlContext.registerDataFrameAsTable(workingData, "working_data")
 ```
-
-12. Consolidate ETHNICITY, LANGUAGE, and MARITAL_STATUS labels and select the columns that we want to use for modeling.
+* Consolidate ETHNICITY, LANGUAGE, and MARITAL_STATUS labels and select the columns that we want to use for modeling.
 ```python
 q8 = """
     SELECT 
@@ -434,14 +433,14 @@ only showing top 10 rows
 """
 ```
 
-# 3. Training, Testing, Validating, and Deploying a Machine Learning Model with ATK
+# 4. Training, Testing, Validating, and Deploying a Machine Learning Model with ATK
 
-1. Go back to the **TAP Console** and click on the **Data Science** subtab and again on the **TAP Analytics Toolkit** subtab. Click on the url for the running ATK instance and you should see something like:
+* Go back to the **TAP Console** and click on the **Data Science** subtab and again on the **TAP Analytics Toolkit** subtab. Click on the url for the running ATK instance and you should see something like:
 
 ![ATK](/atk.png)
 
-2. Copy the `pip install <my-atk-uri>/client` line.
-3. Once you have installed the updated client module for `trustedanalytics`, import ATK and create the credentials file to connect to the server:
+* Copy the `pip install <my-atk-uri>/client` line.
+* Once you have installed the updated client module for `trustedanalytics`, import ATK and create the credentials file to connect to the server:
 ```python
 import trustedanalytics as ta
 
@@ -450,7 +449,7 @@ ta.create_credentials_file('~/atk.creds')
 ```
 This will send you through a prompt that asks you for the server uri, your username, and your password.
 
-4. Create the schema for the ATK Frame to read in the CSV file:
+* Create the schema for the ATK Frame to read in the CSV file:
 ```python
 csv_schema = [
               ("admission_type", unicode), 
