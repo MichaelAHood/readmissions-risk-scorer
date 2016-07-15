@@ -75,12 +75,53 @@ Notice that we also explicitly pass the `client` for the `--deploy-mode` argumen
 sc = SparkContext()
 sqlContext = SQLContext(sc)
 ```
-7. Now, we are reading to read in our `CSV` data from HDFS. First, we need the HDFS uri for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: `hdfs://nameservice1/org/intel/hdfsbroker/userspace/6f072e40-74b6-4da9-8e8a-34a203915d9d/9b14ae53-20ca-4dd4-b65e-68f0c72783cb/000000_1`. Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
+7. Now, we are reading to read in our `CSV` data from HDFS. First, we need the HDFS uri for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: 
+```python
+hdfs://nameservice1/org/intel/hdfsbroker/userspace/6f072e40-74b6-4da9-8e8a-34a203915d9d/9b14ae53-20ca-4dd4-b65e-68f0c72783cb/000000_1 
+```
+8. Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
 ```python
 hdfsPathAdmissions = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/9997ff80-b53f-46c4-9dca-f76cc56c876a/000000_1"
 hdfsPathPatients = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/d82b3a1e-de79-4312-98be-1499e25e25c6/000000_1"
 hdfsPathCodes = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/e69a6c0a-5507-4cec-a184-c2a480ee2a6a/000000_1"
 ```
+9. Use `spark-csv` to load the `CSV` files into Spark DataFrames:
+```python
+df_admissions = sqlContext.read.format('com.databricks.spark.csv').\
+                                options(header='true', inferSchema=True).\
+                                load(hdfsPathAdmissions)
 
+df_patients = sqlContext.read.format('com.databricks.spark.csv').\
+                                options(header='true', inferSchema=True).\
+                                load(hdfsPathPatients)
 
+df_drgcodes = sqlContext.read.format('com.databricks.spark.csv').\
+                                options(header='true', inferSchema=True).\
+                                load(hdfsPathCodes)
+```
+10. Check the schema to make sure that datatypes and column names are what you want:
+```python
+df_admissions.printSchema()
 
+root
+ |-- ROW_ID: integer (nullable = true)
+ |-- SUBJECT_ID: integer (nullable = true)
+ |-- HADM_ID: integer (nullable = true)
+ |-- ADMITTIME: timestamp (nullable = true)
+ |-- DISCHTIME: timestamp (nullable = true)
+ |-- DEATHTIME: timestamp (nullable = true)
+ |-- ADMISSION_TYPE: string (nullable = true)
+ |-- ADMISSION_LOCATION: string (nullable = true)
+ |-- DISCHARGE_LOCATION: string (nullable = true)
+ |-- INSURANCE: string (nullable = true)
+ |-- LANGUAGE: string (nullable = true)
+ |-- RELIGION: string (nullable = true)
+ |-- MARITAL_STATUS: string (nullable = true)
+ |-- ETHNICITY: string (nullable = true)
+ |-- EDREGTIME: timestamp (nullable = true)
+ |-- EDOUTTIME: timestamp (nullable = true)
+ |-- DIAGNOSIS: string (nullable = true)
+ |-- HOSPITAL_EXPIRE_FLAG: integer (nullable = true)
+ |-- HAS_IOEVENTS_DATA: integer (nullable = true)
+ |-- HAS_CHARTEVENTS_DATA: integer (nullable = true)
+```
