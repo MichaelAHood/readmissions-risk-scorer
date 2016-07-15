@@ -273,3 +273,51 @@ only showing top 5 rows
 
 sqlContext.registerDataFrameAsTable(df2, "target")
 ```
+7. This query explicitly excludes anyone who dies in the hospital -- about 7000 people, in this dataset. It may be the case that you want to include people who die. We also only include people who have chartevents data because we may end up using that data later.
+```python
+q4 = """SELECT 
+            a.SUBJECT_ID, 
+            a.HADM_ID,
+            a.ADMITTIME,
+            a.ADMISSION_TYPE, 
+            a.ETHNICITY,
+            IF (a.MARITAL_STATUS IS NULL, 'UNKNOWN', a.MARITAL_STATUS) as MARITAL_STATUS,
+            a.INSURANCE,
+            a.LANGUAGE,
+            NUM_ADMISSIONS,
+            IF (t.DAYS_UNTIL_READMISSION IS NULL, 0, t.DAYS_UNTIL_READMISSION) as DAYS_TO_READMISSION
+        FROM admissions a 
+        LEFT JOIN target t ON a.HADM_ID = t.DISCH_HADM_ID 
+        WHERE a.HAS_CHARTEVENTS_DATA = 1 AND a.HOSPITAL_EXPIRE_FLAG = 0"""
+        
+admissionsTarget = sqlContext.sql(q4)
+admissionsTarget.show(5)
+
+"""
++----------+-------+--------------------+--------------+--------------------+--------------+---------+--------+--------------+-------------------+
+|SUBJECT_ID|HADM_ID|           ADMITTIME|ADMISSION_TYPE|           ETHNICITY|MARITAL_STATUS|INSURANCE|LANGUAGE|NUM_ADMISSIONS|DAYS_TO_READMISSION|
++----------+-------+--------------------+--------------+--------------------+--------------+---------+--------+--------------+-------------------+
+|      6892| 100031|2140-11-11 07:15:...|      ELECTIVE|               WHITE|       MARRIED| Medicare|        |             2|                688|
+|     28965| 100431|2149-10-09 15:27:...|     EMERGENCY|BLACK/AFRICAN AME...|       WIDOWED| Medicare|    ENGL|          null|                  0|
+|     18376| 100831|2147-06-12 14:29:...|     EMERGENCY|               ASIAN|       MARRIED| Medicare|    ENGL|             4|                379|
+|      3478| 101031|2156-03-17 06:43:...|       NEWBORN|               WHITE|              |  Private|        |          null|                  0|
+|     73713| 101431|2146-09-19 16:42:...|     EMERGENCY|               WHITE|       MARRIED|  Private|    ENGL|            17|                 66|
++----------+-------+--------------------+--------------+--------------------+--------------+---------+--------+--------------+-------------------+
+only showing top 5 rows
+"""
+
+sqlContext.registerDataFrameAsTable(admissionsTarget, "admissions_target")
+sqlContext.sql("select COUNT(*) as num_patients from admissions_target").show()
+
+"""
++------------+
+|num_patients|
++------------+
+|       51558|
++------------+
+"""
+```
+8. Now, we will extract the patients gender and age from the `PATIENTS` table.
+```python
+
+```
