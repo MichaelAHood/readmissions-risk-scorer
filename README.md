@@ -64,8 +64,14 @@ os.environ['PYSPARK_SUBMIT_ARGS'] = "--deploy-mode client \
                                      --packages com.databricks:spark-csv_2.10:1.4.0 \
                                      pyspark-shell"
 ```
-*Note:* For exploratory data analysis and investigating a dataset I prefer to use `spark-submit` to set the parameters for the SparkContext. You can also edit the `spark-defaults.conf` to edit the defaults, adjusting paramters like `--num-executors`, `--driver-memory`, `--executor-memory`, and `--num-executors`, etc. `spark-submit` has the benefit that the arguments you pass override whatever their corresponding value is in `spark-defaults.conf`. You can read more [here](http://spark.apache.org/docs/latest/submitting-applications.html).  
+Notice that we also explicitly pass the `client` for the `--deploy-mode` argument. This will allow us to use spark in the cell based REPL workflow that makes Jupyter notebooks so useful for data analysis.
 
-Notice that we also explicitly pass the `client` for the `--deploy-mode` argument. This will allow us to use spark in the cell based REPL workflow that makes Jupyter notebooks so useful for data analysis. 
+**Note:** For exploratory data analysis and investigating a dataset I prefer to use `spark-submit` to set the parameters for the SparkContext. You can also edit the `spark-defaults.conf` to edit the defaults, adjusting paramters like `--num-executors`, `--driver-memory`, `--executor-memory`, and `--num-executors`, etc. `spark-submit` has the benefit that the arguments you pass override whatever their corresponding value is in `spark-defaults.conf`. The `SparkConf` object also gives you a lot of control over the specific resources and properties your Spark application has. You can read more [here](http://spark.apache.org/docs/latest/submitting-applications.html).  
 
+6. Let's create the SparkContext and the SQLContext. SQLContext allows us to create Spark Dataframes, enabling us to SQL queries against our dataframes. Dataframes also allow us to use pandas style dataframe operations when it is more appropriate. Additionally, you can use `map`, `filter`, `reduceByKey`, `flatMap`, etc. on dataframes, just like you can with RDDs. 
+
+```python
+sc = SparkContext()
+sqlContext = SQLContext(sc)
+```
 
