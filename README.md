@@ -319,5 +319,20 @@ sqlContext.sql("select COUNT(*) as num_patients from admissions_target").show()
 ```
 8. Now, we will extract the patients gender and age from the `PATIENTS` table.
 ```python
+sqlContext.registerDataFrameAsTable(df_patients, "patients")
 
+q5 = """SELECT 
+            a.*,
+            p.GENDER, 
+            p.DOB
+        FROM admissions_target a
+        LEFT JOIN patients p ON a.SUBJECT_ID = p.SUBJECT_ID
+        WHERE p.EXPIRE_FLAG = 0"""
+
+patients = sqlContext.sql(q5)
 ```
+9. 
+
+# 3. Training, Testing, Validating, and Deploying a Machine Learning Model with ATK
+
+1. Click 
