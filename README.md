@@ -50,11 +50,16 @@ c. `DRGCODES.csv` - contains the cormorbidity features `DRG_MORTALITY` and `DRG_
 3. TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that your battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use. *Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
 
 4. Start by making some standard `pyspark` imports:
-```ipython
+```python
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 from pyspark.sql.types import *
 from pyspark.sql.functions import datediff, round as Round
 ```
 
+5. Since we are working with csv files the `spark-csv` package is extremely useful. Specifically, it allows us to read csv files directly into dataframes and enables labor saving features like automatically infering schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
+
+```python
+os.environ['PYSPARK_SUBMIT_ARGS'] = "--deploy-mode client --packages com.databricks:spark-csv_2.10:1.4.0 pyspark-shell"
+```
 
