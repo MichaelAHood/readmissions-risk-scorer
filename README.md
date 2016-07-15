@@ -63,6 +63,8 @@ from pyspark.sql import SQLContext
 * Since we are working with csv files the `spark-csv` package is extremely useful ([spark-csv docs here](https://github.com/databricks/spark-csv)). Specifically, it allows us to read csv files directly into DataFrames and enables labor saving features like automatically inferring schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
 
 ```python
+import os
+
 os.environ['PYSPARK_SUBMIT_ARGS'] = "--deploy-mode client \
                                      --packages com.databricks:spark-csv_2.10:1.4.0 \
                                      --driver-memory 2G \
@@ -84,7 +86,7 @@ sqlContext = SQLContext(sc)
 
 ![Finding file URIs in the Data Catalog](hdfs-uri.png)
 
-* The below URIs are palacehodlers. Copy and paste the your **targetUri** for each file in the **Data Catalog** that you want to load:
+* The below URIs are palacehodlers. Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
 ```python
 hdfsPathAdmissions = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/9997ff80-b53f-46c4-9dca-f76cc56c876a/000000_1"
 hdfsPathPatients = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/d82b3a1e-de79-4312-98be-1499e25e25c6/000000_1"
