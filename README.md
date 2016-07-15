@@ -22,5 +22,5 @@ For this exercise, I am using the MIMIC-III dataset, which can be accessed at: h
 
 In this case, the data we are using are is tables called ADMISSIONS.csv, PATIENTS.csv, and DRGCODES.csv. Here is brief description of the data in each and why we want it.
 
-    1. ADMISSIONS.csv - contains the unique patient id ('SUBJECT_ID'), unique admission id ('HADM_ID'), the type of admissions (e.g. 'EMERGENCY', 'ELECTIVE', 'NEWBORN' etc.), time of patient admission ('ADMITTIME'), time of patient discharge ('DISCHTIME') and some socioeconomic and demographic features like 'ETHNICITY', 'LANGUAGE', 'INSURANCE', etc.
-      'ADMIT_TYPE', etc.
+a. ADMISSIONS.csv - contains the unique patient id ('SUBJECT_ID'), unique admission id ('HADM_ID'), the type of admissions (e.g. 'EMERGENCY', 'ELECTIVE', 'NEWBORN' etc.), time of patient admission ('ADMITTIME'), time of patient discharge ('DISCHTIME') and some socioeconomic and demographic features like 'ETHNICITY', 'LANGUAGE', 'INSURANCE', etc.
+'ADMIT_TYPE', etc.
