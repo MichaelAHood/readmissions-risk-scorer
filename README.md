@@ -52,7 +52,11 @@ c. `DRGCODES.csv` - contains the comorbidity features `DRG_MORTALITY` and `DRG_S
 
 * Give your notebook a name and click on the "Create New Instance" button. It can take a few seconds while the Docker host spins up a container running your Jupyter notebook.
 
-* TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that your battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use. *Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
+* TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that your battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use.
+
+![A Brand New Jupyter Notebook](/ipython.png)
+
+* *Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
 
 * Start by making some standard `pyspark` imports:
 ```python
