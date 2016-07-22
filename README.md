@@ -477,6 +477,28 @@ csv_schema = [
              ]
 
 csv_class = ta.CsvFile("/modeling-data.csv", schema=csv_schema, skip_header_lines=1)
+frame = ta.Frame(csv_class)
 ```
 
+The ATK server will now marshall the cluster resoruces to create an ATK Frame. Let's take a look at it.
 
+```python
+frame = ta.Frame(csv_class)
+"""
+[#]  admission_type  insurance  gender  age            avg_severity
+===================================================================
+[0]  EMERGENCY       Medicare   F       76.3000030518           2.0
+[1]  NEWBORN         Private    M                 0.0           0.0
+[2]  EMERGENCY       Private    F       49.9000015259           3.0
+[3]  ELECTIVE        Medicare   F       72.5999984741           0.0
+[4]  ELECTIVE        Private    F                59.5           2.0
+
+[#]  avg_mortality  ethnicity       language  marital_status  days_to_readm
+===========================================================================
+[0]            2.0  black/african   english   WIDOWED                     0
+[1]            0.0  white/european  newborn   MARITAL-OTHER               0
+[2]            3.0  white/european  english   MARRIED                    66
+[3]            0.0  Other           Unknown   MARRIED                     0
+[4]            2.0  black/african   english   SINGLE                      0
+"""
+```
