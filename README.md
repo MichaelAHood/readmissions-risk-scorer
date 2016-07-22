@@ -533,7 +533,7 @@ Out[64]:
     ```
     As you can see, `categorical_summary` offers the same functionality as the `df.value_counts()` method from Pandas with the additional useful feature of automatically tabulating percentages of each class.
     
-    * Now let's get build a map of all the categorical valuess. This is necessary for the modeling stage later when we need to tell our model what columns have categorical features and how many there are for each column.
+    *Now let's get build a map of all the categorical valuess. This is necessary for the modeling stage later when we need to tell our model what columns have categorical features and how many there are for each column.
     
     ```python
     res = frame.categorical_summary('admission_type', 
@@ -545,14 +545,16 @@ Out[64]:
 
 summary = res['categorical_summary']
 
-# This dictionary comprehension loops through each level of the categorical summary and pulls out the distinct values that appear with non-zero frequency for each column name.
+# This dictionary comprehension loops through each level of the categorical summary and pulls 
+# out the distinct values that appear with non-zero frequency for each column name.
 
 distinctValues = {colSummary['column']: [l['level'] for l in colSummary['levels'] if l['percentage'] > 0] 
                   for colSummary in summary}
 
 # Here is the mapping we created.
+
 for col in distinctValues:
-    print col, "-->", distinctValues[col ]
+    print col, "-->", distinctValues[col]
 """
 language       --> [u'english', u'newborn', u'Unknown', u'other']
 admission_type --> [u'EMERGENCY', u'NEWBORN', u'ELECTIVE', u'URGENT']
