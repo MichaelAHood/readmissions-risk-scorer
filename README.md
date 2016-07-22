@@ -502,3 +502,63 @@ frame = ta.Frame(csv_class)
 [4]            2.0  black/african   english   SINGLE                      0
 """
 ```
+* From our analysis, we know that newborns are nearly almost always  will drop the 'NEWBORN' col because virtually all newborns are admitted into ICU -- which may boost the classifier performance in a way that does actually help us
+discriminate which adults are likely to be readmitted.
+```python
+frame.filter(lambda row: 'NEWBORN' not in row.admission_type)
+```
+* Now let's use the `categorical_summary` method to get the distinct values of a column with categorical data.
+```python
+frame.categorical_summary('admission_type')
+
+"""
+Done [=========================] 100.00% Time 00:00:02
+Out[64]:
+{u'categorical_summary': [{u'column': u'admission_type',
+   u'levels': [{u'frequency': 22124,
+     u'level': u'EMERGENCY',
+     u'percentage': 0.6216876949447832},
+    {u'frequency': 7701,
+     u'level': u'NEWBORN',
+     u'percentage': 0.21639924691600865},
+    {u'frequency': 5140,
+     u'level': u'ELECTIVE',
+     u'percentage': 0.14443476550425718},
+    {u'frequency': 622,
+     u'level': u'URGENT',
+     u'percentage': 0.017478292634950966},
+    {u'frequency': 0, u'level': u'Missing', u'percentage': 0.0},
+    {u'frequency': 0, u'level': u'Other', u'percentage': 0.0}]}]}
+    """
+    ```
+    As you can see, `categorical_summary` offers the same functionality as the `df.value_counts()` method from Pandas with the additional useful feature of automatically tabulating percentages of each class.
+    
+    * Now let's get build a map of all the categorical valuess. This is necessary for the modeling stage later when we need to tell our model what columns have categorical features and how many there are for each column.
+    
+    ```python
+    res = frame.categorical_summary('admission_type', 
+                                'insurance',
+                                'gender',
+                                'ethnicity',
+                                'language',
+                                'marital_status')
+
+summary = res['categorical_summary']
+
+# This dictionary comprehension loops through each level of the categorical summary and pulls out the distinct values that appear with non-zero frequency for each column name.
+
+distinctValues = {colSummary['column']: [l['level'] for l in colSummary['levels'] if l['percentage'] > 0] 
+                  for colSummary in summary}
+
+# Here is the mapping we created.
+for col in distinctValues:
+    print col, "-->", distinctValues[col ]
+"""
+language       --> [u'english', u'newborn', u'Unknown', u'other']
+admission_type --> [u'EMERGENCY', u'NEWBORN', u'ELECTIVE', u'URGENT']
+gender         --> [u'M', u'F']
+marital_status --> [u'MARRIED', u'MARITAL-OTHER', u'SINGLE', u'WIDOWED', u'DIVORCED', u'SEPARATED', u'MARITAL-UNKNOWN']
+insurance      --> [u'Private', u'Medicare', u'Medicaid', u'Government', u'Self Pay']
+ethnicity      --> [u'white/european', u'Other', u'black/african', u'hispanic/latino', u'asian/indian', u'mideastern']    
+"""    
+```
