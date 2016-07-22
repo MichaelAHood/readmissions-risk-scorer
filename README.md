@@ -529,11 +529,11 @@ Out[64]:
      u'percentage': 0.017478292634950966},
     {u'frequency': 0, u'level': u'Missing', u'percentage': 0.0},
     {u'frequency': 0, u'level': u'Other', u'percentage': 0.0}]}]}
-    """
-    ```
-    As you can see, `categorical_summary` offers the same functionality as the `df.value_counts()` method from Pandas with the additional useful feature of automatically tabulating percentages of each class.
+"""
+```
+As you can see, `categorical_summary` offers the same functionality as the `df.value_counts()` method from Pandas with the additional useful feature of automatically tabulating percentages of each class.
     
-    *Now let's get build a map of all the categorical valuess. This is necessary for the modeling stage later when we need to tell our model what columns have categorical features and how many there are for each column.
+* Now let's get build a map of all the categorical valuess. This is necessary for the modeling stage later when we need to tell our model what columns have categorical features and how many there are for each column.
     
     ```python
     res = frame.categorical_summary('admission_type', 
