@@ -570,7 +570,7 @@ ethnicity      --> [u'white/european', u'Other', u'black/african', u'hispanic/la
 frame.add_columns(lambda row: 0 if 'EMERGENCY' in row.admission_type 
                                 else 1 if 'ELECTIVE' in row.admission_type
                                 else 2,  
-                               ('admission_type_c', ta.int32))
+                               ('admission_type_c', ta.int32)) # We must explicitly state the new column name and type
 
 frame.add_columns(lambda row: 0 if 'Private' in row.insurance 
                                 else 1 if 'Medicare' in row.insurance
@@ -661,10 +661,10 @@ frame.drop_columns(['days_to_readm'])
 ```python
 frame.assign_sample([0.8, 0.2],
                     ['train', 'test'],
-                   output_column='split',
-                   random_seed=1234)
+                    output_column='split',
+                    random_seed=1234)
 ```
-* Having done that we can create two new dataframes with the `frame.copy()` method that copys that dataframe on a condition that pass as a user defined fucntion, e.g. `newFrame = frame.copy(colsToCopy, where=lambda x: x if 'my_condition')`
+* Having done that we can create two new dataframes with the `frame.copy()` method that copys that dataframe on a condition that we pass, e.g. `newFrame = frame.copy(colsToCopy, where=lambda x: x if 'my_condition')`
 ```python
 frameCols = ['age', 
             'admission_type_c', 
