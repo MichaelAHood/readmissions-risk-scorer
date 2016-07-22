@@ -657,3 +657,25 @@ frame.add_columns(lambda row: 1 if (row.days_to_readm < 90) and (row.days_to_rea
 # Drop the original column
 frame.drop_columns(['days_to_readm'])
 ```
+* Split the data into a training set and a testing set. This method is creating a new column called `split` and is randomly assigning 80% of the rows of `split` the value of `train` and the remaining 20% the value of `test`.
+```python
+frame.assign_sample([0.8, 0.2],
+                    ['train', 'test'],
+                   output_column='split',
+                   random_seed=1234)
+```
+* Having done that we can create two new dataframes with the `frame.copy()` method that copys that dataframe on a condition that pass as a user defined fucntion, e.g. `newFrame = frame.copy(colsToCopy, where=lambda x: x if 'my_condition')`
+```python
+frameCols = ['age', 
+            'admission_type_c', 
+            'insurance_c', 
+            'gender_c', 
+            'ethnicity_c', 
+            'language_c', 
+            'marital_status_c',
+            'target',
+            'split']
+
+trainFrame = frame.copy(frameCols, where=lambda row: 'train' in row.split)
+testFrame = frame.copy(frameCols, where=lambda row: 'test' in row.split)    
+```
