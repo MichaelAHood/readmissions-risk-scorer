@@ -745,4 +745,21 @@ Actual_Pos              2            216
 Actual_Neg             12           5307
 """
 ```
+## Model Hyperparameter Tuning
+* Grid Search and Cross Validation
+This section under construction. 
 
+## Deploying the Model
+* Once we are satisified with the performance of our model we want to put it into production. To do that we use the `model.publish()` method to serialize the model and write it to HDFS.
+```python
+model.publish()
+"""
+u'hdfs://nameservice1/org/3344b8a7-f814-4343-903e-ca914317bee3/brokers/userspace/aeab8785-03bb-4ac7-93b1-a5a46abb9a82/atk-intel-be107c9e/models_3fe4c46e705c4bb697e7546cfcbecbc8.tar'
+"""
+```
+Be sure to copy the above uri for your model.
+
+* Go back to the TAP Console and select Services -> Marketplace -> TAP Scoring Engine.
+* Create a name for your scoring engine instance, e.g. my-model-as-an-api. Ensure that you select the "Add an extra paramter". For `key` enter `uri`. For `value` enter the long HDFS uri that you copied after calling `model.publish()`. In case you forogt to copy it and no longer have your Jupyter notebook up and running, go to the Data Catalog and select the `TAR` format under "Advanced Search". You should see your model here and can click on the filename to get the `targetUri`.
+* Click on "Create new instance"
+* Congratualtions, your model is now available as a REST API that you can pass datapoints to over http!
