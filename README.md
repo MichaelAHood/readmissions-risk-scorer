@@ -483,7 +483,7 @@ frame = ta.Frame(csv_class)
 The ATK server will now marshall the cluster resoruces to create an ATK Frame. Let's take a look at it.
 
 ```python
-frame = ta.Frame(csv_class)
+frame.inspect(5)
 """
 [#]  admission_type  insurance  gender  age            avg_severity
 ===================================================================
@@ -537,21 +537,22 @@ As you can see, `categorical_summary` offers the same functionality as the `df.v
     
     ```python
     res = frame.categorical_summary('admission_type', 
-                                'insurance',
-                                'gender',
-                                'ethnicity',
-                                'language',
-                                'marital_status')
+                                    'insurance',
+                                    'gender',
+                                    'ethnicity',
+                                    'language',
+                                    'marital_status')
 
 summary = res['categorical_summary']
 
 # This dictionary comprehension loops through each level of the categorical summary and pulls 
 # out the distinct values that appear with non-zero frequency for each column name.
 
+#                 #key="columnName"   :  #value=List(distinct values in each column)                
 distinctValues = {colSummary['column']: [l['level'] for l in colSummary['levels'] if l['percentage'] > 0] 
                   for colSummary in summary}
 
-# Here is the mapping we created.
+# Here is the mapping we created. This will be useful later.
 
 for col in distinctValues:
     print col, "-->", distinctValues[col]
@@ -563,4 +564,94 @@ marital_status --> [u'MARRIED', u'MARITAL-OTHER', u'SINGLE', u'WIDOWED', u'DIVOR
 insurance      --> [u'Private', u'Medicare', u'Medicaid', u'Government', u'Self Pay']
 ethnicity      --> [u'white/european', u'Other', u'black/african', u'hispanic/latino', u'asian/indian', u'mideastern']    
 """    
+```
+* Now we need to convert all categorical column to integer values, so we can start the modeling process with ATK.
+```python
+frame.add_columns(lambda row: 0 if 'EMERGENCY' in row.admission_type 
+                                else 1 if 'ELECTIVE' in row.admission_type
+                                else 2,  
+                               ('admission_type_c', ta.int32))
+
+frame.add_columns(lambda row: 0 if 'Private' in row.insurance 
+                                else 1 if 'Medicare' in row.insurance
+                                else 2 if 'Medicaid' in row.insurance
+                                else 3 if 'Government' in row.insurance
+                                else 4, 
+                               ('insurance_c', ta.int32))
+
+frame.add_columns(lambda row: 0 if 'M' in row.gender else 1, 
+                               ('gender_c', ta.int32))
+
+frame.add_columns(lambda row: 0 if 'white/european' in row.ethnicity 
+                                else 1 if 'black/african' in row.ethnicity
+                                else 2 if 'hispanic/latino' in row.ethnicity
+                                else 3 if 'asian/indian' in row.ethnicity
+                                else 4 if 'mideastern' in row.ethnicity
+                                else 5, 
+                               ('ethnicity_c', ta.int32))
+
+frame.add_columns(lambda row: 0 if 'english' in row.language 
+                                else 1 if 'newborn' in row.language
+                                else 2 if 'Unknown' in row.language
+                                else 3, 
+                               ('language_c', ta.int32))
+
+frame.add_columns(lambda row:  0 if 'MARRIED' in row.marital_status 
+                                else 1 if 'MARITAL-OTHER' in row.marital_status
+                                else 2 if 'SINGLE' in row.marital_status
+                                else 3 if 'WIDOWED' in row.marital_status
+                                else 4 if 'DIVORCED' in row.marital_status
+                                else 5 if u'SEPARATED' in row.marital_status
+                                else 6, 
+                               ('marital_status_c', ta.int32))
+```
+* Now that we have created numerical representations of our categorical valued columns, we can drop the original columns.
+```python
+frame.drop_columns(['admission_type', 
+                    'insurance',
+                    'gender',
+                    'ethnicity',
+                    'language',
+                    'marital_status'])
+```
+* Now let's take a look at the continuous valued columns. We start with the average comorbidity severity score `avg_severity`
+```python
+frame.column_summary_statistics('avg_severity')
+"""
+{u'bad_row_count': 2,
+ u'geometric_mean': None,
+ u'good_row_count': 27884,
+ u'maximum': 4.0,
+ u'mean': 2.17097618706068,
+ u'mean_confidence_lower': 2.154239032436824,
+ u'mean_confidence_upper': 2.187713341684536,
+ u'minimum': 0.0,
+ u'non_positive_weight_count': 0,
+ u'positive_weight_count': 27884,
+ u'standard_deviation': 1.4259460483397752,
+ u'total_weight': 27884.0,
+ u'variance': 2.0333221327758206}
+"""
+```
+Here we can see that there are two bad rows, i.e. NULL valued rows that we missed during our data extraction process. We can go ahead and impute the missing values as 0. We will also do the same for `avg_mortality` because this column is also missing values for the same two rows.
+
+```python
+frame.add_columns(lambda row: 0 if type(row.avg_severity) != ta.float32 else row.avg_severity,
+                            ('cleaned_severity', ta.float32))
+
+frame.add_columns(lambda row: 0 if type(row.avg_mortality) != ta.float32 else row.avg_mortality,
+                            ('cleaned_mortality', ta.float32))
+```
+* Now we will drop the original columns that new columns are dervied from.
+```python
+frame.drop_columns(['avg_severity', 'avg_mortality'])
+```
+frame.add_columns(lambda row: 1 if (row.days_to_readm < 30) and (row.days_to_readm > 0) else 0, 
+                              ('target_30', ta.int32))
+
+frame.add_columns(lambda row: 1 if (row.days_to_readm < 90) and (row.days_to_readm > 0) else 0, 
+                              ('target_90', ta.int32))
+
+# Drop the original column
+frame.drop_columns(['days_to_readm'])
 ```
