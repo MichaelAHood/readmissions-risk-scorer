@@ -647,7 +647,7 @@ frame.add_columns(lambda row: 0 if type(row.avg_mortality) != ta.float32 else ro
 frame.drop_columns(['avg_severity', 'avg_mortality'])
 ```
 * Now, create the targets for the 30-day readmission model and the 90-day readmission model.
-```pytohn
+```python
 frame.add_columns(lambda row: 1 if (row.days_to_readm < 30) and (row.days_to_readm > 0) else 0, 
                               ('target_30', ta.int32))
 
