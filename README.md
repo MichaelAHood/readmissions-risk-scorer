@@ -678,4 +678,29 @@ frameCols = ['age',
 
 trainFrame = frame.copy(frameCols, where=lambda row: 'train' in row.split)
 testFrame = frame.copy(frameCols, where=lambda row: 'test' in row.split)    
+
+# Drop the `split` column now that it is no longer needed.
+trainFrame.drop_columns(['split'])
+testFrame.drop_columns(['split'])
 ```
+
+* Now we will try different modeling to see how well we can predict whether or not a patient will be readmitted. First, let's import the `RandomForestCLassifierModel`.
+```python
+model = ta.RandomForestClassifierModel()
+```
+* One of the nice properties of Random Forest models is the ability to handle categorical variables as well as continuous variables. We can just use the categorical variables as they are right now, e.g. {0, 1, 2, ...}, as the model can work with them, however the model will assume that they are continuous unless otherwise specified. This is exactl what the `categorical_features_info` paramter of the `model.train()` method is for. 
+
+ATK uses the same input data structure -- an arity -- as Spark MLLib Random Forest. This just means that we need to give the model a dictionary of the column indexes (0-based) with the number of distinct categorical values in that column.
+
+```python
+categoricalCols = ['admission_type', 'insurance',
+                   'gender', 'ethnicity',
+                   'language', 'marital_status']
+
+categoricalInfo = {ix: len(distinctValues[col]) for ix, col in enumerate(categoricalCols)}
+
+print categoricalInfo
+"""
+{0: 3, 1: 5, 2: 2, 3: 6, 4: 3, 5: 7}
+"""
+
