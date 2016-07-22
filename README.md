@@ -714,9 +714,8 @@ feature_cols = ["admission_type_c",
                 "marital_status_c",
                 "age"]
 
-
-train_output = model.train(trainFrame, 
-                           'target_30', 
+train_output = model.train(frame=trainFrame, 
+                           label_column='target_30', 
                            observation_columns=feature_cols, 
                            num_classes=2, 
                            categorical_features_info=categoricalInfo,
@@ -725,7 +724,7 @@ train_output = model.train(trainFrame,
                            max_depth=16, 
                            max_bins=32)
 ```
-* Model training can take a while depending on the size of your data, how many trees you want in your ensemble, and the depth that you allow your trees to go. In general, you want each tree to be constructed to the maximum depth permissable by your time and computational resources. This will inherently overfit your data on any given tree, but since your are constructing many different trees from random bootstrapped samples of the data, each tree is overfitting in a slightly different way. A given prediction made when a datapoint is fed through each tree in the forest and the tree votes on the classification for that datapoint. The votes are tallied and then prediciton is made by taking the majority vote of the trees. The end result is that the high variance between individual trees will average out over the entire forest.
+* Model training can take a while depending on the size of your data, how many trees you want in your ensemble, and the depth that you allow your trees to go. In general, you want each tree to be constructed to the maximum depth permissable by your time and computational resources. This will inherently overfit your data on any given tree, but since your are constructing many different trees from random bootstrapped samples of the data, each tree is overfitting in a slightly different way. A given prediction is made when a datapoint is fed through each tree in the forest and the tree votes on the classification for that datapoint. The votes are tallied and then prediciton is made by taking the majority vote of the trees. The end result is that the high variance between individual trees will average out over the entire forest.
 
 * Now let's make predictions and test the results
 ```python
