@@ -15,7 +15,7 @@ Additionally, there are several assumptions about skills and familiarity with te
 2. Second, we will demonstrate how to create a Jupyter notebook running Pyspark and load the patient data for analysis.
 3. Next, we will select a classifier model to identify patients at risk of readmission.
 4. Then, we will discuss how to tune model parameters, evaluate the model's performance, and discuss common risks and 'gotchas' to be aware of when modeling.
-5. Finally, we will show how to deploy the model as a REST api so that medical staff can begin identifying which patients are most at risk of readmission.
+5. Finally, we will show how to deploy the model as a REST api so that medical staff can begin identifying which patients are most at risk of readmission.         
 
 # 1. Loading the data into the Data Catalog
 
@@ -646,6 +646,8 @@ frame.add_columns(lambda row: 0 if type(row.avg_mortality) != ta.float32 else ro
 ```python
 frame.drop_columns(['avg_severity', 'avg_mortality'])
 ```
+* Now, create the targets for the 30-day readmission model and the 90-day readmission model.
+```pytohn
 frame.add_columns(lambda row: 1 if (row.days_to_readm < 30) and (row.days_to_readm > 0) else 0, 
                               ('target_30', ta.int32))
 
