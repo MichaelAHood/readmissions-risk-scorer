@@ -1,6 +1,20 @@
 # readmissions-risk-scorer
 This is a temporary repo for the Intel-TAP readmission risk scoring model reference architecture
 
+## Executive Summary
+
+# 1. The Problem
+
+# 2. Solution Summary
+
+# 3. How to Use the Solution
+
+# 4. What Does the Solution Contain
+
+# 5. Solution Backgroun
+
+# 6. Adoption Roadmap
+
 This intent is for this repo to be a one-stop source for everything you need to take your own hospital patient data, load that data into TAP, extract and process the relevant features, and train a model to predict which patients are likely to be readmitted within some amount of time.
 
 This tutorial takes as given that you have access to a running TAP VPC (version 0.7), have access to patient data in CSV format, have permissions to upload data to the HDFS data catalog, and can create Jupyter notebook instances.
