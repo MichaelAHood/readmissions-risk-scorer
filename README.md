@@ -5,7 +5,7 @@ This is a temporary repo for the Intel-TAP readmission risk scoring model refere
 
 ## 1. The Problem
 
-The Affordable Care Act established the Hospital Readmissions Reduction Program (HRRP), which requires the Centers for Medicare & Medicaid Services (CMS) to promote quality health care for Americans. To this end the CMS is required to reduce payments to hospitals with excessive readmissions. Additionally, hospitals incur unnecessary costs when patients are readmitted for conditions that could have addressed or mitigated in their initial admission. As a result, hospitals are seeking ways to reduce readmissions rates.
+The Affordable Care Act established the Hospital Readmissions Reduction Program (HRRP), which requires the Centers for Medicare & Medicaid Services (CMS) to promote quality health care for Americans. To this end the CMS is required to reduce payments to hospitals with excessive readmissions. Additionally, hospitals incur unnecessary costs when patients are readmitted for conditions that could have addressed or mitigated during the patient's initial admission. As a result, hospitals are seeking ways to reduce readmissions rates.
 
 ## 2. Solution Summary
 
