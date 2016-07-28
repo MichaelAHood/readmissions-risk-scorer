@@ -9,7 +9,7 @@ The Affordable Care Act established the Hospital Readmissions Reduction Program 
 
 ## 2. Solution Summary
 
-![Solution Architecture](/architecture-diagram.pdf)
+![Solution Architecture](/architecture-diagram.png)
 
 
 ## 3. How to Use the Solution
