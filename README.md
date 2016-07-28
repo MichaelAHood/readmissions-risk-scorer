@@ -11,7 +11,7 @@ This is a temporary repo for the Intel-TAP readmission risk scoring model refere
 
 ## 4. What Does the Solution Contain
 
-## 5. Solution Backgroun
+## 5. Solution Background
 
 ## 6. Adoption Roadmap
 
