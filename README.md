@@ -9,6 +9,9 @@ The Affordable Care Act established the Hospital Readmissions Reduction Program 
 
 ## 2. Solution Summary
 
+Intel's Trusted Analytics Platform (TAP) uses indsutry standard Open Source tools (e.g. Cloudera Hadoop, Docker, and CloudFoundry) to provide a consolidated platform for quickly testing, developing and deploying advanced analytics applications on arbitrarily large datasets.
+
+
 ![Solution Architecture](/architecure-diagram.png)
 
 
