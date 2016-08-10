@@ -19,8 +19,8 @@ Intel's Trusted Analytics Platform (TAP) uses indsutry standard Open Source tool
 This solution to reducing hospital readmissions will consist of five essential steps:
 
 1. Loading the relevant patient record data into the TAP Hadoop Cluster
-2. Load and explore the data, process the records, and engineer features for use in predictive modeling.
-3. Train a preditive model and validate it's performance priot to deployment.
+2. Load and explore the data, process the data, and engineer features for use in predictive modeling.
+3. Train a preditive model and validate it's performance before deployment.
 4. Deploy a the predictive model as an API that can be used by an application.
 5. Build an application that allows a practitioner to use the model's output as part of the discharge planning process.
 
