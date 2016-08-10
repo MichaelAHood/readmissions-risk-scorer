@@ -14,7 +14,7 @@ Advanced analytics on large patient datasets allow analytics professionals and d
 Intel's Trusted Analytics Platform (TAP) uses indsutry standard Open Source tools (e.g. Cloudera Hadoop, Docker, and CloudFoundry) to provide a consolidated platform for quickly testing, developing and deploying advanced analytics applications on arbitrarily large datasets.
 
 
-![Solution Architecture](/architecure-diagram.png)
+![Solution Architecture](images/architecure-diagram.png)
 
 This solution to reducing hospital readmissions will consist of five essential steps:
 
