@@ -53,7 +53,7 @@ Additionally, there are several assumptions about skills and familiarity with te
 
 * First, log in to the console for your TAP VPC. It should look something like this:
 
-![Data Catalog](/data-catalog.png)
+![Data Catalog](images/data-catalog.png)
 
 * To load your data, select the "Submit Transfer" tab. You upload data files directly from your local machine or you can pass a link. You can also `ssh` or `sftp` into `cdh-launcher` and from there you can directly interact with the nodes of the Hadoop cluster via the hdfs command (e.g. PUT files directly into HDFS). For our purposes, uploading data to the Data Catalog with the browser based console is probably the quickest and easiest way.
 
@@ -80,13 +80,13 @@ c. `DRGCODES.csv` - contains the comorbidity features `DRG_MORTALITY` and `DRG_S
 
 * Click on the "Data Science" tab on the right side of the console Dash Board. Click on the "Jupyter" tab.
 
-![Creating a Jupyter Notebook](/jupyter.png)
+![Creating a Jupyter Notebook](images/jupyter.png)
 
 * Give your notebook a name and click on the "Create New Instance" button. It can take a few seconds while the Docker host spins up a container running your Jupyter notebook.
 
 * TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that your battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use.
 
-![A Brand New Jupyter Notebook](/ipython.png)
+![A Brand New Jupyter Notebook](images/ipython.png)
 
 * *Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
 
@@ -120,7 +120,7 @@ sqlContext = SQLContext(sc)
 ```
 * In order to load our `CSV` files, we need the HDFS uris for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: 
 
-![Finding file URIs in the Data Catalog](hdfs-uri.png)
+![Finding file URIs in the Data Catalog](images/hdfs-uri.png)
 
 * The below URIs are palacehodlers. Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
 ```python
@@ -482,7 +482,7 @@ only showing top 10 rows
 
 * Go back to the **TAP Console** and click on the **Data Science** subtab and again on the **TAP Analytics Toolkit** subtab. Click on the url for the running ATK instance and you should see something like:
 
-![ATK](/atk.png)
+![ATK](images/atk.png)
 
 * Copy the `pip install <my-atk-uri>/client` line.
 * Once you have installed the updated client module for `trustedanalytics`, import ATK and create the credentials file to connect to the server:
