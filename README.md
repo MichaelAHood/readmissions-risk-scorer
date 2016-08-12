@@ -17,15 +17,11 @@ Intel's Trusted Analytics Platform (TAP) uses indsutry standard Open Source tool
 
 The above diagram demonstrates the general process by which patient EMR data can be combined with multiple data sources, such as census data, and socio-economic data to form a rich picture about patients. With a dataset on hand, data scientists can create preditive models that learn the relationships between patient data and their propensity for different conditions, e.g. heart disease or risk of early readmission.
 
-Once a preditive model has been created and validated, it can be deployed as a cloud-based service that allows the model's predictive capabilities to be used by other applications. For example, discharge planning software can pass a list of patient IDs to the model and receive a risk score that indicates who is most at-risk of being readmitted.
+Once a preditive model has been created and validated, it can be deployed as a cloud-based service that allows the model's predictive capabilities to be used by other applications. For example, discharge planning software can pass a list of patient IDs to the model and receive a score that indicates the readmission risk for each patient.
 
 Once high-risk patients have been identified, their EMRs and discharge plans can be modified  to mitigate any risk factors that appear.
 
 ## 3. How to Use the Solution
-
-
-
-## 4. What Does the Solution Contain
 
 This solution to reducing hospital readmissions will consist of five essential steps:
 
@@ -37,7 +33,22 @@ This solution to reducing hospital readmissions will consist of five essential s
 
 ![Solution Architecture](images/architecture-diagram-1.png)
 
+## 4. What Does the Solution Contain
+
+
 ## 5. Solution Background
+
+This solution originated through Intel's partnership with Cloudera to conduct a pilot program with a large hospital group to use predictive analytics reduce readmission rates. 
+
+Intel Data Scientists used the hospital historical patient data -- combined with census data -- to help doctor's pinpoint which patients were a high readmission risk. Hospital staff were able to administer additional care to indetify any shortcommings in the treatment and dicharge plan, thereby reducing overall readmission rates.
+
+By Using the predictions from the analysis the Hospital Group was able to reap the following benefits:
+
+  1. Reducing 6,000 occurrences of patient readmission.
+  2. Avoiding $4 million in potential Medicare ppenalties.
+  3. Saving appriximately $72 milion in medical costs.
+  4. More efficient utilization of resources by focusing at high-risk patients.
+  5. Improving hospital ratings by lowering readmission rate and increasing patient satisfaction.
 
 ## 6. Adoption Roadmap
 
