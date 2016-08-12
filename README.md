@@ -149,6 +149,8 @@ Notice that we also explicitly pass the `client` for the `--deploy-mode` argumen
 ```python
 sc = SparkContext()
 sqlContext = SQLContext(sc)
+# Tungsten is the built-in code execution optimizer. It should be on by default, but make sure it is on.
+sqlContext.setConf("spark.sql.tungsten.enabled", "true")
 ```
 * In order to load our `CSV` files, we need the HDFS uris for our files from the Data Catalog. Click on the **Data Catalog** tab of the TAP Console and ensure you are viewing the **Data sets** subtab. From here, click on the filename of the `CSV` files you want to load into Spark. Once you click on the filename, you should see a **targetUri** that is very long and looks something like this: 
 
@@ -509,6 +511,102 @@ data.show(10)
 only showing top 10 rows
 """
 ```
+
+Let's take a quick look at the distribution of age among the patients. The collect methods can take a while with large data sets any you should be careful to not collect so much data that you overflow your driver memory.
+
+```python
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+# We will take sample 20% of our data to get a sense of the age distribution.
+ages = [age[0] for age in data.select(data.AGE).sample(withReplacement=False, fraction=0.2).collect()]
+
+plt.hist(ages, bins=30)
+plt.suptitle('Distribution of Ages', size=24)
+plt.ylabel('Counts', size=20)
+plt.xlabel('Age', size=20)
+plt.show()
+```
+![Age Histogram](images/age-histogram.png)
+
+This chart shows a bimodal distribution that appears to be centered around newborns and the normal adult population, with essentially no instances of other children.
+
+Let's take a look at the readmission rates for the different admission_types.
+
+```python
+sqlContext.sql("""select 
+                    ADMISSION_TYPE,
+                    AVG(CASE
+                        WHEN DAYS_TO_READMISSION > 0 and DAYS_TO_READMISSION <= 30 THEN 1
+                        ELSE 0
+                        END) as 30day_readmission_rate,
+                    AVG(CASE
+                        WHEN DAYS_TO_READMISSION > 0 and DAYS_TO_READMISSION <= 90 THEN 1
+                        ELSE 0
+                        END) as 90day_readmission_rate  
+                    FROM data 
+                    GROUP BY ADMISSION_TYPE""").show()
+                    
+"""
++--------------+----------------------+----------------------+
+|ADMISSION_TYPE|30day_readmission_rate|90day_readmission_rate|
++--------------+----------------------+----------------------+
+|      ELECTIVE|  0.029766536964980543|  0.047470817120622566|
+|       NEWBORN|   0.01778989741592001|   0.01856901701077782|
+|        URGENT|  0.028938906752411574|   0.04823151125401929|
+|     EMERGENCY|   0.04691737479660098|   0.08041041403001266|
++--------------+----------------------+----------------------+
+"""
+```
+From here we can see that `NEWBORN` patients have a significantly lower readmission rate -- which is good, but these are probably not the people we want to focus on. Therefore, I have chosen to remove the instances of NEWBORN because I intend to focus on adressing readmissions for adults. My intution is that newborns may have an unexpected effect of boosting accuracy of my classifier in such a way that does not generalize to the adult population.
+
+Another point worth nothing is that `EMERGENCY` readmissions are nearly twice as the other classes. This is likely to be a useful feature. 
+
+adults = data.filter(data.ADMISSION_TYPE != 'NEWBORN')
+sqlContext.registerDataFrameAsTable(adults, "adults")
+
+Let's see what the imbalance is between the people who were readmitted within 30 days and those wo were not
+
+```python
+sqlContext.sql("""SELECT
+                    AVG(CASE
+                        WHEN DAYS_TO_READMISSION > 0 and DAYS_TO_READMISSION <= 30 THEN 1
+                        ELSE 0
+                        END)
+                    FROM adults""").show()
+"""
++--------------------+
+|                 _c0|
++--------------------+
+|0.043355088574912146|
++--------------------+
+"""
+```
+From this result we can see that this is a heavily imbalanced class -- about 1 patient is readmitted within 30 days for 23 patients that are not. This imbalance in the target will also pose problems to any classifier that is sensitive to class imbalance, e.g. Logistic Regression and Random Forest
+
+One way we can handle this is to oversample from the minority class -- those who were readmitted -- until they are represented in roughly the same proportion as the those who were not readmitted. There are some sophisticated techniques for doing this such as Synthetic Minority Oversampling Technique (SMOTE), but we will use bootstrapping.
+
+First, let's find all the instances of the positive class.
+
+```python
+positiveLables = sqlContext.sql("""SELECT * 
+                                   FROM adults 
+                                   WHERE DAYS_TO_READMISSION <= 30 
+                                       AND DAYS_TO_READMISSION > 0
+                                """)
+```
+Now, we will bootstrap by using the sample with replacement method.
+
+```python
+upsampled = positiveLables.sample(withReplacement=True, fraction=23.0)
+sqlContext.registerDataFrameAsTable(upsampled, "upsampled")
+```
+Next, we combine the upsampled set with the original set of adults
+upsampledData = sqlContext.sql("""SELECT * FROM upsampled
+                                  UNION ALL
+                                  SELECT * FROM adults
+                               """)
+
 
 # 4. Training, Testing, Validating, and Deploying a Machine Learning Model with ATK
 
