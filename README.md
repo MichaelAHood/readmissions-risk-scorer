@@ -38,7 +38,7 @@ This solution to reducing hospital readmissions will consist of five essential s
 
 ## 5. Solution Background
 
-This solution originated through Intel's partnership with Cloudera to conduct a pilot program with a large hospital group to use predictive analytics reduce readmission rates. 
+This solution originated through Intel's partnership with Cloudera to conduct a pilot program with a Large Hospital Group to use predictive analytics to reduce readmission rates. 
 
 Intel Data Scientists used the hospital historical patient data -- combined with census data -- to help doctor's pinpoint which patients were a high readmission risk. Hospital staff were able to administer additional care to indetify any shortcommings in the treatment and dicharge plan, thereby reducing overall readmission rates.
 
