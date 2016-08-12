@@ -11,10 +11,14 @@ The Affordable Care Act established the Hospital Readmissions Reduction Program 
 
 Advanced analytics on large patient datasets allow analytics professionals and data scientists to find patterns in patient readmission data. From these patterns, models can be biult which enable hospitals to identify the most at-risk patients before they are discharged and apply an appropriate intervention.  
 
-Intel's Trusted Analytics Platform (TAP) uses indsutry standard Open Source tools (e.g. Cloudera Hadoop, Docker, and CloudFoundry) to provide a consolidated platform for quickly testing, developing and deploying advanced analytics applications on arbitrarily large datasets.
+Intel's Trusted Analytics Platform (TAP) uses indsutry standard Open Source tools (e.g. Cloudera Hadoop, Docker, and CloudFoundry) to provide a consolidated platform for quickly developing and deploying predictive modeling applications on large datasets.
+
+![Preditive Modeling Process](images/predictive-modeling-process.png)
 
 
-![Solution Architecture](images/architecture-diagram-1.png)
+## 3. How to Use the Solution
+
+## 4. What Does the Solution Contain
 
 This solution to reducing hospital readmissions will consist of five essential steps:
 
@@ -24,10 +28,7 @@ This solution to reducing hospital readmissions will consist of five essential s
 4. Deploy a the predictive model as an API that can be used by an application.
 5. Build an application that allows a practitioner to use the model's output as part of the discharge planning process.
 
-
-## 3. How to Use the Solution
-
-## 4. What Does the Solution Contain
+![Solution Architecture](images/architecture-diagram-1.png)
 
 ## 5. Solution Background
 
