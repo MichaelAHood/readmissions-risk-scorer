@@ -47,17 +47,24 @@ This solution utilizes the above components by storing historical data and patie
 
 This solution originated through Intel's partnership with Cloudera to conduct a pilot program with a Large Hospital Group to use predictive analytics to reduce readmission rates. 
 
-Intel Data Scientists used the hospital historical patient data to use a Random Forest machine learning algorithm to train a predictive model that enabled doctor's to pinpoint which patients were a high readmission risk. Hospital staff were able to administer additional care to indetify any shortcommings in the treatment and dicharge plan, thereby reducing overall readmission rates.
+Intel Data Scientists combined the hospital historical patient data with socioeconomic data, such as housing prices and health services in the surrounding area, to train a Random Forest predictive model that enabled doctor's to pinpoint which patients were a high readmission risk. Hospital staff were able to administer additional care to indetify any shortcommings in the treatment and dicharge plan, thereby reducing overall readmission rates.
 
 By Using the predictions from the analysis the Hospital Group was able to reap the following benefits:
 
   1. Reducing 6,000 occurrences of patient readmission.
   2. Avoiding $4 million in potential Medicare ppenalties.
   3. Saving appriximately $72 milion in medical costs.
-  4. More efficient utilization of resources by focusing at high-risk patients.
-  5. Improving hospital ratings by lowering readmission rate and increasing patient satisfaction.
+  4. Improving hospital ratings by lowering readmission rate and increasing patient satisfaction.
+  5. More efficient utilization of resources by focusing at high-risk patients.
+
+One of the uninteded benefits of implementing this solution was more efficient utilization of resources. Specifically, the increased quality of care provided to the identified high-risk patients during their initial visit freed up resources that enabled the Hospital Group to help an additional 300 - 500% more patients.
 
 ## 6. Adoption Roadmap
+
+
+
+
+## Overview
 
 This intent is for this repo to be a one-stop source for everything you need to take your own hospital patient data, load that data into TAP, extract and process the relevant features, and train a model to predict which patients are likely to be readmitted within some amount of time.
 
@@ -68,7 +75,6 @@ Additionally, there are several assumptions about skills and familiarity with te
   * You are familiar with Spark
   * You can write SQL queries
 
-## Overview
 1. First, we will cover how to upload patient data to the Data Catalog.
 2. Second, we will demonstrate how to create a Jupyter notebook running Pyspark and load the patient data for analysis.
 3. Next, we will select a classifier model to identify patients at risk of readmission.
