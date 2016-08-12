@@ -527,7 +527,7 @@ plt.ylabel('Counts', size=20)
 plt.xlabel('Age', size=20)
 plt.show()
 ```
-![Age Histogram](images/age-histogram.png)
+![Age Histogram](images/age-histogram-1.png)
 
 This chart shows a bimodal distribution that appears to be centered around newborns and the normal adult population, with essentially no instances of other children.
 
