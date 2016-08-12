@@ -35,12 +35,19 @@ This solution to reducing hospital readmissions will consist of five essential s
 
 ## 4. What Does the Solution Contain
 
+At it's core, TAP consists of three key opensource technologies:
+
+  1. Cloudera Hadoop (CDH)
+  2. Docker
+  3. CloudFoundry
+
+This solution utilizes the above components by storing historical data and patient records in the CDH cluster. Data Scientists are able to analyze the data via the creation of Docker containers that contained virtual instances of Jupyter analytics notebooks. Additionally, Apache Spark -- the big data computing engine -- was utilized on the CDH cluster to analyze the datasets that were too big to fit into the memory. Spark was also used to train, test, and validate the machine learning model for making predictions of at-risk patients. Finally, the trained model was packaged into an application and deployed in the TAP cloud as a CloudFoundry application.
 
 ## 5. Solution Background
 
 This solution originated through Intel's partnership with Cloudera to conduct a pilot program with a Large Hospital Group to use predictive analytics to reduce readmission rates. 
 
-Intel Data Scientists used the hospital historical patient data -- combined with census data -- to help doctor's pinpoint which patients were a high readmission risk. Hospital staff were able to administer additional care to indetify any shortcommings in the treatment and dicharge plan, thereby reducing overall readmission rates.
+Intel Data Scientists used the hospital historical patient data to use a Random Forest machine learning algorithm to train a predictive model that enabled doctor's to pinpoint which patients were a high readmission risk. Hospital staff were able to administer additional care to indetify any shortcommings in the treatment and dicharge plan, thereby reducing overall readmission rates.
 
 By Using the predictions from the analysis the Hospital Group was able to reap the following benefits:
 
