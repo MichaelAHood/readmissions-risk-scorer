@@ -15,8 +15,15 @@ Intel's Trusted Analytics Platform (TAP) uses indsutry standard Open Source tool
 
 ![Preditive Modeling Process](images/predictive-modeling-process.png)
 
+The above diagram demonstrates the general process by which patient EMR data can be combined with multiple data sources, such as census data, and socio-economic data to form a rich picture about patients. With a dataset on hand, data scientists can create preditive models that learn the relationships between patient data and their propensity for different conditions, e.g. heart disease or risk of early readmission.
+
+Once a preditive model has been created and validated, it can be deployed as a cloud-based service that allows the model's predictive capabilities to be used by other applications. For example, discharge planning software can pass a list of patient IDs to the model and receive a risk score that indicates who is most at-risk of being readmitted.
+
+Once high-risk patients have been identified, their EMRs and discharge plans can be modified  to mitigate any risk factors that appear.
 
 ## 3. How to Use the Solution
+
+
 
 ## 4. What Does the Solution Contain
 
