@@ -688,24 +688,31 @@ encoded = sqlContext.sql("""
         WHEN STATUS LIKE 'WIDOWED' THEN 6.0
         WHEN STATUS LIKE 'SEPARATED' THEN 7.0
         ELSE 8.0
-        END as status
+        END as status,
+      IF (AVG_DRG_SEVERITY IS NULL, 0, AVG_DRG_SEVERITY) as avg_severity,
+      IF (AVG_DRG_MORTALITY IS NULL, 0, AVG_DRG_MORTALITY) as avg_mortality,
+      AGE as age,
+      DAYS_TO_READMISSION as days_to_readmission
   FROM balanced
-            """)
+  """)
+
+# Let's see a random sample of the data
+encoded.sample(withReplacement=False, fraction=0.1).show(10)
 """
-+--------------+---------+------+----+------------+-------------+----+----+------+
-|admission_type|insurance|gender| age|avg_severity|avg_mortality|ethn|lang|status|
-+--------------+---------+------+----+------------+-------------+----+----+------+
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
-|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|
-|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|
-|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|
-|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|
-+--------------+---------+------+----+------------+-------------+----+----+------+
++--------------+---------+------+----+------------+-------------+----+----+------+------------+-------------+----+-------------------+
+|admission_type|insurance|gender| age|avg_severity|avg_mortality|ethn|lang|status|avg_severity|avg_mortality| age|days_to_readmission|
++--------------+---------+------+----+------------+-------------+----+----+------+------------+-------------+----+-------------------+
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|         4.0|          4.0|66.1|                 13|
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|         4.0|          4.0|66.1|                 13|
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|         4.0|          4.0|66.1|                 13|
+|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|         3.0|          3.0|62.7|                  3|
+|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|         3.0|          3.0|62.7|                  3|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|         4.0|          4.0|80.2|                 30|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|         4.0|          4.0|80.2|                 30|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|         4.0|          4.0|80.2|                 30|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|         4.0|          4.0|80.2|                 30|
+|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|         0.0|          0.0|43.4|                 15|
++--------------+---------+------+----+------------+-------------+----+----+------+------------+-------------+----+-------------------+
 only showing top 10 rows
 """
 ```
@@ -716,7 +723,7 @@ Finally, we save the data.
 sqlContext.setConf("spark.sql.tungsten.enabled", "false")
 
 # Let's pull all the data from each partition into one and save our balanced data
-upsampledData.coalesce(1).write.format("com.databricks.spark.csv").\
+encoded.coalesce(1).write.format("com.databricks.spark.csv").\
                           option("header", "true").\
                           save("modeling-data.csv")
 ```
