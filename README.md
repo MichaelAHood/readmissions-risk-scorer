@@ -558,9 +558,9 @@ sqlContext.sql("""select
 +--------------+----------------------+----------------------+
 """
 ```
-From here we can see that `NEWBORN` patients have a significantly lower readmission rate -- which is good, but these are probably not the people we want to focus on. Therefore, I have chosen to remove the instances of NEWBORN because I intend to focus on adressing readmissions for adults. My intution is that newborns may have an unexpected effect of boosting accuracy of my classifier in such a way that does not generalize to the adult population.
+From here we can see that `NEWBORN` patients have a significantly lower readmission rate -- which is good, but these are probably not the people we want to focus on. Therefore, I have chosen to remove the instances of `NEWBORN` because I intend to focus on adressing readmissions for adults. My intution is that newborns may have an unexpected effect of boosting accuracy of a classifier in such a way that does not generalize to the adult population.
 
-Another point worth nothing is that `EMERGENCY` readmissions are nearly twice as the other classes. This is likely to be a useful feature. 
+Another point worth nothing is that `EMERGENCY` readmissions rates are nearly twice as high as the other classes. This is likely to be a useful feature. 
 
 adults = data.filter(data.ADMISSION_TYPE != 'NEWBORN')
 sqlContext.registerDataFrameAsTable(adults, "adults")
@@ -595,6 +595,7 @@ positiveLables = sqlContext.sql("""SELECT *
                                        AND DAYS_TO_READMISSION > 0
                                 """)
 ```
+
 Now, we will bootstrap by using the sample with replacement method.
 
 ```python
@@ -602,10 +603,123 @@ upsampled = positiveLables.sample(withReplacement=True, fraction=23.0)
 sqlContext.registerDataFrameAsTable(upsampled, "upsampled")
 ```
 Next, we combine the upsampled set with the original set of adults
+
+```python
 upsampledData = sqlContext.sql("""SELECT * FROM upsampled
                                   UNION ALL
                                   SELECT * FROM adults
                                """)
+sqlContext.registerDataFrameAsTable(balanced, "balanced")
+```
+
+Finally, let's verify that the proportion of the positive class is reoughly requivalent to that of the negative class.
+
+```python
+sqlContext.sql("""SELECT
+                    AVG(CASE
+                        WHEN DAYS_TO_READMISSION > 0 and DAYS_TO_READMISSION <= 30 THEN 1
+                        ELSE 0
+                        END)
+                    FROM balanced""").show()
+"""
++------------------+
+|               _c0|
++------------------+
+|0.5212053771739326|
++------------------+
+"""
+```
+
+The last step we want to take before starting the modeling process is to encode categorical variables. Many classifiers can handle cariables that are categorical as well as continuous. An example of a categorical variables is `GENDER` which -- in this dataset -- can only take the values of `M` or `F`. An example of a continuous variable is `AGE` which can take any value greater than 0. To encode `GENDER`, `M` can be represented by a `0` and `F` can be represented by a `1`. 
+
+We can use SparkSQL to do this.
+
+```python
+encoded = sqlContext.sql("""
+  SELECT 
+      CASE
+          WHEN ADMISSION_TYPE LIKE 'NEWBORN' THEN 0.0
+          WHEN ADMISSION_TYPE LIKE 'EMERGENCY' THEN 1.0
+          WHEN ADMISSION_TYPE LIKE 'URGENT' THEN 2.0
+          ELSE 3.0
+          END as admission_type,
+      CASE 
+          WHEN INSURANCE LIKE 'Private' THEN 0.0
+          WHEN INSURANCE LIKE 'Medicare' THEN 1.0
+          WHEN INSURANCE LIKE 'Medicaid' THEN 2.0
+          WHEN INSURANCE LIKE 'Government' THEN 3.0
+          WHEN INSURANCE LIKE 'Self Pay' THEN 4.0
+          ELSE 5.0
+          END as insurance,
+      CASE
+          WHEN GENDER LIKE 'M' THEN 0.0
+          WHEN GENDER LIKE 'F' THEN 1.0
+          ELSE 2.0
+          END as gender,
+      IF (AGE > 200, 91, AGE) as age,
+      IF (AVG_DRG_SEVERITY IS NULL, 0, AVG_DRG_SEVERITY) as avg_severity,
+      IF (AVG_DRG_MORTALITY IS NULL, 0, AVG_DRG_MORTALITY) as avg_mortality,
+      CASE
+          WHEN ETHN LIKE 'WHITE%' OR 
+               ETHN LIKE 'EUROPEAN%' OR
+               ETHN LIKE 'PORTUGUESE%' THEN 0.0
+          WHEN ETHN LIKE 'BLACK%' OR 
+               ETHN LIKE 'AFRICAN%' THEN 1.0
+          WHEN ETHN LIKE 'HISPANIC%' OR 
+               ETHN LIKE 'LATINO%' THEN 2.0
+          WHEN ETHN LIKE '%MIDDLE EASTERN%' THEN 3.0
+          WHEN ETHN LIKE 'ASIAN%' OR
+               ETHN LIKE '%ASIAN - INDIAN%' THEN 4.0
+          ELSE 5.0 
+          END as ethn,
+      CASE 
+        WHEN ADMISSION_TYPE='NEWBORN' THEN 0.0
+        WHEN LANG='ENGL' THEN 1.0
+        WHEN LANG='' THEN 2.0
+        ELSE 3.0
+        END as lang,
+      CASE
+        WHEN STATUS LIKE 'NEWBORN' THEN 0.0
+        WHEN STATUS LIKE '' OR STATUS LIKE 'LIFE PARTNER' THEN 1.0
+        WHEN STATUS LIKE 'UNKNOWN%' THEN 2.0
+        WHEN STATUS LIKE 'MARRIED' THEN 3.0
+        WHEN STATUS LIKE 'DIVORCED' THEN 4.0
+        WHEN STATUS LIKE 'SINGLE' THEN 5.0
+        WHEN STATUS LIKE 'WIDOWED' THEN 6.0
+        WHEN STATUS LIKE 'SEPARATED' THEN 7.0
+        ELSE 8.0
+        END as status
+  FROM balanced
+            """)
+"""
++--------------+---------+------+----+------------+-------------+----+----+------+
+|admission_type|insurance|gender| age|avg_severity|avg_mortality|ethn|lang|status|
++--------------+---------+------+----+------------+-------------+----+----+------+
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|
+|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|
+|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|
+|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|
+|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|
++--------------+---------+------+----+------------+-------------+----+----+------+
+only showing top 10 rows
+"""
+```
+Finally, we save the data.
+
+```python
+# Make this false if writing options fail
+sqlContext.setConf("spark.sql.tungsten.enabled", "false")
+
+# Let's pull all the data from each partition into one and save our balanced data
+upsampledData.coalesce(1).write.format("com.databricks.spark.csv").\
+                          option("header", "true").\
+                          save("modeling-data.csv")
+```
 
 
 # 4. Training, Testing, Validating, and Deploying a Machine Learning Model with ATK
