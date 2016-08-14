@@ -5,7 +5,7 @@ This is a temporary repo for the Intel-TAP readmission risk scoring model refere
 
 ## 1. The Problem
 
-The Affordable Care Act established the Hospital Readmissions Reduction Program (HRRP), which requires the Centers for Medicare & Medicaid Services (CMS) to promote quality health care for Americans. To this end the CMS is required to reduce payments to hospitals with excessive readmissions. Additionally, hospitals incur unnecessary costs when patients are readmitted for conditions that could have addressed or mitigated during the patient's initial admission. As a result, hospitals are seeking ways to reduce readmissions rates.
+The Affordable Care Act established the Hospital Readmissions Reduction Program (HRRP), which requires the Centers for Medicare & Medicaid Services (CMS) to promote quality health care for Americans. To this end the CMS is required to reduce payments to hospitals with excessive readmissions. Additionally, hospitals incur unnecessary costs when patients are readmitted for conditions that could have been addressed or mitigated during the patient's initial admission. As a result, hospitals are seeking ways to reduce readmissions rates.
 
 ## 2. Solution Summary
 
@@ -19,7 +19,7 @@ The above diagram demonstrates the general process by which patient EMR data can
 
 Once a preditive model has been created and validated, it can be deployed as a cloud-based service that allows the model's predictive capabilities to be used by other applications. For example, discharge planning software can pass a list of patient IDs to the model and receive a score that indicates the readmission risk for each patient.
 
-Once high-risk patients have been identified, their EMRs and discharge plans can be modified  to mitigate any risk factors that appear.
+Once high-risk patients have been identified, their EMRs and discharge plans can be modified to mitigate any risk factors that have been identified.
 
 ## 3. How to Use the Solution
 
