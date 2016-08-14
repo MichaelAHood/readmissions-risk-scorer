@@ -689,9 +689,6 @@ encoded = sqlContext.sql("""
         WHEN STATUS LIKE 'SEPARATED' THEN 7.0
         ELSE 8.0
         END as status,
-      IF (AVG_DRG_SEVERITY IS NULL, 0, AVG_DRG_SEVERITY) as avg_severity,
-      IF (AVG_DRG_MORTALITY IS NULL, 0, AVG_DRG_MORTALITY) as avg_mortality,
-      AGE as age,
       DAYS_TO_READMISSION as days_to_readmission
   FROM balanced
   """)
@@ -699,247 +696,92 @@ encoded = sqlContext.sql("""
 # Let's see a random sample of the data
 encoded.sample(withReplacement=False, fraction=0.1).show(10)
 """
-+--------------+---------+------+----+------------+-------------+----+----+------+------------+-------------+----+-------------------+
-|admission_type|insurance|gender| age|avg_severity|avg_mortality|ethn|lang|status|avg_severity|avg_mortality| age|days_to_readmission|
-+--------------+---------+------+----+------------+-------------+----+----+------+------------+-------------+----+-------------------+
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|         4.0|          4.0|66.1|                 13|
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|         4.0|          4.0|66.1|                 13|
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|         4.0|          4.0|66.1|                 13|
-|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|         3.0|          3.0|62.7|                  3|
-|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|         3.0|          3.0|62.7|                  3|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|         4.0|          4.0|80.2|                 30|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|         4.0|          4.0|80.2|                 30|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|         4.0|          4.0|80.2|                 30|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|         4.0|          4.0|80.2|                 30|
-|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|         0.0|          0.0|43.4|                 15|
-+--------------+---------+------+----+------------+-------------+----+----+------+------------+-------------+----+-------------------+
++--------------+---------+------+----+------------+-------------+----+----+------+-------------------+
+|admission_type|insurance|gender| age|avg_severity|avg_mortality|ethn|lang|status|days_to_readmission|
++--------------+---------+------+----+------------+-------------+----+----+------+-------------------+
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|                 13|
+|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|                 13|
+|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|                  3|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
+|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
+|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|                 15|
+|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|                 15|
++--------------+---------+------+----+------------+-------------+----+----+------+-------------------+
 only showing top 10 rows
+
 """
 ```
 Finally, we save the data.
 
 ```python
-# Make this false if writing options fail
-sqlContext.setConf("spark.sql.tungsten.enabled", "false")
+# If writing options fail, disable Tungsten by changing this parameter to False.
+sqlContext.setConf("spark.sql.tungsten.enabled", "True")
 
-# Let's pull all the data from each partition into one and save our balanced data
+# Let's pull all the data from each partition into one and save our balanced data.
 encoded.coalesce(1).write.format("com.databricks.spark.csv").\
                           option("header", "true").\
                           save("modeling-data.csv")
 ```
 
 
-# 4. Training, Testing, Validating, and Deploying a Machine Learning Model with ATK
+# 4. Training, Testing, Validating, and Deploying a Machine Learning Model
 
-* Go back to the **TAP Console** and click on the **Data Science** subtab and again on the **TAP Analytics Toolkit** subtab. Click on the url for the running ATK instance and you should see something like:
-
-![ATK](images/atk.png)
-
-* Copy the `pip install <my-atk-uri>/client` line.
-* Once you have installed the updated client module for `trustedanalytics`, import ATK and create the credentials file to connect to the server:
-```python
-import trustedanalytics as ta
-
-# Create ATK credentials file and connect to the ATK server
-ta.create_credentials_file('~/atk.creds')
-```
-This will send you through a prompt that asks you for the server uri, your username, and your password.
-
-* Create the schema for the ATK Frame to read in the CSV file:
-```python
-csv_schema = [
-              ("admission_type", unicode), 
-              ("insurance", ta.int32), 
-              ("gender", unicode),
-              ("age", ta.int32),
-              ("avg_severity", ta.int32),
-              ("avg_mortality", ta.int32),
-              ("ethnicity", unicode),
-              ("language", unicode),
-              ("days_to_readm", ta.int32)
-             ]
-
-csv_class = ta.CsvFile("/modeling-data.csv", schema=csv_schema, skip_header_lines=1)
-frame = ta.Frame(csv_class)
-```
-
-The ATK server will now marshall the cluster resoruces to create an ATK Frame. Let's take a look at it.
+Import the modeling data and do some preliminary checks before we start modeling.
 
 ```python
-frame.inspect(5)
-"""
-[#]  admission_type  insurance  gender  age            avg_severity
-===================================================================
-[0]  EMERGENCY       Medicare   F       76.3000030518           2.0
-[1]  NEWBORN         Private    M                 0.0           0.0
-[2]  EMERGENCY       Private    F       49.9000015259           3.0
-[3]  ELECTIVE        Medicare   F       72.5999984741           0.0
-[4]  ELECTIVE        Private    F                59.5           2.0
+df = sqlContext.read.format('com.databricks.spark.csv').\
+                    options(header='true', inferSchema=True).\
+                    load("modeling-data.csv")
 
-[#]  avg_mortality  ethnicity       language  marital_status  days_to_readm
-===========================================================================
-[0]            2.0  black/african   english   WIDOWED                     0
-[1]            0.0  white/european  newborn   MARITAL-OTHER               0
-[2]            3.0  white/european  english   MARRIED                    66
-[3]            0.0  Other           Unknown   MARRIED                     0
-[4]            2.0  black/african   english   SINGLE                      0
-"""
-```
-* From our analysis, we know that newborns are nearly almost always  will drop the 'NEWBORN' col because virtually all newborns are admitted into ICU -- which may boost the classifier performance in a way that does actually help us
-discriminate which adults are likely to be readmitted.
-```python
-frame.filter(lambda row: 'NEWBORN' not in row.admission_type)
-```
-* Now let's use the `categorical_summary` method to get the distinct values of a column with categorical data.
-```python
-frame.categorical_summary('admission_type')
+# Print the schema to make sure that our data were loaded as the correct type.
+df.printSchema()
 
 """
-Done [=========================] 100.00% Time 00:00:02
-Out[64]:
-{u'categorical_summary': [{u'column': u'admission_type',
-   u'levels': [{u'frequency': 22124,
-     u'level': u'EMERGENCY',
-     u'percentage': 0.6216876949447832},
-    {u'frequency': 7701,
-     u'level': u'NEWBORN',
-     u'percentage': 0.21639924691600865},
-    {u'frequency': 5140,
-     u'level': u'ELECTIVE',
-     u'percentage': 0.14443476550425718},
-    {u'frequency': 622,
-     u'level': u'URGENT',
-     u'percentage': 0.017478292634950966},
-    {u'frequency': 0, u'level': u'Missing', u'percentage': 0.0},
-    {u'frequency': 0, u'level': u'Other', u'percentage': 0.0}]}]}
+root
+ |-- admission_type: double (nullable = true)
+ |-- insurance: double (nullable = true)
+ |-- gender: double (nullable = true)
+ |-- age: double (nullable = true)
+ |-- avg_severity: double (nullable = true)
+ |-- avg_mortality: double (nullable = true)
+ |-- ethn: double (nullable = true)
+ |-- lang: double (nullable = true)
+ |-- status: double (nullable = true)
+ |-- days_to_readmission: integer (nullable = true)
 """
+# In this case, everything has been read-in as the correct type. You never know and should always check 
+
+# Run this line to check if there are any null valued rows.
+# If so, then you can use df.fillna() method to ipute any missing values.
+
+print df.where(df.admission_type.isNull()).count()
+print df.where(df.insurance.isNull()).count()
+print df.where(df.gender.isNull()).count()
+print df.where(df.avg_severity.isNull()).count()
+print df.where(df.avg_mortality.isNull()).count()
+print df.where(df.ethn.isNull()).count()
+print df.where(df.lang.isNull()).count()
+print df.where(df.status.isNull()).count()
+print df.where(df.days_to_readmission.isNull()).count()
 ```
-As you can see, `categorical_summary` offers the same functionality as the `df.value_counts()` method from Pandas with the additional useful feature of automatically tabulating percentages of each class.
-    
-* Now let's get build a map of all the categorical valuess. This is necessary for the modeling stage later when we need to tell our model what columns have categorical features and how many there are for each column.
-    
-    ```python
-    res = frame.categorical_summary('admission_type', 
-                                    'insurance',
-                                    'gender',
-                                    'ethnicity',
-                                    'language',
-                                    'marital_status')
 
-summary = res['categorical_summary']
+We handled any missing values earlier, so the above step just a pre-modleing check. Most algorithms do not handle missing data and will throw an exception -- requireing you to replace those missing values witt something. 
 
-# This dictionary comprehension loops through each level of the categorical summary and pulls 
-# out the distinct values that appear with non-zero frequency for each column name.
-
-#                 #key="columnName"   :  #value=List(distinct values in each column)                
-distinctValues = {colSummary['column']: [l['level'] for l in colSummary['levels'] if l['percentage'] > 0] 
-                  for colSummary in summary}
-
-# Here is the mapping we created. This will be useful later.
-
-for col in distinctValues:
-    print col, "-->", distinctValues[col]
-"""
-language       --> [u'english', u'newborn', u'Unknown', u'other']
-admission_type --> [u'EMERGENCY', u'NEWBORN', u'ELECTIVE', u'URGENT']
-gender         --> [u'M', u'F']
-marital_status --> [u'MARRIED', u'MARITAL-OTHER', u'SINGLE', u'WIDOWED', u'DIVORCED', u'SEPARATED', u'MARITAL-UNKNOWN']
-insurance      --> [u'Private', u'Medicare', u'Medicaid', u'Government', u'Self Pay']
-ethnicity      --> [u'white/european', u'Other', u'black/african', u'hispanic/latino', u'asian/indian', u'mideastern']    
-"""    
-```
-* Now we need to convert all categorical column to integer values, so we can start the modeling process with ATK.
-```python
-frame.add_columns(lambda row: 0 if 'EMERGENCY' in row.admission_type 
-                                else 1 if 'ELECTIVE' in row.admission_type
-                                else 2,  
-                               ('admission_type_c', ta.int32)) # We must explicitly state the new column name and type
-
-frame.add_columns(lambda row: 0 if 'Private' in row.insurance 
-                                else 1 if 'Medicare' in row.insurance
-                                else 2 if 'Medicaid' in row.insurance
-                                else 3 if 'Government' in row.insurance
-                                else 4, 
-                               ('insurance_c', ta.int32))
-
-frame.add_columns(lambda row: 0 if 'M' in row.gender else 1, 
-                               ('gender_c', ta.int32))
-
-frame.add_columns(lambda row: 0 if 'white/european' in row.ethnicity 
-                                else 1 if 'black/african' in row.ethnicity
-                                else 2 if 'hispanic/latino' in row.ethnicity
-                                else 3 if 'asian/indian' in row.ethnicity
-                                else 4 if 'mideastern' in row.ethnicity
-                                else 5, 
-                               ('ethnicity_c', ta.int32))
-
-frame.add_columns(lambda row: 0 if 'english' in row.language 
-                                else 1 if 'newborn' in row.language
-                                else 2 if 'Unknown' in row.language
-                                else 3, 
-                               ('language_c', ta.int32))
-
-frame.add_columns(lambda row:  0 if 'MARRIED' in row.marital_status 
-                                else 1 if 'MARITAL-OTHER' in row.marital_status
-                                else 2 if 'SINGLE' in row.marital_status
-                                else 3 if 'WIDOWED' in row.marital_status
-                                else 4 if 'DIVORCED' in row.marital_status
-                                else 5 if u'SEPARATED' in row.marital_status
-                                else 6, 
-                               ('marital_status_c', ta.int32))
-```
-* Now that we have created numerical representations of our categorical valued columns, we can drop the original columns.
-```python
-frame.drop_columns(['admission_type', 
-                    'insurance',
-                    'gender',
-                    'ethnicity',
-                    'language',
-                    'marital_status'])
-```
-* Now let's take a look at the continuous valued columns. We start with the average comorbidity severity score `avg_severity`
-```python
-frame.column_summary_statistics('avg_severity')
-"""
-{u'bad_row_count': 2,
- u'geometric_mean': None,
- u'good_row_count': 27884,
- u'maximum': 4.0,
- u'mean': 2.17097618706068,
- u'mean_confidence_lower': 2.154239032436824,
- u'mean_confidence_upper': 2.187713341684536,
- u'minimum': 0.0,
- u'non_positive_weight_count': 0,
- u'positive_weight_count': 27884,
- u'standard_deviation': 1.4259460483397752,
- u'total_weight': 27884.0,
- u'variance': 2.0333221327758206}
-"""
-```
-Here we can see that there are two bad rows, i.e. NULL valued rows that we missed during our data extraction process. We can go ahead and impute the missing values as 0. We will also do the same for `avg_mortality` because this column is also missing values for the same two rows.
+There is an entire sub-field of data analysis devoted to imputation of missing data, however, three common methods for imputing missing values are using the mean or median value of a column, replacing it with zero, or dropping it entirely. You can also perform tests to see if the missing values are missing at random or if there is a statisitcally significant number of missing values -- thereby necessitating a prudent imputation stratedgy, e.g. mean, meadian, or fitting a model that can identify a pattern from the other data fields to try and learn what is likely to be in a good value for the missing fields.  
+Next we will create the target column that we are trying to model. We will call it `label`.
 
 ```python
-frame.add_columns(lambda row: 0 if type(row.avg_severity) != ta.float32 else row.avg_severity,
-                            ('cleaned_severity', ta.float32))
+from pyspark.sql.functions import udf
 
-frame.add_columns(lambda row: 0 if type(row.avg_mortality) != ta.float32 else row.avg_mortality,
-                            ('cleaned_mortality', ta.float32))
+# We will use a 1.0 to denote which patients were readmitted within 30 days and 0.0 to denote which were not.
+labelBinner = udf(lambda days: 1.0 if (days > 0) and (days <= 30) else 0.0, DoubleType())
+dfWithLabel = df.withColumn('label', labelBinner(df.days_to_readmission))
 ```
-* Now we will drop the original columns that new columns are dervied from.
-```python
-frame.drop_columns(['avg_severity', 'avg_mortality'])
-```
-* Now, create the targets for the 30-day readmission model and the 90-day readmission model.
-```python
-frame.add_columns(lambda row: 1 if (row.days_to_readm < 30) and (row.days_to_readm > 0) else 0, 
-                              ('target_30', ta.int32))
 
-frame.add_columns(lambda row: 1 if (row.days_to_readm < 90) and (row.days_to_readm > 0) else 0, 
-                              ('target_90', ta.int32))
 
-# Drop the original column
-frame.drop_columns(['days_to_readm'])
-```
 * Split the data into a training set and a testing set. This method is creating a new column called `split` and is randomly assigning 80% of the rows of `split` the value of `train` and the remaining 20% the value of `test`.
 ```python
 frame.assign_sample([0.8, 0.2],
