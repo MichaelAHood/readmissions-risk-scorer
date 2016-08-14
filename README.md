@@ -660,21 +660,16 @@ encoded = sqlContext.sql("""
       IF (AVG_DRG_SEVERITY IS NULL, 0, AVG_DRG_SEVERITY) as avg_severity,
       IF (AVG_DRG_MORTALITY IS NULL, 0, AVG_DRG_MORTALITY) as avg_mortality,
       CASE
-          WHEN ETHN LIKE 'WHITE%' OR 
-               ETHN LIKE 'EUROPEAN%' OR
-               ETHN LIKE 'PORTUGUESE%' THEN 0.0
-          WHEN ETHN LIKE 'BLACK%' OR 
-               ETHN LIKE 'AFRICAN%' THEN 1.0
-          WHEN ETHN LIKE 'HISPANIC%' OR 
-               ETHN LIKE 'LATINO%' THEN 2.0
-          WHEN ETHN LIKE '%MIDDLE EASTERN%' THEN 3.0
-          WHEN ETHN LIKE 'ASIAN%' OR
-               ETHN LIKE '%ASIAN - INDIAN%' THEN 4.0
+          WHEN ETHN LIKE 'white/european' THEN 0.0
+          WHEN ETHN LIKE 'black/african' THEN 1.0
+          WHEN ETHN LIKE 'hispanic/latino' THEN 2.0
+          WHEN ETHN LIKE 'mideastern' THEN 3.0
+          WHEN ETHN LIKE 'asian/indian' THEN 4.0
           ELSE 5.0 
           END as ethn,
       CASE 
-        WHEN ADMISSION_TYPE='NEWBORN' THEN 0.0
-        WHEN LANG='ENGL' THEN 1.0
+        WHEN ADMISSION_TYPE='newborn' THEN 0.0
+        WHEN LANG='engl' THEN 1.0
         WHEN LANG='' THEN 2.0
         ELSE 3.0
         END as lang,
@@ -780,74 +775,65 @@ from pyspark.sql.functions import udf
 labelBinner = udf(lambda days: 1.0 if (days > 0) and (days <= 30) else 0.0, DoubleType())
 dfWithLabel = df.withColumn('label', labelBinner(df.days_to_readmission))
 ```
-
-
-* Split the data into a training set and a testing set. This method is creating a new column called `split` and is randomly assigning 80% of the rows of `split` the value of `train` and the remaining 20% the value of `test`.
+* Now we will try different modeling to see how well we can predict whether or not a patient will be readmitted. First, let's import `RandomForest`.
 ```python
-frame.assign_sample([0.8, 0.2],
-                    ['train', 'test'],
-                    output_column='split',
-                    random_seed=1234)
+rf = RandomForest()
 ```
-* Having done that we can create two new dataframes with the `frame.copy()` method that copys that dataframe on a condition that we pass, e.g. `newFrame = frame.copy(colsToCopy, where=lambda x: x if 'my_condition')`
-```python
-frameCols = ['age', 
-            'admission_type_c', 
-            'insurance_c', 
-            'gender_c', 
-            'ethnicity_c', 
-            'language_c', 
-            'marital_status_c',
-            'target',
-            'split']
+* One of the nice properties of Random Forest is the ability to handle categorical variables as well as continuous variables. We can just use the categorical variables as they are right now, e.g. {0, 1, 2, ...}, as the model can work with them, however the model will assume that they are continuous unless otherwise specified. This is exactly what the `categoricalFeaturesInfo` paramter of the `model.train()` method is for. MLlib asks for a data structure called an arity for `categoricalFeaturesInfo`. This just means that we need to give the model a dictionary of the column indexes (0-based) with the number of distinct categorical values in that column.
 
-trainFrame = frame.copy(frameCols, where=lambda row: 'train' in row.split)
-testFrame = frame.copy(frameCols, where=lambda row: 'test' in row.split)    
-
-# Drop the `split` column now that it is no longer needed.
-trainFrame.drop_columns(['split'])
-testFrame.drop_columns(['split'])
-```
-
-* Now we will try different modeling to see how well we can predict whether or not a patient will be readmitted. First, let's import the `RandomForestCLassifierModel`.
-```python
-model = ta.RandomForestClassifierModel()
-```
-* One of the nice properties of Random Forest models is the ability to handle categorical variables as well as continuous variables. We can just use the categorical variables as they are right now, e.g. {0, 1, 2, ...}, as the model can work with them, however the model will assume that they are continuous unless otherwise specified. This is exactl what the `categorical_features_info` paramter of the `model.train()` method is for. 
-
-ATK uses the same input data structure -- an arity -- as Spark MLLib Random Forest. This just means that we need to give the model a dictionary of the column indexes (0-based) with the number of distinct categorical values in that column.
+Here is how we construct the arity.
 
 ```python
-categoricalCols = ['admission_type', 'insurance',
-                   'gender', 'ethnicity',
-                   'language', 'marital_status']
+categoricalCols = ['admission_type', 
+                   'insurance', 
+                   'gender', 
+                   'ethn', 
+                   'lang', 
+                   'status']
 
-categoricalInfo = {ix: len(distinctValues[col]) for ix, col in enumerate(categoricalCols)}
+catFeatureInfo = {}
 
-print categoricalInfo
+for i, col in enumerate(categoricalCols):
+    catFeatureInfo[i] = dfWithLabel.select(col).distinct().count()
+print catFeatureInfo
 """
-{0: 3, 1: 5, 2: 2, 3: 6, 4: 3, 5: 7}
+{0: 3, 1: 5, 2: 2, 3: 6, 4: 3, 5: 6}
 """
 ```
+
+Now we have to build an RDD of LabeledPoints for inut into the `RandomForest`.
+
+```python
+from pyspark.ml.feature import VectorAssembler
+from pyspark.mllib.regression import LabeledPoint
+
+featureCols = ['admission_type', 
+                'insurance', 
+                'gender', 
+                'ethn', 
+                'lang', 
+                'status', 
+                'avg_severity', 
+                "avg_mortality", 
+                'age']
+
+va = VectorAssembler(inputCols=featureCols, outputCol='features')
+
+vectors = va.transform(dfWithLabel)
+labeledPoints = vectors.select("label", "features").map(lambda row: LabeledPoint(row.label, row.features))
+
+labeledPoints.take(5)
+"""
+[LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1]),
+ LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1]),
+ LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1]),
+ LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1]),
+ LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1])]
+"""
 * Now we are ready to train the model
-```python
-feature_cols = ["admission_type_c",  
-                "insurance_c",  
-                "gender_c",  
-                "ethnicity_c",
-                "language_c", 
-                "marital_status_c",
-                "age"]
 
-train_output = model.train(frame=trainFrame, 
-                           label_column='target_30', 
-                           observation_columns=feature_cols, 
-                           num_classes=2, 
-                           categorical_features_info=categoricalInfo,
-                           num_trees=100, 
-                           impurity="entropy", 
-                           max_depth=16, 
-                           max_bins=32)
+
+
 ```
 * Model training can take a while depending on the size of your data, how many trees you want in your ensemble, and the depth that you allow your trees to go. In general, you want each tree to be constructed to the maximum depth permissable by your time and computational resources. This will inherently overfit your data on any given tree, but since your are constructing many different trees from random bootstrapped samples of the data, each tree is overfitting in a slightly different way. A given prediction is made when a datapoint is fed through each tree in the forest and the tree votes on the classification for that datapoint. The votes are tallied and then prediciton is made by taking the majority vote of the trees. The end result is that the high variance between individual trees will average out over the entire forest.
 
