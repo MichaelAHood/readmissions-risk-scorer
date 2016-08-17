@@ -40,6 +40,7 @@ const barrels: string[] = [
   'app/header',
   'app/filter-population-by',
   'app/proportion-at-risk',
+  'app/readmission-risk-results',
   /** @cli-barrel */
 ];
 
