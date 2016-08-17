@@ -37,6 +37,6 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-src/UI/.idea/
-src/UI/.idea/workspace.xml
-src/UI/.idea/workspace.xml
+#WebStorm
+**/.idea
+.idea
