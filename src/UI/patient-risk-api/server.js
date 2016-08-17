@@ -63,7 +63,7 @@ router.route('/patients')
     });
   });
 
-router.route('/patients/:patient_id')
+/*router.route('/patients/:patient_id')
   .get(function(request, response){
     DischargeAdmission.findById(request.params.patient_id, function(error, patient){
       if(error){
@@ -111,7 +111,7 @@ router.route('/patients/:patient_id')
         patient: patient
       });
     });
-  });
+  });*/
 
 //Register Routes
 app.use('/api', router);
