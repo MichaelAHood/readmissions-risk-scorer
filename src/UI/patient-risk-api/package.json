@@ -1,5 +1,5 @@
 {
-	"name": "node-api",
+	"name": "patient-risk-api",
 	"main": "server.js",
 	"dependencies":{
 		"express": "4.14.0",
