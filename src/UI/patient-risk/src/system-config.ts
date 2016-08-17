@@ -36,11 +36,12 @@ const barrels: string[] = [
   // App specific barrels.
   'app',
   'app/shared',
-  'app/discharge-population',
   'app/header',
-  'app/filter-population-by',
-  'app/proportion-at-risk',
-  'app/readmission-risk-results',
+  'app/patient-select',
+  'app/patient-select/discharge-population',
+  'app/patient-select/filter-population-by',
+  'app/patient-select/proportion-at-risk',
+  'app/readmission-risk-results'
   /** @cli-barrel */
 ];
 
