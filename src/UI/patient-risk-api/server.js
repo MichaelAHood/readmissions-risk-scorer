@@ -9,14 +9,14 @@ var app = express();
 var bodyParser = require('body-parser');
 var mongoose = new require('mongoose');
 var DischargeAdmission = require('./app/models/discharge-admissions');
-var DischargeComobids = require('./app/models/discharge-comorbids');
+var DischargeComorbids = require('./app/models/discharge-comorbids');
 var DischargePatient = require('./app/models/discharge-patient');
 
 //Configuration
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://localhost:27017/Patients');
+mongoose.connect('mongodb://localhost:27017/PatientDischarge');
 
 var port = process.env.PORT || 9090;
 
@@ -34,27 +34,8 @@ router.get('/', function(request, response){
   response.json({ message: 'NodeJS Api is working.' });
 });
 
-router.route('/patients')
-  .post(function(request, response){
-    var patient = new DischargeAdmission();
-
-   /* patient.name = request.body.name;
-    patient.age = request.body.age;
-   */
-    console.log('Name: ' + patient.name + ' Age: ' + patient.age);
-
-    patient.save(function(error){
-      if(error){
-        response.send(error);
-      }
-
-      response.json({
-        message: 'DischargeAdmission created!',
-        patient: patient
-      });
-    });
-  })
-  .get(function(request, response){
+router.route('/discharge-admissions')
+   .get(function(request, response){
     DischargeAdmission.find(function(error, patients){
       if(error){
         response.send(error);
@@ -63,55 +44,25 @@ router.route('/patients')
     });
   });
 
-/*router.route('/patients/:patient_id')
-  .get(function(request, response){
-    DischargeAdmission.findById(request.params.patient_id, function(error, patient){
-      if(error){
-        response.send(error);
-      }
-      response.json(patient);
+router.route('/discharge-comorbids')
+    .get(function(request, response){
+      DischargeComorbids.find(function(error, comorbids){
+        if(error){
+          response.send(comorbids);
+        }
+        response.json(comorbids);
+      });
     });
-  })
-  .put(function(request, response){
-    DischargeAdmission.findById(request.params.patient_id, function(error, patient){
 
-      if(error){
-        response.send(error);
-      }
-
-      var previous = new DischargeAdmission();
-      previous.name = patient.name;
-      previous.age = patient.age;
-
-      patient.name = request.body.name;
-      patient.age = request.body.age;
-
-      patient.save(function(error){
+router.route('/discharge-patients')
+    .get(function (request, response){
+      DischargePatient.find(function(error, patients){
         if(error){
           response.send(error);
         }
-
-        response.json({
-          message: 'DischargeAdmission updated!',
-          previous: previous,
-          updated: patient
-        });
+        response.json(patients);
       });
     });
-  })
-  .delete(function(request, response){
-    DischargeAdmission.remove({_id: request.params.patient_id
-    }, function(error, patient){
-      if(error){
-        response.send(patient);
-      }
-      response.json({
-        message: 'Successfully deleted',
-
-        patient: patient
-      });
-    });
-  });*/
 
 //Register Routes
 app.use('/api', router);

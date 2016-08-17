@@ -6,7 +6,7 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var dischargeAdmissionsSchema = new Schema({
+var dischargePatientSchema = new Schema({
     row_id: Number,
     subject_id: Number,
     gender: String,
