@@ -8,8 +8,9 @@ var express = new require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose = new require('mongoose');
-var Patient = require('./app/models/patient');
-
+var DischargeAdmission = require('./app/models/discharge-admissions');
+var DischargeComobids = require('./app/models/discharge-comorbids');
+var DischargePatient = require('./app/models/discharge-patient');
 
 //Configuration
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -35,11 +36,11 @@ router.get('/', function(request, response){
 
 router.route('/patients')
   .post(function(request, response){
-    var patient = new Patient();
+    var patient = new DischargeAdmission();
 
-    patient.name = request.body.name;
+   /* patient.name = request.body.name;
     patient.age = request.body.age;
-
+   */
     console.log('Name: ' + patient.name + ' Age: ' + patient.age);
 
     patient.save(function(error){
@@ -48,13 +49,13 @@ router.route('/patients')
       }
 
       response.json({
-        message: 'Patient created!',
+        message: 'DischargeAdmission created!',
         patient: patient
       });
     });
   })
   .get(function(request, response){
-    Patient.find(function(error, patients){
+    DischargeAdmission.find(function(error, patients){
       if(error){
         response.send(error);
       }
@@ -64,7 +65,7 @@ router.route('/patients')
 
 router.route('/patients/:patient_id')
   .get(function(request, response){
-    Patient.findById(request.params.patient_id, function(error, patient){
+    DischargeAdmission.findById(request.params.patient_id, function(error, patient){
       if(error){
         response.send(error);
       }
@@ -72,13 +73,13 @@ router.route('/patients/:patient_id')
     });
   })
   .put(function(request, response){
-    Patient.findById(request.params.patient_id, function(error, patient){
+    DischargeAdmission.findById(request.params.patient_id, function(error, patient){
 
       if(error){
         response.send(error);
       }
 
-      var previous = new Patient();
+      var previous = new DischargeAdmission();
       previous.name = patient.name;
       previous.age = patient.age;
 
@@ -91,7 +92,7 @@ router.route('/patients/:patient_id')
         }
 
         response.json({
-          message: 'Patient updated!',
+          message: 'DischargeAdmission updated!',
           previous: previous,
           updated: patient
         });
@@ -99,7 +100,7 @@ router.route('/patients/:patient_id')
     });
   })
   .delete(function(request, response){
-    Patient.remove({_id: request.params.patient_id
+    DischargeAdmission.remove({_id: request.params.patient_id
     }, function(error, patient){
       if(error){
         response.send(patient);
