@@ -41,7 +41,8 @@ const barrels: string[] = [
   'app/patient-select/discharge-population',
   'app/patient-select/filter-population-by',
   'app/patient-select/proportion-at-risk',
-  'app/readmission-risk-results'
+  'app/readmission-risk-results',
+  'app/dropdown',
   /** @cli-barrel */
 ];
 

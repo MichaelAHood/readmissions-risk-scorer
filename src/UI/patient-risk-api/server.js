@@ -4,6 +4,8 @@
 // server.js
 
 //Call packages
+
+var environment = new require('./config/environment.js');//TODO: Needs to be set up
 var express = new require('express');
 var app = express();
 var bodyParser = require('body-parser');

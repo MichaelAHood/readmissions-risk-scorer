@@ -1,0 +1,7 @@
+---
+applications:
+- name: patient-risk-api
+  memory: 1G
+  command: node --max-old-space-size=500 server.js
+  services:
+    - couchdb1 <---- create MongoDb instance and place name here
