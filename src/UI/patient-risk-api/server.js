@@ -8,8 +8,8 @@ var express = new require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose = new require('mongoose');
-var DischargeAdmission = require('./app/models/discharge-admissions');
-var DischargeComorbids = require('./app/models/discharge-comorbids');
+var DischargeAdmission = require('./app/models/discharge-admission');
+var DischargeComorbids = require('./app/models/discharge-comorbid');
 var DischargePatient = require('./app/models/discharge-patient');
 
 //Configuration
@@ -31,7 +31,14 @@ router.use(function(request, response, next){
 //Test route
 //http://localhost:9090/api
 router.get('/', function(request, response){
-  response.json({ message: 'NodeJS Api is working.' });
+  response.json({
+      message: 'Readmission Risk Patient Select api is running.',
+      availableResources: [
+          '/discharge-admissions GET discharge-admission[]',
+          '/discharge-comorbids GET discharge-comorbid[]',
+          '/discharge-patients GET dishcare-patient[]'
+      ]
+  });
 });
 
 router.route('/discharge-admissions')

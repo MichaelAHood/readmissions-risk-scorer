@@ -1,7 +1,7 @@
 /**
  * Created by prokarma on 8/17/2016.
  */
-// app/models/discharge-admissions.js
+// app/models/discharge-admission.js
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
