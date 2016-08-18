@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { DischargePopulationComponent } from './discharge-population/';
-import { FilterPopulationByComponent } from './filter-population-by/';
-import { ProportionAtRiskComponent } from './proportion-at-risk';
+import { DischargePopulationComponent } from './discharge-population.component';
+import { FilterPopulationByComponent } from './filter-population-by.component';
+import { ProportionAtRiskComponent } from './proportion-at-risk.component';
 
 @Component({
   moduleId: module.id,
