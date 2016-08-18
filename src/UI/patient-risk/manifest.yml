@@ -2,6 +2,7 @@
 applications:
 - name: patient-risk
   memory: 512M
+  disk_quota: 512M
   host: patient-risk
   instances: 1
   command: ng serve

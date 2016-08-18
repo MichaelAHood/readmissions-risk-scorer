@@ -18,7 +18,7 @@ var DischargePatient = require('./app/models/discharge-patient');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://localhost:27017/PatientReadmission');
+//mongoose.connect('mongodb://localhost:27017/PatientReadmission');
 
 var port = process.env.PORT || 9090;
 
