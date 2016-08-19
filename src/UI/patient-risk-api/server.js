@@ -5,7 +5,9 @@
 
 //Call packages
 
-var environment = new require('./config/environment.js');//TODO: Needs to be set up
+var mongoConfig = new require('./config/mongodb.js');
+var db = mongoConfig();
+
 var express = new require('express');
 var app = express();
 var bodyParser = require('body-parser');
@@ -18,7 +20,8 @@ var DischargePatient = require('./app/models/discharge-patient');
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-//mongoose.connect('mongodb://localhost:27017/PatientReadmission');
+
+mongoose.connect(db.connectionString);
 
 var port = process.env.PORT || 9090;
 
