@@ -1,11 +1,11 @@
 {
   "name": "patient-risk",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "license": "MIT",
   "angular-cli": {},
   "scripts": {
     "start": "ng serve",
-    "postinstall": "typings install",
+    "postinstall": "npm install angular-cli || npm install typings",
     "lint": "tslint \"src/**/*.ts\"",
     "test": "ng test",
     "pree2e": "webdriver-manager update",
@@ -42,5 +42,9 @@
     "tslint": "3.11.0",
     "typescript": "1.8.10",
     "typings": "1.3.1"
+  },
+  "engines": {
+    "node": "6.4.0",
+    "npm": "3.10.3"
   }
 }
