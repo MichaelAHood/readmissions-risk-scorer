@@ -27,15 +27,14 @@
  }
 */
 module.exports = function(){
-    var mongoDbConfig = JSON.parse(process.env.VCAP_SERVICES).mongodb30[0];
-
-/*    console.log('MongoDB Configuration');
-    console.log('---------------------');
-    console.log(process.env.VCAP_SERVICES);
-    console.log(mongoDbConfig.mongodb30);
-    //'mongodb://localhost:27017/PatientReadmission'*/
+    var uri;
+    if(process.env.VCAP_SERVICES) {
+        uri = JSON.parse(process.env.VCAP_SERVICES).mongodb30[0].credentials.uri;
+    } else{
+        uri = 'mongodb://localhost:27017/PatientReadmission';
+    }
 
     return{
-      connectionString: mongoDbConfig.credentials.uri
+      connectionString: uri
     };
 }
