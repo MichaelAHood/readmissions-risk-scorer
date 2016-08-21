@@ -17,21 +17,11 @@ Intel's Trusted Analytics Platform (TAP) uses indsutry standard Open Source tool
 
 The above diagram demonstrates the general process by which patient EMR data can be combined with multiple data sources, such as census data, and socio-economic data to form a rich picture about patients. With a dataset on hand, data scientists can create preditive models that learn the relationships between patient data and their propensity for different conditions, e.g. heart disease or risk of early readmission.
 
-Once a preditive model has been created and validated, it can be deployed as a cloud-based service that allows the model's predictive capabilities to be used by other applications. For example, discharge planning software can pass a list of patient IDs to the model and receive a score that indicates the readmission risk for each patient.
-
-Once high-risk patients have been identified, their EMRs and discharge plans can be modified to mitigate any risk factors that have been identified.
-
 ## 3. How to Use the Solution
 
-This solution to reducing hospital readmissions will consist of five essential steps:
+Once a preditive model has been created and validated, it can be deployed as a cloud-based service that allows the model's predictive capabilities to be consumed by other applications. For example, discharge planning software can pass a list of patient IDs to the model and receive a score that indicates the readmission risk for each patient.
 
-1. Loading the relevant patient record data into the TAP Hadoop Cluster
-2. Load and explore the data, process the data, and engineer features for use in predictive modeling.
-3. Train a preditive model and validate it's performance before deployment.
-4. Deploy a the predictive model as an API that can be used by an application.
-5. Build an application that flags high-risk patients and allows practitioners to visual relevant patient data.
-
-![Solution Architecture](images/architecture-diagram-1.png)
+Once high-risk patients have been identified, their EMRs and discharge plans can be modified to mitigate any risk factors that have been identified.
 
 ## 4. What Does the Solution Contain
 
@@ -59,8 +49,19 @@ By Using the predictions from the analysis the Hospital Group was able to reap t
 
 One of the uninteded benefits of implementing this solution was more efficient utilization of resources. Specifically, the increased quality of care provided to the identified high-risk patients during their initial visit freed up resources that enabled the Hospital Group to help an additional 300 - 500% more patients.
 
+The primary objective of this solution is to provide a blueprint that any hospital organization -- running TAP -- can use to quickly take their own patient data and use that data to quickly train a predictive model that drives a readmission risk scoring application.
+
 ## 6. Adoption Roadmap
 
+This adoption roadmap for this solution consists of five essential steps:
+
+1. Loading the relevant patient record data into the TAP Hadoop Cluster
+2. Load and explore the data, process the data, and engineer features for use in predictive modeling.
+3. Train a preditive model and validate it's performance before deployment.
+4. Deploy a the predictive model as an API that can be used by an application.
+5. Build an application that flags high-risk patients and allows practitioners to visualize relevant patient data.
+
+![Solution Architecture](images/architecture-diagram-1.png)
 
 
 
