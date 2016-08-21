@@ -63,8 +63,9 @@ This adoption roadmap for this solution consists of five essential steps:
 
 ![Solution Architecture](images/architecture-diagram-1.png)
 
-1. **Identifying and loading the relevant data into the TAP Hadoop cluster.** At a minimum you need to have the hospitals admission records, so you can identify which patients were readmitted. Other sources of data, such as demographics and comorbidity records, are necessary to enrich the patient readmission data. Enricging patient data to increase the accuracy of models is as much of a creative process as it an investigative one and should be treated as an iterative process.
-2.
+1. **Identifying and loading the relevant data into the TAP Hadoop cluster.** At a minimum you need to have the hospitals admission records, so you can identify which patients were readmitted. Other sources of data, such as demographics and comorbidity records, are necessary to enrich the patient readmission data boost model performance. Enriching patient data to increase the accuracy of a model is as much a creative process as it an investigative one, and should be treated as an iterative process. Subject Matter Experts (SMEs), IT professionals, and Data Scientists should be involved in this initial phase. Data can be loaded into TAP in many forms, Hive tables in Hadoop, SQL or noSQL, or raw text/json/csv files in hadoop. There are pros and cons to each and that decision is best left as a conversation between IT professionals and Data Scientists.
+2. **Explore, process, and engineer features from the data for use in predictive modeling.** This step involves creating the data pipeline that takes the data from the source defined in the previous step and prepares it for modeling. These steps will include an initial Exploratory Data Analysis (EDA) to learn the structure of the data, if there are any dirty or missing data, how to clean and impute missing fields, and finally indentify what types of data fields will be useful for modeling. A major part of this step is called feature engineering, that is the creation of new data features from existing ones. Feature Engineering is another opportunity for SMEs, IT professionals, and Data Scientists to come together to brainstorm and discuss ideas and courses of action.
+3. **Train a preditive model and validate it's performance.** 
 
 
 ## Overview
