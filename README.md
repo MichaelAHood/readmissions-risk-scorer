@@ -562,8 +562,10 @@ From here we can see that `NEWBORN` patients have a significantly lower readmiss
 
 Another point worth nothing is that `EMERGENCY` readmissions rates are nearly twice as high as the other classes. This is likely to be a useful feature. 
 
+```python
 adults = data.filter(data.ADMISSION_TYPE != 'NEWBORN')
 sqlContext.registerDataFrameAsTable(adults, "adults")
+```
 
 Let's see what the imbalance is between the people who were readmitted within 30 days and those wo were not
 
