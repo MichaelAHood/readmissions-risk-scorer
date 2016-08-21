@@ -19,9 +19,9 @@ The above diagram demonstrates the general process by which patient EMR data can
 
 ## 3. How to Use the Solution
 
-Once a preditive model has been created and validated, it can be deployed as a cloud-based service that allows the model's predictive capabilities to be consumed by other applications. For example, discharge planning software can pass a list of patient IDs to the model and receive a score that indicates the readmission risk for each patient.
+Once a predictive model has been created and validated, it can be deployed as a cloud-based service that allows the model's predictions to be consumed by other applications. For example, discharge planning software can pass a list of patient IDs to the model and receive a score that indicates the readmission risk for each patient. Once high-risk patients have been identified, their EMRs and discharge plans can be scrutinized to identify any risk factors that have been identified.
 
-Once high-risk patients have been identified, their EMRs and discharge plans can be modified to mitigate any risk factors that have been identified.
+In this way, the model serves as a cognitive aid to assist hospital staff in identifying high-risk people who may have gone unnoticed.
 
 ## 4. What Does the Solution Contain
 
@@ -31,15 +31,15 @@ At it's core, TAP consists of three key opensource technologies:
   2. Docker
   3. CloudFoundry
 
-This solution utilizes the above components by storing historical data and patient records in the CDH cluster. Data Scientists are able to analyze the data via the creation of Docker containers that contained virtual instances of Jupyter analytics notebooks. Additionally, Apache Spark -- the big data computing engine -- was utilized on the CDH cluster to analyze the datasets that were too big to fit into the memory. Spark was also used to train, test, and validate the machine learning model for making predictions of at-risk patients. Finally, the trained model was packaged into an application and deployed in the TAP cloud as a CloudFoundry application.
+This solution utilizes the above components by storing historical data and patient records in the CDH cluster. Data Scientists are able to analyze the data via the creation of Docker containers that contained virtual instances of Jupyter analytics notebooks. Additionally, Apache Spark -- the big data computing engine -- was utilized on the CDH cluster to analyze the datasets that were too big to fit into the memory. Spark was also used to train and validate the machine learning model for making predictions of high-risk patients. Finally, the trained model was packaged into an application and deployed in the TAP cloud as a CloudFoundry application.
 
 ## 5. Solution Background
 
 This solution originated through Intel's partnership with Cloudera to conduct a pilot program with a Large Hospital Group to use predictive analytics to reduce readmission rates. 
 
-Intel Data Scientists combined the hospital historical patient data with socioeconomic data, such as housing prices and health services in the surrounding area, to train a Random Forest predictive model that enabled doctor's to pinpoint which patients were a high readmission risk. Hospital staff were able to administer additional care to indetify any shortcommings in the treatment and dicharge plan, thereby reducing overall readmission rates.
+Intel Data Scientists combined the hospital historical patient data with socioeconomic data, such as housing prices and health services in the surrounding area, to train a Random Forest predictive model that enabled doctors to pinpoint which patients were a high readmission risk. Hospital staff were able to administer additional care to indentify any shortcommings in the treatment and dicharge plan, thereby reducing overall readmission rates.
 
-By Using the predictions from the analysis the Hospital Group was able to reap the following benefits:
+By Using the predictions from the analysis, the Hospital Group was able to reap the following benefits:
 
   1. Reducing 6,000 occurrences of patient readmission.
   2. Avoiding $4 million in potential Medicare ppenalties.
@@ -49,16 +49,16 @@ By Using the predictions from the analysis the Hospital Group was able to reap t
 
 One of the uninteded benefits of implementing this solution was more efficient utilization of resources. Specifically, the increased quality of care provided to the identified high-risk patients during their initial visit freed up resources that enabled the Hospital Group to help an additional 300 - 500% more patients.
 
-The primary objective of this solution is to provide a blueprint that any hospital organization -- running TAP -- can use to quickly take their own patient data and use that data to quickly train a predictive model that drives a readmission risk scoring application.
+We have provided a blueprint that enables any hospital organization to use TAP, adopt the above described solution, and begin reaping the same benefits.
 
 ## 6. Adoption Roadmap
 
 This adoption roadmap for this solution consists of five essential steps:
 
-1. Loading the relevant patient record data into the TAP Hadoop Cluster
-2. Load and explore the data, process the data, and engineer features for use in predictive modeling.
-3. Train a preditive model and validate it's performance before deployment.
-4. Deploy a the predictive model as an API that can be used by an application.
+1. Idetifying and loading the relevant patient record data into the TAP Hadoop Cluster
+2. Explore, process, and engineer features from the data for use in predictive modeling.
+3. Train a preditive model and validate it's performance.
+4. Deploy the predictive model as an API that can be used by another application.
 5. Build an application that flags high-risk patients and allows practitioners to visualize relevant patient data.
 
 ![Solution Architecture](images/architecture-diagram-1.png)
