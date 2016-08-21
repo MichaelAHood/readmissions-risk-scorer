@@ -55,7 +55,7 @@ We have provided a blueprint that enables any hospital organization to use TAP, 
 
 This adoption roadmap for this solution consists of five essential steps:
 
-1. Idetifying and loading the relevant patient record data into the TAP Hadoop Cluster
+1. Identifying and loading the relevant data into the TAP Hadoop cluster
 2. Explore, process, and engineer features from the data for use in predictive modeling.
 3. Train a preditive model and validate it's performance.
 4. Deploy the predictive model as an API that can be used by another application.
@@ -63,6 +63,8 @@ This adoption roadmap for this solution consists of five essential steps:
 
 ![Solution Architecture](images/architecture-diagram-1.png)
 
+1. **Identifying and loading the relevant data into the TAP Hadoop cluster.** At a minimum you need to have the hospitals admission records, so you can identify which patients were readmitted. Other sources of data, such as demographics and comorbidity records, are necessary to enrich the patient readmission data. Enricging patient data to increase the accuracy of models is as much of a creative process as it an investigative one and should be treated as an iterative process.
+2.
 
 
 ## Overview
