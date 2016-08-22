@@ -5,20 +5,34 @@
 
 //Call packages
 
-var environment = new require('./config/environment.js');//TODO: Needs to be set up
+var mongoConfig = new require('./config/mongodb.js');
+var db = mongoConfig();
+
 var express = new require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var mongoose = new require('mongoose');
+
+mongoose.connect(db.connectionString);
+
+
+//Schemas
 var DischargeAdmission = require('./app/models/discharge-admission');
 var DischargeComorbids = require('./app/models/discharge-comorbid');
 var DischargePatient = require('./app/models/discharge-patient');
 
+var dataImporter = new require('./config/SampleDataImporter.js')(DischargeAdmission,
+                                                                 DischargeComorbids,
+                                                                 DischargePatient);
+
+//check if test data needs to be loaded
+dataImporter.populateAdmissionsSampleDataIfNone();
+dataImporter.populateComorbidsSampleDataIfNone();
+dataImporter.populatePatientSampleDataIfNone();
+
 //Configuration
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
-
-//mongoose.connect('mongodb://localhost:27017/PatientReadmission');
 
 var port = process.env.PORT || 9090;
 
@@ -45,11 +59,14 @@ router.get('/', function(request, response){
 
 router.route('/discharge-admissions')
    .get(function(request, response){
-    DischargeAdmission.find(function(error, patients){
+    DischargeAdmission.find(function(error, admissions){
       if(error){
         response.send(error);
       }
-      response.json(patients);
+      response.json({
+                      count: admissions.length,
+                      admissions: admissions
+                    });
     });
   });
 
@@ -59,7 +76,10 @@ router.route('/discharge-comorbids')
         if(error){
           response.send(comorbids);
         }
-        response.json(comorbids);
+        response.json({
+                         count: comorbids.length,
+                         comorbids: comorbids
+                      });
       });
     });
 
@@ -69,7 +89,10 @@ router.route('/discharge-patients')
         if(error){
           response.send(error);
         }
-        response.json(patients);
+        response.json({
+                        count: patients.length,
+                        patients: patients
+                      });
       });
     });
 
