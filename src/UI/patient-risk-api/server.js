@@ -10,25 +10,28 @@ var db = mongoConfig();
 
 var express = new require('express');
 var app = express();
-var bodyParser = require('body-parser');
+var bodyParser = new require('body-parser');
 var mongoose = new require('mongoose');
 
 mongoose.connect(db.connectionString);
 
 
 //Schemas
-var DischargeAdmission = require('./app/models/discharge-admission');
-var DischargeComorbids = require('./app/models/discharge-comorbid');
-var DischargePatient = require('./app/models/discharge-patient');
+var DischargeAdmission = new require('./app/models/discharge-admission');
+var DischargeComorbids = new require('./app/models/discharge-comorbid');
+var DischargePatient = new require('./app/models/discharge-patient');
+var ProcessedPatient = new require('./app/models/processed-data');
 
 var dataImporter = new require('./config/SampleDataImporter.js')(DischargeAdmission,
                                                                  DischargeComorbids,
-                                                                 DischargePatient);
+                                                                 DischargePatient,
+                                                                 ProcessedPatient);
 
 //check if test data needs to be loaded
 dataImporter.populateAdmissionsSampleDataIfNone();
 dataImporter.populateComorbidsSampleDataIfNone();
 dataImporter.populatePatientSampleDataIfNone();
+dataImporter.populateProcessedPatientsIfNone();
 
 //Configuration
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -94,6 +97,19 @@ router.route('/discharge-patients')
                         patients: patients
                       });
       });
+    });
+
+router.route('/processed-patients')
+    .get(function (request, response){
+        ProcessedPatient.find(function(error, patients){
+            if(error){
+                response.send(error);
+            }
+            response.json({
+                count: patients.length,
+                processedPatients: patients
+            });
+        });
     });
 
 //Register Routes

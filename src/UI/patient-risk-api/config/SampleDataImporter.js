@@ -3,7 +3,7 @@
  */
 var fs = new require('fs');
 
-module.exports = function(admission, comorbid, patient) {
+module.exports = function(admission, comorbid, patient, processed) {
     var importer = {
         populateAdmissionsSampleDataIfNone: function(){
             admission.find(function(error, admissions){
@@ -60,15 +60,17 @@ module.exports = function(admission, comorbid, patient) {
                                 newAdmission.save(function (error) {
                                     if (error) {
                                         console.log(error);
+                                        return;
                                     }
                                 });
 
                                 entries++;
+                                continue;
                             } else{
                                 console.log('Error parsing lines of Admissions.');
+                                return;
                             }
                         }
-
                         console.log('Finished loading [' + entries + '] Admission Sample Data!');
                     } else{
                         console.log('Currently [' + admissions.length + '] admissions.')
@@ -110,15 +112,17 @@ module.exports = function(admission, comorbid, patient) {
                                 newComorbid.save(function (error) {
                                     if (error) {
                                         console.log(error);
+                                        return;
                                     }
                                 });
 
                                 entries++;
-                            } else{
+                                continue;
+                            } else {
                                 console.log('Error parsing lines of Comorbids.');
+                                return;
                             }
                         }
-
                         console.log('Finished loading [' + entries + '] Comorbids Sample Data!');
                     } else{
                         console.log('Currently [' + comorbids.length + '] comorbids.');
@@ -167,18 +171,76 @@ module.exports = function(admission, comorbid, patient) {
                                 newPatient.save(function (error) {
                                     if (error) {
                                         console.log(error);
+                                        return;
                                     }
                                 });
 
                                 entries++;
+                                continue;
                             } else{
-                                console.log('Error parsing lines of Comorbids.');
+                                console.log('Error parsing lines of Patients.');
+                                return;
                             }
-                        }
 
-                        console.log('Finished loading [' + entries + '] Patients Sample Data!');
+                        }
                     } else {
                         console.log('Currently [' + patients.length + '] patients.');
+                    }
+                    console.log('Finished loading [' + entries + '] Patients Sample Data!');
+                }
+            });
+        },
+        populateProcessedPatientsIfNone: function(){
+            processed.find(function (error, patients) {
+                if (error) {
+                    console.log(error);
+                    return;
+                }
+                if (patients) {
+                    if (patients.length === 0) {
+                        console.log('No Processed Patients Sample Data! Loading...');
+
+                        var lines = fs.readFileSync('./app/sampledata/processed-data.csv').toString().split('\n');
+                        lines.shift(); // Shift the headings off the list of records.
+
+                        var entries = 0;
+                        while (lines.length) {
+                            var line = lines.shift();
+                            var newProcessed = new processed();
+
+                            var values = line.split(',');
+
+
+                            if (values) {
+                                newProcessed.subject_id = values[0];
+                                newProcessed.hadm_id = values[1];
+                                newProcessed.admission_type = values[2];
+                                newProcessed.ethnicity = values[3];
+                                newProcessed.insurance = values[4];
+                                newProcessed.language = values[5];
+                                newProcessed.marital_status = values[6];
+                                newProcessed.avg_drg_severity = values[7];
+                                newProcessed.avg_drg_mortality = values[8];
+                                newProcessed.age = values[9];
+                                newProcessed.gender = values[10];
+
+                                newProcessed.save(function (error) {
+                                    if (error) {
+                                        console.log(error);
+                                        return;
+                                    }
+                                });
+
+                                entries++;
+                                continue;
+                            } else {
+                                console.log('Error parsing lines of Processed Patients.');
+                                return;
+                            }
+                        }
+                        console.log('Finished loading [' + entries + '] Processed Patients Sample Data!');
+                    } else {
+                        console.log('Currently [' + patients.length + '] processed patients.');
                     }
                 }
             });
