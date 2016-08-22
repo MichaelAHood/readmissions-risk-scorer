@@ -5,7 +5,6 @@ import {PAGINATION_DIRECTIVES} from 'ng2-bootstrap/ng2-bootstrap';
 import {NG_TABLE_DIRECTIVES} from 'ng2-table';
 import {TableData} from './table-data';
 
-
 @Component({
   moduleId: module.id,
   selector: 'pk-discharge-population',
