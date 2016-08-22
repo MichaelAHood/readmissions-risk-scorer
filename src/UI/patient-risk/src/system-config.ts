@@ -46,42 +46,9 @@ const barrels: string[] = [
   /** @cli-barrel */
 ];
 
-const barrels2: string[] = [
-  'ng2-table',
-];
-
-const barrels3: string[] = [
-  'ng2-bootstrap',
-];
-
-const barrels4: string[] = [
-  'moment',
-];
-
-const barrels5: string[] = [
-  'zone',
-];
-
-
 const cliSystemConfigPackages: any = {};
 barrels.forEach((barrelName: string) => {
   cliSystemConfigPackages[barrelName] = { main: 'index' };
-});
-
-barrels2.forEach((barrelName2: string) => {
-  cliSystemConfigPackages[barrelName2] = { main: 'ng2-table' };
-});
-
-barrels3.forEach((barrelName3: string) => {
-  cliSystemConfigPackages[barrelName3] = { main: 'ng2-bootstrap' };
-});
-
-barrels4.forEach((barrelName4: string) => {
-  cliSystemConfigPackages[barrelName4] = { main: 'moment' };
-});
-
-barrels5.forEach((barrelName5: string) => {
-  cliSystemConfigPackages[barrelName5] = { main: 'zone' };
 });
 
 /** Type declaration for ambient System. */
@@ -92,11 +59,7 @@ System.config({
   map: {
     '@angular': 'vendor/@angular',
     'rxjs': 'vendor/rxjs',
-    'main': 'main.js',
-    'ng2-table': 'vendor/ng2-table',
-    'ng2-bootstrap': 'vendor/ng2-bootstrap',
-    'moment': 'vendor/moment',
-    'zone': 'vendor/zone'
+    'main': 'main.js'
   },
   packages: cliSystemConfigPackages
 });

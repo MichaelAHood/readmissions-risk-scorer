@@ -9,10 +9,6 @@ var Angular2App = require('angular-cli/lib/broccoli/angular2-app');
 module.exports = function(defaults) {
   return new Angular2App(defaults, {
     vendorNpmFiles: [
-      'ng2-table/**/*.js',
-      'ng2-bootstrap/**/*.js',
-      'moment/**/*.js',
-      'zone/**/*.js',
       'bootstrap/dist/css/bootstrap.min.css',
       'systemjs/dist/system-polyfills.js',
       'systemjs/dist/system.src.js',
