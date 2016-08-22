@@ -27,7 +27,7 @@ In this way, the model serves as a cognitive aid to assist hospital staff in ide
 
 At it's core, TAP consists of three key open source technologies:
 
-  1. **Cloudera Hadoop (CDH) **
+  1. **Cloudera Hadoop (CDH)**
   2. **Docker**
   3. **CloudFoundry**
 
