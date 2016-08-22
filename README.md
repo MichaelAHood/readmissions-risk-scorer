@@ -9,7 +9,7 @@ The Affordable Care Act established the Hospital Readmissions Reduction Program 
 
 ## 2. Solution Summary
 
-Advanced analytics on large patient datasets allow analytics professionals and data scientists to find patterns in patient readmission data. From these patterns, models can be built which enable hospitals to identify the most at-risk patients before they are discharged and apply an appropriate intervention.  
+The availability of large patient datasets and the computational resources available via cloud computing enable data scientists to find meaningful patterns in patient readmission data. From these patterns, models can be built which enable hospitals to identify the most at-risk patients before they are discharged and apply an appropriate intervention.  
 
 Intel's Trusted Analytics Platform (TAP) uses industry standard Open Source tools (e.g. Cloudera Hadoop, Docker, and CloudFoundry) to create a consolidated platform to quickly develop predictive models from large datasets and then deploy those models for use in applications.
 
