@@ -15,7 +15,7 @@ Intel's Trusted Analytics Platform (TAP) uses indsutry standard Open Source tool
 
 ![Preditive Modeling Process](images/predictive-modeling-process.png)
 
-The above diagram demonstrates the general process by which patient EMR data can be combined with multiple data sources, such as census data, and socio-economic data to form a rich picture about patients. With a dataset on hand, data scientists can create preditive models that learn the relationships between patient data and their propensity for different conditions, e.g. heart disease or risk of early readmission.
+The above diagram demonstrates the general process by which patient Electronic Medical Records (EMR) data can be combined with multiple data sources, such as census data, and socio-economic data to form a rich picture about patients. With a dataset on hand, data scientists can create preditive models that learn the relationships between patient data and their propensity for different conditions, e.g. heart disease or risk of early readmission.
 
 ## 3. How to Use the Solution
 
