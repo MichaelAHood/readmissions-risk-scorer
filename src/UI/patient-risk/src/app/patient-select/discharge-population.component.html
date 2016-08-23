@@ -1,17 +1,12 @@
-Patient Count: {{patients.length}} <br>
-Length: {{length}}<br>
-Error: {{errorMessage}}
-<br><br>
-
-Position:
-<input *ngIf="config.filterPosition" placeholder=""
-       [ngTableFiltering]="config.filterPosition"
+Age:
+<input *ngIf="config.filterAge" placeholder=""
+       [ngTableFiltering]="config.filterAge"
        (tableChanged)="onChangeTable(config)"/>
 
 <br />
-Start Date:
-<input *ngIf="config.filterStartdate" placeholder=""
-       [ngTableFiltering]="config.filterStartdate"
+Admission Type:
+<input *ngIf="config.filterAdmissionType" placeholder=""
+       [ngTableFiltering]="config.filterAdmissionType"
        (tableChanged)="onChangeTable(config)"/>
 <br />
 

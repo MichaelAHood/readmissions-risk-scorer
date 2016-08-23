@@ -30,6 +30,21 @@ export class DischargePopulationComponent implements OnInit {
 
   }
 
+  public config:any = {
+    paging: true,
+    sorting: {
+      columns: this.columns
+    },
+    filterAge: {
+      filterString: '',
+      columnName: 'age'
+    },
+    filterAdmissionType: {
+      filterString: '',
+      columnName: 'admission_type'
+    }
+  };
+
   public ngOnInit():void {
     this.patientService.getAllPatients()
                        .subscribe(
@@ -46,15 +61,11 @@ export class DischargePopulationComponent implements OnInit {
   public columns:Array<any> = [
     {title: 'Name', name: 'subject_id'},
     {title: 'Age', name: 'age'},
+    {title: 'Gender', name: 'gender'},
+    {title: 'Martial Status', name: 'marital_status'},
+    {title: 'Language', name: 'language'},
     {title: 'Admission Type', name: 'admission_type'}
   ];
-
-  public config:any = {
-    paging: true,
-    sorting: {columns: this.columns},
-    filterPosition: {filterString: '', columnName: 'age'},
-    filterStartdate: {filterString: '', columnName: 'admission_type'},
-  };
 
   public changePage(page:any, data:Array<Patient> = this.patients):Array<Patient> {
     console.log(page);
@@ -95,25 +106,25 @@ export class DischargePopulationComponent implements OnInit {
   }
 
   public changeFilter(data:any, config:any):any {
-    if (!config.filterPosition) {
+    if (!config.filterAge) {
       return data;
     }
 
-    if (!config.filterStartdate) {
+    if (!config.filterAdmissionType) {
         return data;
     }
 
-    let filteredData:Array<any> = data.filter((item:any) => []
-/*        item[config.filterPosition.columnName].match(this.config.filterPosition.filterString) &&
-        item[config.filterStartdate.columnName].match(this.config.filterStartdate.filterString)*/
+    let filteredData:Array<any> = data.filter((item:any) =>
+        item[config.filterAge.columnName].toString().toLowerCase().match(this.config.filterAge.filterString.toLowerCase()) &&
+        item[config.filterAdmissionType.columnName].toLowerCase().match(this.config.filterAdmissionType.filterString.toLowerCase())
     );
 
     return filteredData;
   }
 
   public onChangeTable(config:any, page:any = {page: this.page, itemsPerPage: this.itemsPerPage}):any {
-    if (config.filterPosition) {
-      Object.assign(this.config.filterPosition, config.filterPosition);
+    if (config.filterAge) {
+      Object.assign(this.config.filterAge, config.filterAge);
     }
     if (config.sorting) {
       Object.assign(this.config.sorting, config.sorting);
