@@ -43,8 +43,10 @@ var port = process.env.PORT || 9090;
 var router = express.Router();
 
 router.use(function(request, response, next){
-  console.log('Routerness is happening.');
-  next();
+    console.log('Routerness is happening.');
+    response.header("Access-Control-Allow-Origin", "*");
+    response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
 });
 
 //Test route
