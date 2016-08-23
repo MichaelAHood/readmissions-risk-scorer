@@ -32,7 +32,8 @@ export class DischargePopulationComponent implements OnInit {
   public config:any = {
     paging: true,
     sorting: {columns: this.columns},
-    filtering: {filterString: '', columnName: 'position'}
+    filterPosition: {filterString: '', columnName: 'position'},
+    filterStartdate: {filterString: '', columnName: 'startDate'},
   };
 
   private data:Array<any> = TableData;
@@ -84,19 +85,25 @@ export class DischargePopulationComponent implements OnInit {
   }
 
   public changeFilter(data:any, config:any):any {
-    if (!config.filtering) {
+    if (!config.filterPosition) {
       return data;
     }
 
+    if (!config.filterStartdate) {
+        return data;
+    }
+
     let filteredData:Array<any> = data.filter((item:any) =>
-        item[config.filtering.columnName].match(this.config.filtering.filterString));
+        item[config.filterPosition.columnName].match(this.config.filterPosition.filterString) &&
+        item[config.filterStartdate.columnName].match(this.config.filterStartdate.filterString)
+    );
 
     return filteredData;
   }
 
   public onChangeTable(config:any, page:any = {page: this.page, itemsPerPage: this.itemsPerPage}):any {
-    if (config.filtering) {
-      Object.assign(this.config.filtering, config.filtering);
+    if (config.filterPosition) {
+      Object.assign(this.config.filterPosition, config.filterPosition);
     }
     if (config.sorting) {
       Object.assign(this.config.sorting, config.sorting);
