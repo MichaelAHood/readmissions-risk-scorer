@@ -36,11 +36,10 @@ export class DischargePopulationComponent implements OnInit {
                          p => {
                            this.patients = p;
                            this.length = this.patients.length;
+                           this.onChangeTable(this.config);
                          },
                          e => this.errorMessage = e
                        );
-
-    this.onChangeTable(this.config);
   }
 
   public rows:Array<any> = [];
