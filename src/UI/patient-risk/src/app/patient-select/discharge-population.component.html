@@ -1,6 +1,14 @@
-<!--<input *ngIf="config.filtering" placeholder="Filter"-->
-       <!--[ngTableFiltering]="config.filtering"-->
-       <!--(tableChanged)="onChangeTable(config)"/>-->
+Position:
+<input *ngIf="config.filterPosition" placeholder=""
+       [ngTableFiltering]="config.filterPosition"
+       (tableChanged)="onChangeTable(config)"/>
+
+<br />
+Start Date:
+<input *ngIf="config.filterStartdate" placeholder=""
+       [ngTableFiltering]="config.filterStartdate"
+       (tableChanged)="onChangeTable(config)"/>
+<br />
 
 <ng-table [config]="config.sorting"
           (tableChanged)="onChangeTable(config)"
