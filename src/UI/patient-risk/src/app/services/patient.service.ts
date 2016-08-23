@@ -10,7 +10,7 @@ export class PatientService {
 
   constructor(private http: Http) { }
 
-  getAll(): Observable<Patient[]>{
+  getAllPatients(): Observable<Patient[]>{
     let patients$ = this.http
       .get(`${this.uri}`, {headers: this.getHeaders()})
       .map(mapPatients)
