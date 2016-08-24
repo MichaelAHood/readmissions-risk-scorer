@@ -11,6 +11,7 @@ import { Patient } from '../models';
   moduleId: module.id,
   selector: 'pk-discharge-population',
   templateUrl: 'discharge-population.component.html',
+  styleUrls: ["discharge-population.css"],
   directives: [NG_TABLE_DIRECTIVES, PAGINATION_DIRECTIVES, NgClass, NgIf, CORE_DIRECTIVES, FORM_DIRECTIVES],
   providers: [PatientService]
 })

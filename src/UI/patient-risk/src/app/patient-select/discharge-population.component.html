@@ -1,14 +1,25 @@
-Age:
-<input *ngIf="config.filterAge" placeholder=""
-       [ngTableFiltering]="config.filterAge"
-       (tableChanged)="onChangeTable(config)"/>
-
-<br />
-Admission Type:
-<input *ngIf="config.filterAdmissionType" placeholder=""
-       [ngTableFiltering]="config.filterAdmissionType"
-       (tableChanged)="onChangeTable(config)"/>
-<br />
+<div class="div-table">
+  <div>
+    <span class="spanright">
+      Filter by Age:
+    </span>
+    <span>
+      <input *ngIf="config.filterAge" placeholder=""
+             [ngTableFiltering]="config.filterAge"
+             (tableChanged)="onChangeTable(config)"/>
+    </span>
+  </div>
+  <div>
+    <span>
+      Admission Type:
+    </span>
+    <span>
+      <input *ngIf="config.filterAdmissionType" placeholder=""
+             [ngTableFiltering]="config.filterAdmissionType"
+             (tableChanged)="onChangeTable(config)"/>
+    </span>
+  </div>
+</div>
 
 <ng-table [config]="config.sorting"
           (tableChanged)="onChangeTable(config)"
