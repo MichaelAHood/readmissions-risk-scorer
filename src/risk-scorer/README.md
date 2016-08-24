@@ -6,7 +6,7 @@ Navigate into the `risk-scorer` folder and use:
 
 `cf push risk-scorer`
 
-If your API is at the following url: `http://risk-scorer.12.345.678.910.nip.io`, and you want to get patient info for admission ids `121451`, `193408` and `150357` just use the `/v1/score` ending with the admission ids in an array as the data param, like so: 
+If your API is at the following url: `http://risk-scorer.12.345.678.910.nip.io`, and you want to get patient readmission scores for admission ids `121451`, `193408` and `150357` just use the `/v1/score` ending with the admission ids in an array as the data param, like so: 
 
 `http://risk-scorer.12.345.678.910.nip.io/v1/score?data=[121451, 193408, 150357]`
 
