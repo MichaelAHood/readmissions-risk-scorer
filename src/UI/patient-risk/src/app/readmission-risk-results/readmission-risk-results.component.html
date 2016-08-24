@@ -1,3 +1,39 @@
-<p>
-  readmission-risk-results works!
-</p>
+<article>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-6">
+        <img src="./app/readmission-risk-results/normalcurve.gif">
+        <br />
+        <div class="graphcaption">Comorbidity Severity: {{comorbiditySeverity}}</div>
+        <br />
+        <img src="/app/readmission-risk-results/normalcurve.gif">
+        <br />
+        <div class="graphcaption">Comorbidity Mortality: {{comorbidityMorality}}</div>
+        <br />
+        <img src="/app/readmission-risk-results/normalcurve.gif">
+        <br />
+        <div class="graphcaption">Age: {{age}}</div>
+      </div>
+      <div class="col-md-6">
+        <h3>Admission Type:</h3>
+        <br />
+        <h3>Language:</h3>
+        <br />
+        <h3>Gender:</h3>
+        <br />
+        <h3>Ethnicity:</h3>
+      </div>
+    </div>
+    <div class="row">
+    </div>
+    <div class="row">
+      <div class="col-md-12 riskscore">
+        <hr>
+        <h3>Risk Score: {{riskscore}}</h3>
+      </div>
+    </div>
+  </div>
+
+
+
+</article>
