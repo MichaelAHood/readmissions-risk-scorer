@@ -50,7 +50,13 @@ export class DischargePopulationComponent implements OnInit {
     this.patientService.getAllPatients()
                        .subscribe(
                          p => {
-                           this.patients = p;
+                           //random discharges for the day
+                           for(let i = 0; i < 20; i++){
+                             let randomPatient = p[Math.floor(Math.random() * p.length)];
+                             console.log(randomPatient);
+                             this.patients.push(randomPatient);
+                           }
+                           //this.patients = p;
                            this.length = this.patients.length;
                            this.onChangeTable(this.config);
                          },
