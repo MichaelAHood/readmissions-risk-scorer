@@ -244,6 +244,28 @@ module.exports = function(admission, comorbid, patient, processed) {
                     }
                 }
             });
+        },
+        deleteAllData: function(){
+            comorbid.find(function (error, comorbids) {
+                for(var i = 0; i < comorbids.length; i++){
+                    comorbids[i].remove();
+                }
+            });
+            patient.find(function (error, patients) {
+                for(var i = 0; i < patients.length; i++){
+                    patients[i].remove();
+                }
+            });
+            admission.find(function (error, admissions) {
+                for(var i = 0; i < admissions.length; i++){
+                    admissions[i].remove();
+                }
+            });
+            processed.find(function (error, patients) {
+                for(var i = 0; i < patients.length; i++){
+                    patients[i].remove();
+                }
+            });
         }
     };
     return importer;

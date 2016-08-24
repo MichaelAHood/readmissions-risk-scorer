@@ -135,5 +135,4 @@ export class DischargePopulationComponent implements OnInit {
     this.rows = page && config.paging ? this.changePage(page, sortedData) : sortedData;
     this.length = sortedData.length;
   }
-
 }

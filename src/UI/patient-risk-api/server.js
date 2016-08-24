@@ -27,11 +27,15 @@ var dataImporter = new require('./config/SampleDataImporter.js')(DischargeAdmiss
                                                                  DischargePatient,
                                                                  ProcessedPatient);
 
+//uncomment if you need to clear out all the data
+//dataImporter.deleteAllData();
+
 //check if test data needs to be loaded
 dataImporter.populateAdmissionsSampleDataIfNone();
 dataImporter.populateComorbidsSampleDataIfNone();
 dataImporter.populatePatientSampleDataIfNone();
 dataImporter.populateProcessedPatientsIfNone();
+
 
 //Configuration
 app.use(bodyParser.urlencoded({ extended: true }));
