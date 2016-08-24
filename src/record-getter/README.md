@@ -12,11 +12,9 @@ Navigate into the `record-getter` folder and use:
 
 `cf push record-getter`
 
-The API is at the following url: http://record-parser.52.204.218.231.nip.io
+If your API is at the following url: `http://record-getter.12.345.678.910.nip.io`, and you want to get patient info for admission ids `155684` and `135188` just use the `/v1/parse` ending with the admission ids in an array as the data param, like so: 
 
-If you want to get patient info for admission ids (hadm_id) 155684 and 135188 just use the /v1/parse ending with the admission ids in an array as the data param, like so: 
-
-http://record-parser.52.204.218.231.nip.io/v1/parse?data=[155684, 135188]
+`http://record-getter.12.345.678.910.nip.io/v1/parse?data=[155684, 135188]`
 
 That returns:
 ```python
