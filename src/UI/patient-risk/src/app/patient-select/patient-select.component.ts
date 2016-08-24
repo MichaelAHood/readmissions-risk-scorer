@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { DischargePopulationComponent } from './discharge-population.component';
+import { DischargePopulation2Component } from './discharge-population2.component';
 import { FilterPopulationByComponent } from './filter-population-by.component';
 import { ProportionAtRiskComponent } from './proportion-at-risk.component';
 
@@ -7,7 +7,7 @@ import { ProportionAtRiskComponent } from './proportion-at-risk.component';
   moduleId: module.id,
   selector: 'pk-patient-select',
   templateUrl: 'patient-select.component.html',
-  directives: [DischargePopulationComponent, FilterPopulationByComponent, ProportionAtRiskComponent]
+  directives: [DischargePopulation2Component, FilterPopulationByComponent, ProportionAtRiskComponent]
 })
 export class PatientSelectComponent implements OnInit {
 

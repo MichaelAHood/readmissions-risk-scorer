@@ -6,6 +6,7 @@ import {NG_TABLE_DIRECTIVES} from 'ng2-table';
 
 import { PatientService } from '../services';
 import { Patient } from '../models';
+import {ROUTER_DIRECTIVES} from "@angular/router";
 
 @Component({
   moduleId: module.id,
@@ -13,7 +14,7 @@ import { Patient } from '../models';
   templateUrl: 'discharge-population.component.html',
   styleUrls: ["discharge-population.css"],
   directives: [NG_TABLE_DIRECTIVES, PAGINATION_DIRECTIVES, NgClass, NgIf, CORE_DIRECTIVES, FORM_DIRECTIVES],
-  providers: [PatientService]
+  providers: [PatientService, ROUTER_DIRECTIVES]
 })
 
 export class DischargePopulationComponent implements OnInit {
@@ -53,7 +54,7 @@ export class DischargePopulationComponent implements OnInit {
                            //random discharges for the day
                            for(let i = 0; i < 20; i++){
                              let randomPatient = p[Math.floor(Math.random() * p.length)];
-                             console.log(randomPatient);
+                             //console.log(randomPatient);
                              this.patients.push(randomPatient);
                            }
                            //this.patients = p;
@@ -69,7 +70,7 @@ export class DischargePopulationComponent implements OnInit {
     {title: 'Name', name: 'subject_id'},
     {title: 'Age', name: 'age'},
     {title: 'Gender', name: 'gender'},
-    {title: 'Martial Status', name: 'marital_status'},
+    {title: 'Marital Status', name: 'marital_status'},
     {title: 'Language', name: 'language'},
     {title: 'Admission Type', name: 'admission_type'}
   ];
