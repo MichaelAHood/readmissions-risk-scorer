@@ -1,19 +1,16 @@
-Python on Cloud Foundry using Flask
-================================================================================
-
-This is a sample application showing how to deploy a simple hello world app
-using Cloud Foundry and the Python build pack.
-
-
+An API for scoring patients about to be discharged, deployed on Cloud Foundry using Flask
 
 To Use
 ================================================================================
+Navigate into the `risk-scorer` folder and use:
 
-```
-cf push myappname
-```
+`cf push risk-scorer`
 
-http://risk-scorer.52.204.218.231.nip.io/v1/score?data=[121451, 193408, 150357]
+If your API is at the following url: `http://risk-scorer.12.345.678.910.nip.io`, and you want to get patient info for admission ids `121451`, `193408` and `150357` just use the `/v1/score` ending with the admission ids in an array as the data param, like so: 
+
+`http://risk-scorer.12.345.678.910.nip.io/v1/score?data=[121451, 193408, 150357]`
+
+That returns:
 
 ```python
 {
@@ -28,7 +25,4 @@ http://risk-scorer.52.204.218.231.nip.io/v1/score?data=[121451, 193408, 150357]
   }
 }
 ```
-
-
-or click the button below
 
