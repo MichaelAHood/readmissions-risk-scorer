@@ -9,9 +9,8 @@ using Cloud Foundry and the Python build pack.
 To Use
 ================================================================================
 Navigate into the `record-getter` folder and use:
-```
-cf push record-getter
-```
+
+`cf push record-getter`
 
 The API is at the following url: http://record-parser.52.204.218.231.nip.io
 
