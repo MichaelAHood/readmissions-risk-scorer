@@ -4,7 +4,7 @@
       <div class="col-md-6 col-md-offset-1">
         <img src="./app/readmission-risk-results/normalcurve1.gif">
         <br />
-        <div class="graphcaption">Comorbidity Severity: {{patient?.avg_drg_severity}}</div>
+        <div class="graphcaption"><strong>Comorbidity Severity:</strong> {{patient?.avg_drg_severity}}</div>
         <br />
         <img src="/app/readmission-risk-results/normalcurve2.gif">
         <br />
@@ -12,35 +12,34 @@
         <br />
         <img src="/app/readmission-risk-results/normalcurve3.gif">
         <br />
-        <div class="graphcaption">Age: {{patient?.age}}</div>
+        <div class="graphcaption"><strong>Age:</strong> {{patient?.age}}</div>
       </div>
       <div class="col-md-3 col-md-offset-1">
 
         <div class="div-table">
           <div>
-            <span class="spanright patientdata">Admission Type:</span>
+            <span class="spanright patientdata"><strong>Admission Type:</strong></span>
             <span class="patientdata">{{patient?.admission_type}}</span>
           </div>
           <div>
-            <span class="spanright patientdata">Language:</span>
+            <span class="spanright patientdata"><strong>Language:</strong></span>
             <span class="patientdata">{{patient?.language}}</span>
           </div>
           <div>
-            <span class="spanright patientdata">Gender:</span>
+            <span class="spanright patientdata"><strong>Gender:</strong></span>
             <span class="patientdata">{{patient?.gender}}</span>
           </div>
           <div>
-            <span class="spanright patientdata">Ethnicity:</span>
+            <span class="spanright patientdata"><strong>Ethnicity:</strong></span>
             <span class="patientdata">{{patient?.ethnicity}}</span>
           </div>
         </div>
 
         <hr>
-        <span class="riskscore">Risk Score: {{riskscore}}</span>
+        <span class="riskscore"><strong>Risk Score:</strong> {{riskscore}}</span>
+        <br>
+        <button type="button" (click)="backToPatientSelect()" class="btn btn-primary center-block">Back to Patient Select</button>
       </div>
     </div>
   </div>
-
-
-
 </article>

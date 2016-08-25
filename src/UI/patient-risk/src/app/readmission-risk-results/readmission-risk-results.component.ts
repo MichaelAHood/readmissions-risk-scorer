@@ -23,22 +23,22 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   }
 
 
-  ngOnInit() {
-    this.patientService.getAllPatients()
-      .subscribe(
-        p => {
-            this.patient = p.find(patient => patient.hadm_id == this.admissionId);
-            console.log(this.patient);
-        },
-        e => this.errorMessage = e
-      );
+    ngOnInit() {
+      this.patientService.getAllPatients()
+        .subscribe(
+          p => {
+              this.patient = p.find(patient => patient.hadm_id == this.admissionId);
+          },
+          e => this.errorMessage = e
+        );
+        /*  this.patientService.getRiskScores([165315]).subscribe(
+            rs => {},
+            e => this.errorMessage = e
+          );*/
+    }
 
-
-
-  /*  this.patientService.getRiskScores([165315]).subscribe(
-      rs => {},
-      e => this.errorMessage = e
-    );*/
+  backToPatientSelect(){
+    this.router.navigate(['']);
   }
 
 }

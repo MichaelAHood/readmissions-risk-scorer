@@ -35,6 +35,6 @@ export class DischargePopulation2Component implements OnInit {
   }
 
   goToDetails(patient){
-      this.router.navigate(['/details', patient.hadm_id]);9
+      this.router.navigate(['/details', patient.hadm_id]);
   }
 }
