@@ -13,6 +13,11 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   public age:string = "0";
   public riskscore:string = "0";
 
+  public admissionType:string = "-";
+  public language:string = "-";
+  public gender:string = "-";
+  public ethnicity:string = "-";
+
   constructor() { }
 
   ngOnInit() {

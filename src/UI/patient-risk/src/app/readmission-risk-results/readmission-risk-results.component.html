@@ -1,7 +1,7 @@
 <article>
   <div class="container-fluid">
-    <div class="row">
-      <div class="col-md-6">
+    <div class="row-fluid">
+      <div class="col-md-6 col-md-offset-1">
         <img src="./app/readmission-risk-results/normalcurve1.gif">
         <br />
         <div class="graphcaption">Comorbidity Severity: {{comorbiditySeverity}}</div>
@@ -14,22 +14,29 @@
         <br />
         <div class="graphcaption">Age: {{age}}</div>
       </div>
-      <div class="col-md-6">
-        <h3>Admission Type:</h3>
-        <br />
-        <h3>Language:</h3>
-        <br />
-        <h3>Gender:</h3>
-        <br />
-        <h3>Ethnicity:</h3>
-      </div>
-    </div>
-    <div class="row">
-    </div>
-    <div class="row">
-      <div class="col-md-12 riskscore">
+      <div class="col-md-3 col-md-offset-1">
+
+        <div class="div-table">
+          <div>
+            <span class="spanright patientdata">Admission Type:</span>
+            <span class="patientdata">{{admissionType}}</span>
+          </div>
+          <div>
+            <span class="spanright patientdata">Language:</span>
+            <span class="patientdata">{{language}}</span>
+          </div>
+          <div>
+            <span class="spanright patientdata">Gender:</span>
+            <span class="patientdata">{{gender}}</span>
+          </div>
+          <div>
+            <span class="spanright patientdata">Ethnicity:</span>
+            <span class="patientdata">{{ethnicity}}</span>
+          </div>
+        </div>
+
         <hr>
-        <h3>Risk Score: {{riskscore}}</h3>
+        <span class="riskscore">Risk Score: {{riskscore}}</span>
       </div>
     </div>
   </div>

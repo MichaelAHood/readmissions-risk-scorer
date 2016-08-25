@@ -1,16 +1,37 @@
+
 .graphcaption
 {
   display: block;
-  background-color: #cccccc;
-  width: 600px;
+  background-color: #eeeeee;
+  width: 590px;
   padding: 5px 20px 5px 5px;
   font-size: 1.5em;
   text-align: right;
+  border-radius: 4px;
 }
 
 .riskscore
 {
+  display: block;
+  background-color: #5CB85C;
   text-align: center;
+  font-size: 2em;
+  color: #ffffff;
+  border-radius: 4px;
+}
+
+.patientdata
+{
+  font-size: 1.5em;
+}
+
+
+.bg1{
+  background-color: #eeeeee;
+}
+
+.bg2{
+  background-color: #eeffee;
 }
 
 /*** Div table start ***/
