@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { PatientService } from '../services';
-import { Patient } from "../models/patient";
+import { Patient } from '../models/patient';
+import { ROUTER_DIRECTIVES } from '@angular/router';
 
 @Component({
   moduleId: module.id,
   selector: 'pk-discharge-population2',
   templateUrl: 'discharge-population2.component.html',
-  providers: [PatientService]
+  providers: [PatientService, ROUTER_DIRECTIVES]
 })
 export class DischargePopulation2Component implements OnInit {
   private patients: Array<Patient>;
