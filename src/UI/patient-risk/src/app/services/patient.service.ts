@@ -1,21 +1,35 @@
 import { Injectable } from '@angular/core';
-import { Http, Response, Headers} from '@angular/http';
+import {Http, Response, Headers, URLSearchParams} from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Patient } from '../models';
+import {RiskScore} from "../models";
 
 @Injectable()
 export class PatientService {
 
-  private uri = 'http://patient-risk-api.52.204.218.231.nip.io/api/processed-patients';
+  private patientUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/processed-patients';
+  private riskScoreUri = 'http://risk-scorer.52.204.218.231.nip.io/v1/score-patients';
+
 
   constructor(private http: Http) { }
 
   getAllPatients(): Observable<Patient[]>{
     let patients$ = this.http
-      .get(`${this.uri}`, {headers: this.getHeaders()})
+      .get(`${this.patientUri}`, {headers: this.getHeaders()})
       .map(mapPatients)
       .catch(handleError);
     return patients$;
+  }
+
+  getRiskScores(admissionIds): Observable<number[]>{
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('admissionIds', admissionIds);
+
+    let scores$ = this.http
+      .get(`${this.riskScoreUri}`, {headers: this.getHeaders(), search: params})
+      .map(mapScores)
+      .catch(handleError);
+    return scores$;
   }
 
   private getHeaders(){
@@ -23,6 +37,18 @@ export class PatientService {
     headers.append('Accept', 'application/json');
     return headers;
   }
+}
+
+function mapScores(response: Response): number[]{
+  let scores = response.json().map(toRiskScore);
+  return scores;
+}
+
+function toRiskScore(response: any): RiskScore{
+   let riskScore = <RiskScore>{
+
+   };
+   return riskScore;
 }
 
 function mapPatients(response: Response): Patient[]{

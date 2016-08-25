@@ -11,13 +11,7 @@ if (environment.production) {
   enableProdMode();
 }
 
-const routes: RouterConfig =[
-  { path: '', component: AppComponent },
-  { path: 'details', component: ReadmissionRiskResultsComponent }
-];
-
 bootstrap(AppComponent, [HTTP_PROVIDERS,
                          disableDeprecatedForms(),
-                         provideForms(),
-                         provideRouter(routes, {})]);
+                         provideForms()]);
 

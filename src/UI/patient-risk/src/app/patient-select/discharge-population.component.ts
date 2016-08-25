@@ -67,7 +67,7 @@ export class DischargePopulationComponent implements OnInit {
 
   public rows:Array<any> = [];
   public columns:Array<any> = [
-    {title: 'Name', name: 'subject_id'},
+    {title: 'Name', name: 'hadm_id'},
     {title: 'Age', name: 'age'},
     {title: 'Gender', name: 'gender'},
     {title: 'Marital Status', name: 'marital_status'},

@@ -7,7 +7,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let patient of patients; let i = index;">
-        <td><a router-link="/details">{{patient.subject_id}}</a></td>
+        <td><a router-link="/details">{{patient.hadm_id}}</a></td>
         <td>{{patient.age}}</td>
         <td>{{patient.gender}}</td>
         <td>{{patient.marital_status}}</td>
