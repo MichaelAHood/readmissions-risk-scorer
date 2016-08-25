@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PatientService } from '../services';
+import { Patient } from "../models/patient";
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   moduleId: module.id,
@@ -10,21 +12,29 @@ import { PatientService } from '../services';
 })
 export class ReadmissionRiskResultsComponent implements OnInit {
 
-  private comorbiditySeverity: string = "0";
-  private comorbidityMorality: string = "0";
-  private age: string = "0";
   private riskscore: string = "0";
+
+  private patient: Patient;
   private errorMessage: string;
+  private admissionId: number;
 
-  private admissionType:string = "-";
-  private language:string = "-";
-  private gender:string = "-";
-  private ethnicity:string = "-";
-
-  constructor(private patientService: PatientService) { }
+  constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
+      this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
+  }
 
 
   ngOnInit() {
+    this.patientService.getAllPatients()
+      .subscribe(
+        p => {
+            this.patient = p.find(patient => patient.hadm_id == this.admissionId);
+            console.log(this.patient);
+        },
+        e => this.errorMessage = e
+      );
+
+
+
   /*  this.patientService.getRiskScores([165315]).subscribe(
       rs => {},
       e => this.errorMessage = e

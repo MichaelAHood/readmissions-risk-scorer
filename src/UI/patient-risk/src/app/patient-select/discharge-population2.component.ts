@@ -25,9 +25,9 @@ export class DischargePopulation2Component implements OnInit {
                         p => {
                           //random discharges for the day
                           for(let i = 0; i < 20; i++){
-                            let randomPatient = p[Math.floor(Math.random() * p.length)];
+                            //let randomPatient = p[Math.floor(Math.random() * p.length)];
                             //console.log(randomPatient);
-                            this.patients.push(randomPatient);
+                            this.patients.push(p[i]);
                           }
                         },
                         e => this.errorMessage = e
@@ -35,6 +35,6 @@ export class DischargePopulation2Component implements OnInit {
   }
 
   goToDetails(patient){
-      this.router.navigate(['/details', {patient: patient}]);
+      this.router.navigate(['/details', patient.hadm_id]);9
   }
 }

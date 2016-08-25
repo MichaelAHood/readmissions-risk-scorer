@@ -4,8 +4,7 @@ import { PatientSelectComponent } from './patient-select/patient-select.componen
 
 const routes: RouterConfig = [
   { path: '', component: PatientSelectComponent },
-  { path: 'details', component: ReadmissionRiskResultsComponent }
-  //{ path: 'details/:patient', component: ReadmissionRiskResultsComponent }
+  { path: 'details/:admissionId', component: ReadmissionRiskResultsComponent }
 ];
 
 export const APP_ROUTE_PROVIDER = [

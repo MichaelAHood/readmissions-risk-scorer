@@ -4,34 +4,34 @@
       <div class="col-md-6 col-md-offset-1">
         <img src="./app/readmission-risk-results/normalcurve1.gif">
         <br />
-        <div class="graphcaption">Comorbidity Severity: {{comorbiditySeverity}}</div>
+        <div class="graphcaption">Comorbidity Severity: {{patient?.avg_drg_severity}}</div>
         <br />
         <img src="/app/readmission-risk-results/normalcurve2.gif">
         <br />
-        <div class="graphcaption">Comorbidity Mortality: {{comorbidityMorality}}</div>
+        <div class="graphcaption">Comorbidity Mortality: {{patient?.avg_drg_mortality}}</div>
         <br />
         <img src="/app/readmission-risk-results/normalcurve3.gif">
         <br />
-        <div class="graphcaption">Age: {{age}}</div>
+        <div class="graphcaption">Age: {{patient?.age}}</div>
       </div>
       <div class="col-md-3 col-md-offset-1">
 
         <div class="div-table">
           <div>
             <span class="spanright patientdata">Admission Type:</span>
-            <span class="patientdata">{{admissionType}}</span>
+            <span class="patientdata">{{patient?.admission_type}}</span>
           </div>
           <div>
             <span class="spanright patientdata">Language:</span>
-            <span class="patientdata">{{language}}</span>
+            <span class="patientdata">{{patient?.language}}</span>
           </div>
           <div>
             <span class="spanright patientdata">Gender:</span>
-            <span class="patientdata">{{gender}}</span>
+            <span class="patientdata">{{patient?.gender}}</span>
           </div>
           <div>
             <span class="spanright patientdata">Ethnicity:</span>
-            <span class="patientdata">{{ethnicity}}</span>
+            <span class="patientdata">{{patient?.ethnicity}}</span>
           </div>
         </div>
 

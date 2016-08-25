@@ -53,7 +53,7 @@ function toRiskScore(response: any): RiskScore{
 
 function mapPatients(response: Response): Patient[]{
   let patients = response.json().processedPatients.map(toPatient);
-  console.log(patients);
+  //console.log(patients);
   return patients;
 }
 
