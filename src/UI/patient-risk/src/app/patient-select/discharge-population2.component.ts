@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PatientService } from '../services';
 import { Patient } from '../models/patient';
-import { ROUTER_DIRECTIVES } from '@angular/router';
+import {ROUTER_DIRECTIVES, Router} from '@angular/router';
 
 @Component({
   moduleId: module.id,
@@ -14,7 +14,7 @@ export class DischargePopulation2Component implements OnInit {
   private columns: string[];
   private errorMessage: string;
 
-  constructor(private patientService: PatientService) {
+  constructor(private patientService: PatientService, private router: Router) {
     this.patients = [];
     this.columns = ['Name', 'Age', 'Gender', 'Marital Status', 'Language', 'Admission Type', 'Details'];
   }
@@ -32,5 +32,9 @@ export class DischargePopulation2Component implements OnInit {
                         },
                         e => this.errorMessage = e
                       );
+  }
+
+  goToDetails(patient){
+      this.router.navigate(['/details', {patient: patient}]);
   }
 }
