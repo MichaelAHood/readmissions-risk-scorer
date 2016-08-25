@@ -12,8 +12,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class ReadmissionRiskResultsComponent implements OnInit {
 
-  private riskscore: string = "0";
-
+  private riskscore: string = 'Calculating...';
   private patient: Patient;
   private errorMessage: string;
   private admissionId: number;
@@ -31,10 +30,12 @@ export class ReadmissionRiskResultsComponent implements OnInit {
           },
           e => this.errorMessage = e
         );
-        /*  this.patientService.getRiskScores([165315]).subscribe(
-            rs => {},
+          this.patientService.getRiskScores([this.admissionId]).subscribe(
+            rs => {
+                this.riskscore = rs[0].riskscore.toString();
+            },
             e => this.errorMessage = e
-          );*/
+          );
     }
 
   backToPatientSelect(){

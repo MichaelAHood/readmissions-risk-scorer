@@ -3,5 +3,5 @@
  */
 export class RiskScore{
   hadm_id: number;
-  risk_score: number;
+  riskscore: number;
 }

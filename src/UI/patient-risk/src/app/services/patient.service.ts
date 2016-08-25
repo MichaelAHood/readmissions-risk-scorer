@@ -21,9 +21,9 @@ export class PatientService {
     return patients$;
   }
 
-  getRiskScores(admissionIds): Observable<number[]>{
+  getRiskScores(admissionIds): Observable<RiskScore>{
     let params: URLSearchParams = new URLSearchParams();
-    params.set('admissionIds', admissionIds);
+    params.set('admissionIDs', '[' + admissionIds.join() + ']');
 
     let scores$ = this.http
       .get(`${this.riskScoreUri}`, {headers: this.getHeaders(), search: params})
@@ -45,9 +45,10 @@ function mapScores(response: Response): number[]{
 }
 
 function toRiskScore(response: any): RiskScore{
-   let riskScore = <RiskScore>{
-
-   };
+   let riskScore = <RiskScore>({
+      hadm_id: response.admissionID,
+      riskscore: response.readmissionRisk
+   });
    return riskScore;
 }
 
