@@ -208,21 +208,27 @@ module.exports = function(admission, comorbid, patient, processed) {
                             var line = lines.shift();
                             var newProcessed = new processed();
 
-                            var values = line.split(',');
+                            var values = line.split('|');
 
 
                             if (values) {
-                                newProcessed.subject_id = values[0];
-                                newProcessed.hadm_id = values[1];
+                                console.log(values);
+                                newProcessed.hadm_id = values[0];
+                                newProcessed.subject_id = values[1];
                                 newProcessed.admission_type = values[2];
-                                newProcessed.ethnicity = values[3];
+                                newProcessed.diagnosis = values[3];
                                 newProcessed.insurance = values[4];
-                                newProcessed.language = values[5];
-                                newProcessed.marital_status = values[6];
-                                newProcessed.avg_drg_severity = values[7];
-                                newProcessed.avg_drg_mortality = values[8];
-                                newProcessed.age = values[9];
-                                newProcessed.gender = values[10];
+                                newProcessed.ethnicity = values[5];
+                                newProcessed.language = values[6];
+                                newProcessed.marital_status = values[7];
+                                newProcessed.admittime = values[8];
+                                newProcessed.dischtime = values[9];
+                                newProcessed.avg_drg_severity = values[10];
+                                newProcessed.avg_drg_mortality = values[11];
+                                newProcessed.gender = values[12];
+                                newProcessed.dob = values[13];
+                                newProcessed.age = values[14];
+
 
                                 newProcessed.save(function (error) {
                                     if (error) {

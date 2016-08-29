@@ -28,7 +28,7 @@ var dataImporter = new require('./config/SampleDataImporter.js')(DischargeAdmiss
                                                                  ProcessedPatient);
 
 //uncomment if you need to clear out all the data
-//dataImporter.deleteAllData();
+/*dataImporter.deleteAllData();*/
 
 //check if test data needs to be loaded
 dataImporter.populateAdmissionsSampleDataIfNone();
@@ -61,7 +61,8 @@ router.get('/', function(request, response){
       availableResources: [
           '/discharge-admissions GET discharge-admission[]',
           '/discharge-comorbids GET discharge-comorbid[]',
-          '/discharge-patients GET dishcare-patient[]'
+          '/discharge-patients GET discharge-patient[]',
+          '/processed-patients GET processed-patient[]'
       ]
   });
 });
