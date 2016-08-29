@@ -21,6 +21,6 @@
     </tbody>
   </table>
   <ul class="pagination">
-    <li *ngFor="let page of numberOfPages;"><a (click)="goToPage(page)">{{page}}</a>
+    <li id="Page{{page}}" *ngFor="let page of numberOfPages;"><a (click)="goToPage(page, $event)">{{page}}</a>
   </ul>
 </div>

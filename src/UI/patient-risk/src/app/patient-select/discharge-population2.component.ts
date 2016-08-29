@@ -1,4 +1,4 @@
-import {Component, OnInit } from '@angular/core';
+import {Component, OnInit, ElementRef, Renderer} from '@angular/core';
 import { PatientService } from '../services';
 import { Patient } from '../models/patient';
 import {ROUTER_DIRECTIVES, Router} from '@angular/router';
@@ -17,7 +17,7 @@ export class DischargePopulation2Component implements OnInit {
   private numberOfPages: Array<number>;
   private itemsPerPage: number = 10;
 
-  constructor(private patientService: PatientService, private router: Router) {
+  constructor(private patientService: PatientService, private router: Router, private element: ElementRef, private renderer: Renderer) {
     this.allPatients = [];
     this.displayedPatients = [];
     this.numberOfPages = [];
@@ -45,19 +45,26 @@ export class DischargePopulation2Component implements OnInit {
       this.router.navigate(['/details', patient.hadm_id]);
   }
 
-  goToPage(page){
-
+  goToPage(page, event){
     let startingIndex = 0;
     if(page !== 1){
       startingIndex = Math.ceil((page * this.itemsPerPage) - (this.itemsPerPage - 1));
     }
 
     let endingIndex = (startingIndex + (this.itemsPerPage - 1));
-    
+
     this.displayedPatients = this.allPatients.filter(function(value, index){
       if(index >= startingIndex && index <= endingIndex){
         return true;
       }
     });
+
+    let previousActive = this.element.nativeElement.querySelector('.active');
+    if(previousActive) {
+      this.renderer.setElementClass(previousActive, 'active', false);
+    }
+
+    let currentPageElement = this.element.nativeElement.querySelector('#' + event.srcElement.parentElement.id);
+    this.renderer.setElementClass(currentPageElement, 'active', true);
   }
 }
