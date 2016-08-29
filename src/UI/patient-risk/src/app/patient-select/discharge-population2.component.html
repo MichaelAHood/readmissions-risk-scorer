@@ -21,6 +21,6 @@
     </tbody>
   </table>
   <ul class="pagination">
-    <li id="Page{{page}}" *ngFor="let page of numberOfPages;"><a (click)="goToPage(page, $event)">{{page}}</a>
+    <li id="Page{{page}}" *ngFor="let page of numberOfPages; let isFirst = first" [class.active]="isFirst"><a (click)="goToPage(page, $event)">{{page}}</a>
   </ul>
 </div>

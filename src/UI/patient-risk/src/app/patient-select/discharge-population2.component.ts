@@ -1,7 +1,7 @@
-import {Component, OnInit, ElementRef, Renderer} from '@angular/core';
+import { Component, OnInit, ElementRef, Renderer } from '@angular/core';
 import { PatientService } from '../services';
 import { Patient } from '../models/patient';
-import {ROUTER_DIRECTIVES, Router} from '@angular/router';
+import { ROUTER_DIRECTIVES, Router } from '@angular/router';
 
 @Component({
   moduleId: module.id,
@@ -9,7 +9,7 @@ import {ROUTER_DIRECTIVES, Router} from '@angular/router';
   templateUrl: 'discharge-population2.component.html',
   providers: [PatientService, ROUTER_DIRECTIVES]
 })
-export class DischargePopulation2Component implements OnInit {
+export class DischargePopulation2Component implements OnInit{
   private allPatients: Array<Patient>;
   private displayedPatients: Array<Patient>;
   private columns: Array<string>;
@@ -33,7 +33,7 @@ export class DischargePopulation2Component implements OnInit {
                             for(let i = 0; i < (this.allPatients.length/this.itemsPerPage); i++){
                               this.numberOfPages.push(i + 1);
                             }
-                            for(let i = 0; i < this.itemsPerPage; i++){
+                            for(let i = 0; i < this.itemsPerPage; i++) {
                               this.displayedPatients.push(this.allPatients[i]);
                             }
                         },
