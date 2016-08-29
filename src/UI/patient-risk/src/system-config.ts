@@ -32,6 +32,7 @@ const barrels: string[] = [
 
   // Thirdparty barrels.
   'rxjs',
+  'angular2-highcharts',
 
   // App specific barrels.
   'app',
@@ -60,6 +61,11 @@ const barrels4: string[] = [
     'moment',
 ];
 
+const barrels5: string[] = [
+  'highcharts',
+];
+
+
 const cliSystemConfigPackages: any = {};
 barrels.forEach((barrelName: string) => {
   cliSystemConfigPackages[barrelName] = { main: 'index' };
@@ -77,6 +83,11 @@ barrels4.forEach((barrelName4: string) => {
     cliSystemConfigPackages[barrelName4] = { main: 'moment' };
 });
 
+barrels5.forEach((barrelName5: string) => {
+  cliSystemConfigPackages[barrelName5] = { main: 'highcharts' };
+});
+
+
 /** Type declaration for ambient System. */
 declare var System: any;
 
@@ -88,7 +99,9 @@ System.config({
     'main': 'main.js',
     'ng2-table': 'vendor/ng2-table',
     'ng2-bootstrap': 'vendor/ng2-bootstrap',
-    'moment': 'vendor/moment'
+    'moment': 'vendor/moment',
+    'highcharts': 'vendor/highcharts',
+    'angular2-highcharts': 'vendor/angular2-highcharts'
   },
   packages: cliSystemConfigPackages
 });

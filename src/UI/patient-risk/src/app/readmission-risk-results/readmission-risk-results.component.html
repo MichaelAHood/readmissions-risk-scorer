@@ -2,15 +2,15 @@
   <div class="container-fluid">
     <div class="row-fluid">
       <div class="col-md-6 col-md-offset-1">
-        <img src="./app/readmission-risk-results/normalcurve1.gif">
+        <chart [options]="chart1options"> </chart>
         <br />
         <div class="graphcaption"><strong>Comorbidity Severity:</strong> {{patient?.avg_drg_severity}}</div>
         <br />
-        <img src="/app/readmission-risk-results/normalcurve2.gif">
+        <chart [options]="chart2options"> </chart>
         <br />
         <div class="graphcaption"><strong>Comorbidity Mortality:</strong> {{patient?.avg_drg_mortality}}</div>
         <br />
-        <img src="/app/readmission-risk-results/normalcurve3.gif">
+        <chart [options]="chart3options"> </chart>
         <br />
         <div class="graphcaption"><strong>Age:</strong> {{patient?.age}}</div>
       </div>

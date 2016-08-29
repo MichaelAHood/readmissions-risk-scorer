@@ -19,7 +19,9 @@ module.exports = function(defaults) {
       '@angular/**/*.+(js|js.map)',
       'ng2-table/**/*.js',
       'ng2-bootstrap/**/*.js',
-      'moment/**/*.js'
+      'moment/**/*.js',
+      'highcharts/**/*.js',
+      'angular2-highcharts/**/*.js'
     ]
   });
 };
