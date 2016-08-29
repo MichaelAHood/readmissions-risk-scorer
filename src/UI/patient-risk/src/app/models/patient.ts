@@ -5,6 +5,7 @@ export class Patient{
   subject_id: number;
   hadm_id: number;
   admission_type: string;
+  diagnosis: string;
   ethnicity: string;
   insurance: string;
   language: string;
@@ -13,4 +14,7 @@ export class Patient{
   avg_drg_mortality: number;
   age: number;
   gender: string;
+  admittime: Date;
+  dischtime: Date;
+  dob: Date;
 }

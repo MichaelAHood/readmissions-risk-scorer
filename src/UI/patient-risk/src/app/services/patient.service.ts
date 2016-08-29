@@ -72,6 +72,7 @@ function toPatient(response:any): Patient{
     subject_id: response.subject_id,
     hadm_id: response.hadm_id,
     admission_type: response.admission_type,
+    diagnosis: response.diagnosis,
     ethnicity: response.ethnicity,
     insurance: response.insurance,
     language: response.language,
@@ -79,7 +80,10 @@ function toPatient(response:any): Patient{
     avg_drg_severity: response.avg_drg_severity,
     avg_drg_mortality: response.avg_drg_mortality,
     age: response.age,
-    gender: response.gender
+    gender: response.gender,
+    admittime: response.admittime,
+    dischtime: response.dischtime,
+    dob: response.dob
   });
   //console.log('Parsed patient:', patient);
   return patient;

@@ -6,15 +6,21 @@
     </tr>
     </thead>
     <tbody>
-    <tr *ngFor="let patient of patients; let i = index;">
+    <tr *ngFor="let patient of displayedPatients; let i = index;">
       <td><a (click)="goToDetails(patient)">{{patient.hadm_id}}</a></td>
       <td>{{patient.age}}</td>
+      <td>{{patient.dob.split('T')[0]}}</td>
       <td>{{patient.gender}}</td>
       <td>{{patient.marital_status}}</td>
       <td>{{patient.language}}</td>
+      <td>{{patient.admittime.split('T')[0]}}</td>
       <td>{{patient.admission_type}}</td>
+      <td>{{patient.dischtime.split('T')[0]}}</td>
       <td><a (click)="goToDetails(patient)">Details</a></td>
     </tr>
     </tbody>
   </table>
+  <ul class="pagination">
+    <li *ngFor="let page of numberOfPages;"><a (click)="goToPage(page)">{{page}}</a>
+  </ul>
 </div>
