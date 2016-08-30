@@ -200,7 +200,7 @@ module.exports = function(admission, comorbid, patient, processed) {
                     if (patients.length === 0) {
                         console.log('No Processed Patients Sample Data! Loading...');
 
-                        var lines = fs.readFileSync('./app/sampledata/processed-data.csv').toString().split('\n');
+                        var lines = fs.readFileSync('./app/sampledata/processed-data.psv').toString().split('\n');
                         lines.shift(); // Shift the headings off the list of records.
 
                         var entries = 0;

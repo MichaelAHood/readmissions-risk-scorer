@@ -63,7 +63,9 @@ router.get('/', function(request, response){
           '/discharge-comorbids GET discharge-comorbid[]',
           '/discharge-patients GET discharge-patient[]',
           '/processed-patients GET processed-patient[]',
-          '/age-distribution GET age-distribution[]'
+          '/age-distribution GET AgeDistribution[]',
+          '/comorbid-severity-distribution GET severityDistributions[]',
+          '/comorbid-mortality-distribution GET mortalityDistributions[]'
       ]
   });
 });
@@ -170,6 +172,104 @@ router.route('/age-distribution')
         });
     });
 
+router.route('/comorbid-severity-distribution')
+    .get(function(request, response){
+        ProcessedPatient.find(function(error, patients){
+            if(error){
+                response.send(error);
+            }
+
+            var severityDistributions = new ComorbidsDistribution();
+            for(var i = 0; i < patients.length; i++){
+                var severity = Number(patients[i].avg_drg_severity);
+                if(severity < Number(0.5)){
+                    severityDistributions.A.push(severity);
+                } else if(severity >= Number(0.5) && severity < Number(1.0)){
+                    severityDistributions.B.push(severity);
+                } else if(severity >= Number(1.0) && severity < Number(1.5)){
+                    severityDistributions.C.push(severity);
+                } else if(severity >= Number(1.5) && severity < Number(2.0)){
+                    severityDistributions.D.push(severity);
+                } else if(severity >= Number(2.0) && severity < Number(2.5)){
+                    severityDistributions.E.push(severity);
+                } else if(severity >= Number(2.5) && severity < Number(3.0)){
+                    severityDistributions.F.push(severity);
+                } else if(severity >= Number(3.0) && severity < Number(3.5)){
+                    severityDistributions.G.push(severity);
+                } else if(severity >= Number(4.0) && severity < Number(4.5)){
+                    severityDistributions.H.push(severity);
+                } else if(severity >= Number(4.5) && severity < Number(5.0)){
+                    severityDistributions.I.push(severity);
+                } else{
+                    severityDistributions.J.push(severity);
+                }
+            }
+
+            response.json({
+                ACount: severityDistributions.A.length,
+                BCount: severityDistributions.B.length,
+                CCount: severityDistributions.C.length,
+                DCount: severityDistributions.D.length,
+                ECount: severityDistributions.E.length,
+                FCount: severityDistributions.F.length,
+                GCount: severityDistributions.G.length,
+                HCount: severityDistributions.H.length,
+                ICount: severityDistributions.I.length,
+                JCount: severityDistributions.J.length,
+                severityDistributions: severityDistributions
+            });
+        });
+    });
+
+router.route('/comorbid-mortality-distribution')
+    .get(function(request, response){
+        ProcessedPatient.find(function(error, patients){
+            if(error){
+                response.send(error);
+            }
+
+            var mortalityDistributions = new ComorbidsDistribution();
+            for(var i = 0; i < patients.length; i++){
+                var severity = Number(patients[i].avg_drg_mortality);
+                if(severity < Number(0.5)){
+                    mortalityDistributions.A.push(severity);
+                } else if(severity >= Number(0.5) && severity < Number(1.0)){
+                    mortalityDistributions.B.push(severity);
+                } else if(severity >= Number(1.0) && severity < Number(1.5)){
+                    mortalityDistributions.C.push(severity);
+                } else if(severity >= Number(1.5) && severity < Number(2.0)){
+                    mortalityDistributions.D.push(severity);
+                } else if(severity >= Number(2.0) && severity < Number(2.5)){
+                    mortalityDistributions.E.push(severity);
+                } else if(severity >= Number(2.5) && severity < Number(3.0)){
+                    mortalityDistributions.F.push(severity);
+                } else if(severity >= Number(3.0) && severity < Number(3.5)){
+                    mortalityDistributions.G.push(severity);
+                } else if(severity >= Number(4.0) && severity < Number(4.5)){
+                    mortalityDistributions.H.push(severity);
+                } else if(severity >= Number(4.5) && severity < Number(5.0)){
+                    mortalityDistributions.I.push(severity);
+                } else{
+                    mortalityDistributions.J.push(severity);
+                }
+            }
+
+            response.json({
+                ACount: mortalityDistributions.A.length,
+                BCount: mortalityDistributions.B.length,
+                CCount: mortalityDistributions.C.length,
+                DCount: mortalityDistributions.D.length,
+                ECount: mortalityDistributions.E.length,
+                FCount: mortalityDistributions.F.length,
+                GCount: mortalityDistributions.G.length,
+                HCount: mortalityDistributions.H.length,
+                ICount: mortalityDistributions.I.length,
+                JCount: mortalityDistributions.J.length,
+                mortalityDistributions: mortalityDistributions
+            });
+        });
+    });
+
 //Register Routes
 app.use('/api', router);
 
@@ -180,6 +280,21 @@ console.log('Api is running on port:' + port);
 
 //Helper
 var AgeDistribution = function(){
+    var self = this;
+
+    self.A = [];
+    self.B = [];
+    self.C = [];
+    self.D = [];
+    self.E = [];
+    self.F = [];
+    self.G = [];
+    self.H = [];
+    self.I = [];
+    self.J = [];
+};
+
+var ComorbidsDistribution = function(){
     var self = this;
 
     self.A = [];
