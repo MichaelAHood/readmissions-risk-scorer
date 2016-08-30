@@ -77,12 +77,12 @@ function mapPatients(response: Response): Patient[]{
   return patients;
 }
 
-function mapAgeDistributions(response: Response): AgeDistribution[]{
+function mapAgeDistributions(response: Response): AgeDistribution{
   let ageDistributions = response.json().map(toAgeDistribution);
   return ageDistributions;
 }
 
-function mapComorbidsDistributions(response: Response): ComorbidsDistribution[]{
+function mapComorbidsDistributions(response: Response): ComorbidsDistribution{
   let comorbidsDistributions = response.json().map(toComorbidDistribution);
   return comorbidsDistributions;
 }
