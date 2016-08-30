@@ -30,17 +30,18 @@ export class ReadmissionRiskResultsComponent implements OnInit {
         title: { text : null },
         legend: { enabled: false },
         xAxis: {
-          title: { text: 'Age range'},
-          categories: ['0-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '81-90', '>90']
+          title: { text: 'Range'},
+          categories: ['&lt;0.5', '0.5 - &lt;1.0', '1.0 - &lt;1.5', '1.5 - &lt;2.0', '2.0 - &lt;2.5', '2.5 - &lt;3.0', '3.0 - &lt;3.5', '3.5 - &lt;4.0', '4.0 - &lt;4.5', '4.5 - 5.0']
         },
         yAxis: {
           title: { text: 'Patient Count'}
         },
-        series: [{ data: [20,40,60,80,90,95,
-          {
-            y: 80,
-            marker: {symbol: 'url(/app/readmission-risk-results/marker.png)'}
-          },
+        series: [{name: 'Value',
+          data: [20,40,60,80,90,95,
+            {
+              y: 80,
+              marker: {symbol: 'url(/app/readmission-risk-results/marker.png)'}
+            },
           40,10,5] }]
       };
 
@@ -49,17 +50,18 @@ export class ReadmissionRiskResultsComponent implements OnInit {
       title: { text : null },
       legend: { enabled: false },
       xAxis: {
-        title: { text: 'Age range'},
-        categories: ['0-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '81-90', '>90']
+        title: { text: 'Range'},
+        categories: ['&lt;0.5', '0.5 - &lt;1.0', '1.0 - &lt;1.5', '1.5 - &lt;2.0', '2.0 - &lt;2.5', '2.5 - &lt;3.0', '3.0 - &lt;3.5', '3.5 - &lt;4.0', '4.0 - &lt;4.5', '4.5 - 5.0']
       },
       yAxis: {
         title: { text: 'Patient Count'}
       },
-      series: [{ data: [15,35,45,
-        {
-          y: 55,
-          marker: {symbol: 'url(/app/readmission-risk-results/marker.png)'}
-        },
+      series: [{name: 'Value',
+        data: [15,35,45,
+          {
+            y: 55,
+            marker: {symbol: 'url(/app/readmission-risk-results/marker.png)'}
+          },
         60,80,90,30,7,2] }]
     };
 
@@ -68,17 +70,18 @@ export class ReadmissionRiskResultsComponent implements OnInit {
       title: { text : null },
       legend: { enabled: false },
       xAxis: {
-        title: { text: 'Age range'},
+        title: { text: 'Range'},
         categories: ['0-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '81-90', '>90']
       },
       yAxis: {
         title: { text: 'Patient Count'}
       },
-      series: [{ data: [20,40,60,80,
-        {
-          y: 90,
-          marker: {symbol: 'url(/app/readmission-risk-results/marker.png)'}
-        },
+      series: [{name: 'Value',
+        data: [20,40,60,80,
+          {
+            y: 90,
+            marker: {symbol: 'url(/app/readmission-risk-results/marker.png)'}
+          },
         95,80,40,10,5] }]
     };
 
