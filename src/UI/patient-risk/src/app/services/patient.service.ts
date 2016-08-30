@@ -1,15 +1,17 @@
 import { Injectable } from '@angular/core';
-import {Http, Response, Headers, URLSearchParams} from '@angular/http';
+import { Http, Response, Headers, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
-import { Patient } from '../models';
-import {RiskScore} from "../models";
+import { Patient, RiskScore, ComorbidsDistribution, AgeDistribution } from '../models';
 
 @Injectable()
 export class PatientService {
+  private baseUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/';
 
-  private patientUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/processed-patients';
+  private patientUri = this.baseUri + 'processed-patients';
   private riskScoreUri = 'http://risk-scorer-jb.52.204.218.231.nip.io/v1/score-patients';
-
+  private ageDistributionsUri = this.baseUri + 'age-distribution';
+  private severityDistributionsUri = this.baseUri + 'comorbid-severity-distribution';
+  private mortalityDistibutionsUri = this.baseUri + 'comorbid-mortality-distribution';
 
   constructor(private http: Http) { }
 
@@ -32,6 +34,30 @@ export class PatientService {
     return scores$;
   }
 
+  getAgeDistributions(): Observable<AgeDistribution>{
+    let ageDistributions$ = this.http
+      .get(`${this.ageDistributionsUri}`, {headers: this.getHeaders()})
+      .map(mapAgeDistributions)
+      .catch(handleError);
+    return ageDistributions$;
+  }
+
+  getComorbidsSeverityDistributions(): Observable<ComorbidsDistribution>{
+    let severityDistributions$ = this.http
+      .get(`${this.severityDistributionsUri}`, {headers: this.getHeaders()})
+      .map(mapComorbidsDistributions)
+      .catch(handleError);
+    return severityDistributions$;
+  }
+
+  getComorbidsMortalityDistributions(): Observable<ComorbidsDistribution>{
+    let mortalityDistributions$ = this.http
+      .get(`${this.mortalityDistibutionsUri}`, {headers: this.getHeaders()})
+      .map(mapComorbidsDistributions)
+      .catch(handleError);
+    return mortalityDistributions$;
+  }
+
   private getHeaders(){
     let headers = new Headers();
     headers.append('Accept', 'application/json');
@@ -39,23 +65,26 @@ export class PatientService {
   }
 }
 
+//Object Mappers
 function mapScores(response: Response): number[]{
   let scores = response.json().map(toRiskScore);
   return scores;
-}
-
-function toRiskScore(response: any): RiskScore{
-   let riskScore = <RiskScore>({
-      hadm_id: response.admissionID,
-      riskscore: response.readmissionRisk
-   });
-   return riskScore;
 }
 
 function mapPatients(response: Response): Patient[]{
   let patients = response.json().processedPatients.map(toPatient);
   //console.log(patients);
   return patients;
+}
+
+function mapAgeDistributions(response: Response): AgeDistribution[]{
+  let ageDistributions = response.json().map(toAgeDistribution);
+  return ageDistributions;
+}
+
+function mapComorbidsDistributions(response: Response): ComorbidsDistribution[]{
+  let comorbidsDistributions = response.json().map(toComorbidDistribution);
+  return comorbidsDistributions;
 }
 
 function handleError (error: any) {
@@ -65,6 +94,16 @@ function handleError (error: any) {
 
   // throw an application level error
   return Observable.throw(errorMsg);
+}
+
+
+//Object converters
+function toRiskScore(response: any): RiskScore{
+  let riskScore = <RiskScore>({
+    hadm_id: response.admissionID,
+    riskscore: response.readmissionRisk
+  });
+  return riskScore;
 }
 
 function toPatient(response:any): Patient{
@@ -88,3 +127,36 @@ function toPatient(response:any): Patient{
   //console.log('Parsed patient:', patient);
   return patient;
 }
+
+function toAgeDistribution(response: any){
+  let ageDistribution = <AgeDistribution>({
+    ACount: response.ACount,
+    BCount: response.BCount,
+    CCount: response.CCount,
+    DCount: response.DCount,
+    ECount: response.ECount,
+    FCount: response.FCount,
+    GCount: response.GCount,
+    HCount: response.HCount,
+    ICount: response.ICount,
+    JCount: response.JCount
+  });
+  return ageDistribution;
+}
+
+function toComorbidDistribution(response: any){
+  let comorbidDistribution = <ComorbidsDistribution>({
+    ACount: response.ACount,
+    BCount: response.BCount,
+    CCount: response.CCount,
+    DCount: response.DCount,
+    ECount: response.ECount,
+    FCount: response.FCount,
+    GCount: response.GCount,
+    HCount: response.HCount,
+    ICount: response.ICount,
+    JCount: response.JCount
+  });
+  return comorbidDistribution;
+}
+

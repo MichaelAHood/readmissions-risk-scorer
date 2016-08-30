@@ -3,3 +3,5 @@
  */
 export { Patient } from './patient';
 export { RiskScore } from './riskscore';
+export { ComorbidsDistribution } from './comorbidsDistribution'
+export { AgeDistribution } from './ageDistribution';
