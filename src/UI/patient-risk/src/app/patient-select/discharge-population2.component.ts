@@ -16,6 +16,7 @@ export class DischargePopulation2Component implements OnInit{
   private errorMessage: string;
   private numberOfPages: Array<number>;
   private itemsPerPage: number = 10;
+  private currentPage: number = 1;
 
   constructor(private patientService: PatientService, private router: Router, private element: ElementRef, private renderer: Renderer) {
     this.allPatients = [];
@@ -64,7 +65,35 @@ export class DischargePopulation2Component implements OnInit{
       this.renderer.setElementClass(previousActive, 'active', false);
     }
 
-    let currentPageElement = this.element.nativeElement.querySelector('#' + event.srcElement.parentElement.id);
+    //let currentPageElement = this.element.nativeElement.querySelector('#' + event.srcElement.parentElement.id);
+    let currentPageElement = this.element.nativeElement.querySelector('#Page' + page);
     this.renderer.setElementClass(currentPageElement, 'active', true);
+
+    this.currentPage = page;
   }
+
+  previousPage(event){
+    this.currentPage = --this.currentPage;
+    this.goToPage(this.currentPage, event);
+  }
+
+  isPreviousDisabled(){
+    if(this.currentPage === 1){
+      return true;
+    }
+    return false;
+  }
+
+  nextPage(event){
+    this.currentPage = ++this.currentPage;
+    this.goToPage(this.currentPage, event);
+  }
+
+  isNextDisabled(){
+    if(this.currentPage === this.numberOfPages.length){
+      return true;
+    }
+    return false;
+  }
+
 }
