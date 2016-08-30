@@ -21,6 +21,7 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   private comorbidMortalityOptions: HighchartsOptions;
   private comorbidSeverityOptions: HighchartsOptions;
   private ageOptions: HighchartsOptions;
+  private marker: string = 'url(/app/readmission-risk-results/marker.png)';
 
   constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
       this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
@@ -45,6 +46,42 @@ export class ReadmissionRiskResultsComponent implements OnInit {
       this.patientService.getComorbidsSeverityDistributions()
         .subscribe(
           csd => {
+            let severityData = [
+              { y: csd.ACount, marker: {symbol: 'circle'}},
+              { y: csd.BCount, marker: {symbol: 'circle'}},
+              { y: csd.CCount, marker: {symbol: 'circle'}},
+              { y: csd.DCount, marker: {symbol: 'circle'}},
+              { y: csd.ECount, marker: {symbol: 'circle'}},
+              { y: csd.FCount, marker: {symbol: 'circle'}},
+              { y: csd.GCount, marker: {symbol: 'circle'}},
+              { y: csd.HCount, marker: {symbol: 'circle'}},
+              { y: csd.ICount, marker: {symbol: 'circle'}},
+              { y: csd.JCount, marker: {symbol: 'circle'}}
+            ];
+
+            let severity = this.patient.avg_drg_severity;
+            if(severity < 0.5){
+              severityData[0].marker.symbol = this.marker;
+            } else if(severity >= 0.5 && severity < 1.0){
+              severityData[1].marker.symbol = this.marker;
+            } else if(severity >= 1.0 && severity < 1.5){
+              severityData[2].marker.symbol = this.marker;
+            } else if(severity >= 1.5 && severity < 2.0){
+              severityData[3].marker.symbol = this.marker;
+            } else if(severity >= 2.0 && severity < 2.5){
+              severityData[4].marker.symbol = this.marker;
+            } else if(severity >= 2.5 && severity < 3.0){
+              severityData[5].marker.symbol = this.marker;
+            } else if(severity >= 3.0 && severity < 3.5){
+              severityData[6].marker.symbol = this.marker;
+            } else if(severity >= 3.5 && severity < 4.0){
+              severityData[7].marker.symbol = this.marker;
+            } else if(severity >= 4.0 && severity < 4.5){
+              severityData[8].marker.symbol = this.marker;
+            } else{
+              severityData[9].marker.symbol = this.marker;
+            }
+
             this.comorbidSeverityOptions = {
               chart: { type: 'spline', width: 580, height: 230 },
               title: { text : null },
@@ -56,23 +93,11 @@ export class ReadmissionRiskResultsComponent implements OnInit {
               yAxis: {
                 title: { text: 'Patient Count'}
               },
-              series: [{name: 'Value',
-                data: [
-                  csd.ACount,
-                  csd.BCount,
-                  csd.CCount,
-                  csd.DCount,
-                  csd.ECount,
-                  csd.FCount,
-                  csd.GCount,
-                  csd.HCount,
-                  csd.ICount,
-                  csd.JCount
-                  // {
-                  //   y: 80,
-                  //   marker: {symbol: 'url(/app/readmission-risk-results/marker.png)'}
-                  // }
-                ] }]
+              series: [
+                {
+                  name: 'Value',
+                  data: severityData
+                }]
             };
           },
           e => this.errorMessage = e
@@ -81,6 +106,42 @@ export class ReadmissionRiskResultsComponent implements OnInit {
       this.patientService.getComorbidsMortalityDistributions()
         .subscribe(
           cmd => {
+
+            let mortalityData = [
+              { y: cmd.ACount, marker: {symbol: 'circle'}},
+              { y: cmd.BCount, marker: {symbol: 'circle'}},
+              { y: cmd.CCount, marker: {symbol: 'circle'}},
+              { y: cmd.DCount, marker: {symbol: 'circle'}},
+              { y: cmd.ECount, marker: {symbol: 'circle'}},
+              { y: cmd.FCount, marker: {symbol: 'circle'}},
+              { y: cmd.GCount, marker: {symbol: 'circle'}},
+              { y: cmd.HCount, marker: {symbol: 'circle'}},
+              { y: cmd.ICount, marker: {symbol: 'circle'}},
+              { y: cmd.JCount, marker: {symbol: 'circle'}}
+            ];
+
+            let mortality = this.patient.avg_drg_mortality;
+            if(mortality < 0.5){
+              mortalityData[0].marker.symbol = this.marker;
+            } else if(mortality >= 0.5 && mortality < 1.0){
+              mortalityData[1].marker.symbol = this.marker;
+            } else if(mortality >= 1.0 && mortality < 1.5){
+              mortalityData[2].marker.symbol = this.marker;
+            } else if(mortality >= 1.5 && mortality < 2.0){
+              mortalityData[3].marker.symbol = this.marker;
+            } else if(mortality >= 2.0 && mortality < 2.5){
+              mortalityData[4].marker.symbol = this.marker;
+            } else if(mortality >= 2.5 && mortality < 3.0){
+              mortalityData[5].marker.symbol = this.marker;
+            } else if(mortality >= 3.0 && mortality < 3.5){
+              mortalityData[6].marker.symbol = this.marker;
+            } else if(mortality >= 3.5 && mortality < 4.0){
+              mortalityData[7].marker.symbol = this.marker;
+            } else if(mortality >= 4.0 && mortality < 4.5){
+              mortalityData[8].marker.symbol = this.marker;
+            } else{
+              mortalityData[9].marker.symbol = this.marker;
+            }
 
             this.comorbidMortalityOptions = {
               chart: { type: 'spline', width: 580, height: 230 },
@@ -93,23 +154,11 @@ export class ReadmissionRiskResultsComponent implements OnInit {
               yAxis: {
                 title: { text: 'Patient Count'}
               },
-              series: [{name: 'Value',
-                data: [
-                  cmd.ACount,
-                  cmd.BCount,
-                  cmd.CCount,
-                  cmd.DCount,
-                  cmd.ECount,
-                  cmd.FCount,
-                  cmd.GCount,
-                  cmd.HCount,
-                  cmd.ICount,
-                  cmd.JCount
-                  // {
-                  //   y: 80,
-                  //   marker: {symbol: 'url(/app/readmission-risk-results/marker.png)'}
-                  // }
-                ] }]
+              series: [
+                {
+                  name: 'Value',
+                  data: mortalityData
+              }]
             };
           },
           e => this.errorMessage = e
@@ -118,6 +167,43 @@ export class ReadmissionRiskResultsComponent implements OnInit {
       this.patientService.getAgeDistributions()
         .subscribe(
           ad => {
+
+            let ageData = [
+              { y: ad.ACount, marker: {symbol: 'circle'}},
+              { y: ad.BCount, marker: {symbol: 'circle'}},
+              { y: ad.CCount, marker: {symbol: 'circle'}},
+              { y: ad.DCount, marker: {symbol: 'circle'}},
+              { y: ad.ECount, marker: {symbol: 'circle'}},
+              { y: ad.FCount, marker: {symbol: 'circle'}},
+              { y: ad.GCount, marker: {symbol: 'circle'}},
+              { y: ad.HCount, marker: {symbol: 'circle'}},
+              { y: ad.ICount, marker: {symbol: 'circle'}},
+              { y: ad.JCount, marker: {symbol: 'circle'}}
+            ];
+
+            let age = this.patient.age;
+            if(age < 10){
+              ageData[0].marker.symbol = this.marker;
+            } else if(age > 10 && age <= 20){
+              ageData[1].marker.symbol = this.marker;
+            } else if(age > 20 && age <= 30){
+              ageData[2].marker.symbol = this.marker;
+            } else if(age > 30 && age <= 40){
+              ageData[3].marker.symbol = this.marker;
+            } else if(age > 40 && age <= 50){
+              ageData[4].marker.symbol = this.marker;
+            } else if(age > 50 && age <= 60){
+              ageData[5].marker.symbol = this.marker;
+            } else if(age > 60 && age <= 70){
+              ageData[6].marker.symbol = this.marker;
+            } else if(age > 70 && age <= 80){
+              ageData[7].marker.symbol = this.marker;
+            } else if(age > 80 && age <= 90){
+              ageData[8].marker.symbol = this.marker;
+            } else{
+              ageData[9].marker.symbol = this.marker;
+            }
+
             this.ageOptions = {
               chart: { type: 'spline', width: 580, height: 230 },
               title: { text : null },
@@ -129,24 +215,13 @@ export class ReadmissionRiskResultsComponent implements OnInit {
               yAxis: {
                 title: { text: 'Patient Count'}
               },
-              series: [{name: 'Value',
-                data: [
-                  ad.ACount,
-                  ad.BCount,
-                  ad.CCount,
-                  ad.DCount,
-                  ad.ECount,
-                  ad.FCount,
-                  ad.GCount,
-                  ad.HCount,
-                  ad.ICount,
-                  ad.JCount
-                  // {
-                  //   y: 80,
-                  //   marker: {symbol: 'url(/app/readmission-risk-results/marker.png)'}
-                  // }
-                ] }]
-            }},
+              series: [
+                {
+                  name: 'Value',
+                  data: ageData
+                }
+              ]};
+          },
           e => this.errorMessage = e
         );
     };
