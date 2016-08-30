@@ -16,6 +16,7 @@ export class DischargePopulation2Component implements OnInit{
   private errorMessage: string;
   private numberOfPages: Array<number>;
   private paginationsButtonsDisplayed: Array<number>;
+  private numberOfPageButtons: number = 5;
   private itemsPerPage: number = 10;
   private currentPage: number = 1;
 
@@ -37,6 +38,10 @@ export class DischargePopulation2Component implements OnInit{
                             }
                             for(let i = 0; i < this.itemsPerPage; i++) {
                               this.displayedPatients.push(this.allPatients[i]);
+                            }
+
+                            for(let i = 0; i < this.numberOfPageButtons; i++){
+                               this.paginationsButtonsDisplayed.push(i + 1);
                             }
                         },
                         e => this.errorMessage = e
@@ -74,7 +79,17 @@ export class DischargePopulation2Component implements OnInit{
   }
 
   previousPage(event){
-    this.currentPage = --this.currentPage;
+    let previousPage = --this.currentPage;
+    if(previousPage < 1){
+      return;
+    }
+    this.currentPage = previousPage;
+
+    if(this.paginationsButtonsDisplayed.indexOf(this.currentPage) === -1){
+      this.paginationsButtonsDisplayed.pop();
+      this.paginationsButtonsDisplayed.unshift(this.currentPage);
+    }
+
     this.goToPage(this.currentPage, event);
   }
 
@@ -91,11 +106,24 @@ export class DischargePopulation2Component implements OnInit{
       return;
     }
     this.currentPage = nextPage;
+
+    if(this.paginationsButtonsDisplayed.indexOf(this.currentPage) === -1) {
+      this.paginationsButtonsDisplayed.shift();
+      this.paginationsButtonsDisplayed.push(this.currentPage);
+    }
+
     this.goToPage(this.currentPage, event);
   }
 
   isNextDisabled(){
     if(this.currentPage === this.numberOfPages.length){
+      return true;
+    }
+    return false;
+  }
+
+  hideDisplayButton(page){
+    if(this.paginationsButtonsDisplayed.indexOf(page) === -1){
       return true;
     }
     return false;

@@ -8,7 +8,7 @@ import {RiskScore} from "../models";
 export class PatientService {
 
   private patientUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/processed-patients';
-  private riskScoreUri = 'http://risk-scorer.52.204.218.231.nip.io/v1/score-patients';
+  private riskScoreUri = 'http://risk-scorer-jb.52.204.218.231.nip.io/v1/score-patients';
 
 
   constructor(private http: Http) { }

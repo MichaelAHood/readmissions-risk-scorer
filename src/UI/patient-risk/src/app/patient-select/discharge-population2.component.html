@@ -22,7 +22,7 @@
   </table>
   <ul class="pagination">
     <li id="PreviousPage" [class.disabled]="isPreviousDisabled()"><a (click)="!isPreviousDisabled() && previousPage($event)">&laquo;</a></li>
-    <li id="Page{{page}}" *ngFor="let page of numberOfPages; let isFirst = first" [class.active]="isFirst"><a (click)="goToPage(page, $event)">{{page}}</a>
+    <li id="Page{{page}}" *ngFor="let page of numberOfPages; let isFirst = first" [class.hidden]="hideDisplayButton(page)" [class.active]="isFirst"><a (click)="goToPage(page, $event)">{{page}}</a>
     <li id="nextPage" [class.disabled]="isNextDisabled()"><a (click)=" !isNextDisabled() && nextPage($event)">&raquo;</a></li>
   </ul>
 </div>
