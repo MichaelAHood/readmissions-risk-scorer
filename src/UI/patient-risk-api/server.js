@@ -62,7 +62,8 @@ router.get('/', function(request, response){
           '/discharge-admissions GET discharge-admission[]',
           '/discharge-comorbids GET discharge-comorbid[]',
           '/discharge-patients GET discharge-patient[]',
-          '/processed-patients GET processed-patient[]'
+          '/processed-patients GET processed-patient[]',
+          '/age-distribution GET age-distribution[]'
       ]
   });
 });
@@ -119,6 +120,56 @@ router.route('/processed-patients')
         });
     });
 
+router.route('/age-distribution')
+    .get(function(request, response){
+        ProcessedPatient.find(function(error, patients){
+            if(error){
+                response.send(error);
+            }
+
+            var ageDistributions = new AgeDistribution();
+            for(var i = 0; i < patients.length; i++){
+                var age = patients[i].age;
+                if(age <= 10){
+                    ageDistributions.A.push(age)
+                } else if(age > 10 && age <= 20){
+                    ageDistributions.B.push(age);
+                } else if(age > 20 && age <= 30){
+                    ageDistributions.C.push(age);
+                } else if(age > 30 && age <= 40){
+                    ageDistributions.D.push(age);
+                } else if(age > 40 && age <= 50){
+                    ageDistributions.E.push(age);
+                } else if(age > 50 && age <= 60){
+                    ageDistributions.F.push(age);
+                } else if(age > 60 && age <=70){
+                    ageDistributions.G.push(age);
+                } else if(age > 70 && age <= 80){
+                    ageDistributions.H.push(age);
+                } else if(age > 80 && age <= 90){
+                    ageDistributions.I.push(age);
+                } else{
+                    ageDistributions.J.push(age);
+                }
+            }
+
+            response.json({
+                ACount: ageDistributions.A.length,
+                BCount: ageDistributions.B.length,
+                CCount: ageDistributions.C.length,
+                DCount: ageDistributions.D.length,
+                ECount: ageDistributions.E.length,
+                FCount: ageDistributions.F.length,
+                GCount: ageDistributions.G.length,
+                HCount: ageDistributions.H.length,
+                ICount: ageDistributions.I.length,
+                JCount: ageDistributions.J.length,
+                ageDistributions: ageDistributions
+            });
+
+        });
+    });
+
 //Register Routes
 app.use('/api', router);
 
@@ -126,3 +177,19 @@ app.use('/api', router);
 app.listen(port);
 
 console.log('Api is running on port:' + port);
+
+//Helper
+var AgeDistribution = function(){
+    var self = this;
+
+    self.A = [];
+    self.B = [];
+    self.C = [];
+    self.D = [];
+    self.E = [];
+    self.F = [];
+    self.G = [];
+    self.H = [];
+    self.I = [];
+    self.J = [];
+};
