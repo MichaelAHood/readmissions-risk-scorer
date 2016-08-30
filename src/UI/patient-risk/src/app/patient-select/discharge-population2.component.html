@@ -1,30 +1,39 @@
-<div class="table-responsive">
-  <table class="table">
-    <thead>
-    <tr>
-      <th *ngFor="let column of columns">{{column}}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <tr *ngFor="let patient of displayedPatients; let i = index;">
-      <td><a (click)="goToDetails(patient)">{{patient.hadm_id}}</a></td>
-      <td>{{patient.age}}</td>
-      <td>{{patient.dob?.split('T')[0]}}</td>
-      <td>{{patient.gender}}</td>
-      <td>{{patient.marital_status}}</td>
-      <td>{{patient.language}}</td>
-      <td>{{patient.admittime?.split('T')[0]}}</td>
-      <td>{{patient.admission_type}}</td>
-      <td>{{patient.dischtime?.split('T')[0]}}</td>
-      <td><a (click)="goToDetails(patient)">Details</a></td>
-    </tr>
-    </tbody>
-  </table>
-  <div class="text-center">
-    <ul class="pagination">
-      <li id="PreviousPage" [class.disabled]="isPreviousDisabled()"><a (click)="!isPreviousDisabled() && previousPage($event)">&laquo;</a></li>
-      <li id="Page{{page}}" *ngFor="let page of numberOfPages; let isFirst = first" [class.hidden]="hideDisplayButton(page)" [class.active]="isFirst"><a (click)="goToPage(page, $event)">{{page}}</a>
-      <li id="nextPage" [class.disabled]="isNextDisabled()"><a (click)=" !isNextDisabled() && nextPage($event)">&raquo;</a></li>
-    </ul>
-  </div>
+<div class="container-fluid">
+ <div class="row">
+    <div id="left" class="col-md-8">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th *ngFor="let column of columns">{{column}}</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr *ngFor="let patient of displayedPatients; let i = index;">
+            <td><a (click)="goToDetails(patient)">{{patient.hadm_id}}</a></td>
+            <td>{{patient.age}}</td>
+            <td>{{patient.dob?.split('T')[0]}}</td>
+            <td>{{patient.gender}}</td>
+            <td>{{patient.marital_status}}</td>
+            <td>{{patient.language}}</td>
+            <td>{{patient.admittime?.split('T')[0]}}</td>
+            <td>{{patient.admission_type}}</td>
+            <td>{{patient.dischtime?.split('T')[0]}}</td>
+            <td><a (click)="goToDetails(patient)">Details</a></td>
+          </tr>
+          </tbody>
+        </table>
+        <div class="text-center">
+          <ul class="pagination">
+            <li id="PreviousPage" [class.disabled]="isPreviousDisabled()"><a (click)="!isPreviousDisabled() && previousPage($event)">&laquo;</a></li>
+            <li id="Page{{page}}" *ngFor="let page of numberOfPages; let isFirst = first" [class.hidden]="hideDisplayButton(page)" [class.active]="isFirst"><a (click)="goToPage(page, $event)">{{page}}</a>
+            <li id="nextPage" [class.disabled]="isNextDisabled()"><a (click)=" !isNextDisabled() && nextPage($event)">&raquo;</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="right" class="col-md-4">
+
+    </div>
+ </div>
 </div>
