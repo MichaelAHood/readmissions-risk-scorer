@@ -15,6 +15,7 @@ export class DischargePopulation2Component implements OnInit{
   private columns: Array<string>;
   private errorMessage: string;
   private numberOfPages: Array<number>;
+  private paginationsButtonsDisplayed: Array<number>;
   private itemsPerPage: number = 10;
   private currentPage: number = 1;
 
@@ -22,8 +23,8 @@ export class DischargePopulation2Component implements OnInit{
     this.allPatients = [];
     this.displayedPatients = [];
     this.numberOfPages = [];
+    this.paginationsButtonsDisplayed = [];
     this.columns = ['Name', 'Age', 'DOB', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Details'];
-
   }
 
   ngOnInit() {
@@ -85,7 +86,11 @@ export class DischargePopulation2Component implements OnInit{
   }
 
   nextPage(event){
-    this.currentPage = ++this.currentPage;
+    let nextPage = ++this.currentPage;
+    if(nextPage > this.numberOfPages.length){
+      return;
+    }
+    this.currentPage = nextPage;
     this.goToPage(this.currentPage, event);
   }
 
