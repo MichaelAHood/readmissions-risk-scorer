@@ -78,12 +78,12 @@ function mapPatients(response: Response): Patient[]{
 }
 
 function mapAgeDistributions(response: Response): AgeDistribution{
-  let ageDistributions = response.json().map(toAgeDistribution);
+  let ageDistributions = response.json();
   return ageDistributions;
 }
 
 function mapComorbidsDistributions(response: Response): ComorbidsDistribution{
-  let comorbidsDistributions = response.json().map(toComorbidDistribution);
+  let comorbidsDistributions = response.json();
   return comorbidsDistributions;
 }
 
@@ -126,37 +126,5 @@ function toPatient(response:any): Patient{
   });
   //console.log('Parsed patient:', patient);
   return patient;
-}
-
-function toAgeDistribution(response: any){
-  let ageDistribution = <AgeDistribution>({
-    ACount: response.ACount,
-    BCount: response.BCount,
-    CCount: response.CCount,
-    DCount: response.DCount,
-    ECount: response.ECount,
-    FCount: response.FCount,
-    GCount: response.GCount,
-    HCount: response.HCount,
-    ICount: response.ICount,
-    JCount: response.JCount
-  });
-  return ageDistribution;
-}
-
-function toComorbidDistribution(response: any){
-  let comorbidDistribution = <ComorbidsDistribution>({
-    ACount: response.ACount,
-    BCount: response.BCount,
-    CCount: response.CCount,
-    DCount: response.DCount,
-    ECount: response.ECount,
-    FCount: response.FCount,
-    GCount: response.GCount,
-    HCount: response.HCount,
-    ICount: response.ICount,
-    JCount: response.JCount
-  });
-  return comorbidDistribution;
 }
 
