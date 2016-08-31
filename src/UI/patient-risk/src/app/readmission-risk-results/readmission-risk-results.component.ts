@@ -21,10 +21,10 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   private comorbidSeverityOptions: HighchartsOptions;
   private ageOptions: HighchartsOptions;
   private marker: string = 'url(/app/readmission-risk-results/marker.png)';
+  private riskColor: string = '#888888';
 
   constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
        this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
-       let riskScore = this.activatedRouter.snapshot.params['riskScore'];
     };
 
     ngOnInit() {
@@ -33,6 +33,15 @@ export class ReadmissionRiskResultsComponent implements OnInit {
           p => {
               this.patient = p.find(patient => patient.hadm_id == this.admissionId);
               this.patient.riskScoreAsPercent = Math.floor(this.patient.riskScore * 100) + '%';
+
+              let riskScore = this.patient.riskScore;
+              if (riskScore <= 0.25){
+                this.riskColor = '#5CB85C'; // green
+              } else if (riskScore <= 0.50){
+                this.riskColor = '#F7D83D'; // yellow
+              }else{
+                this.riskColor = '#FC4133' // red
+              }
 
             this.patientService.getComorbidsSeverityDistributions()
               .subscribe(
@@ -190,26 +199,6 @@ export class ReadmissionRiskResultsComponent implements OnInit {
           e => this.errorMessage = e
         );
     };
-
-  getriskScoreStyle() {
-    if(this.riskscore == 'Calculating...'){
-      return "#5CB85C"; // green
-    } else {
-      let riskScore = Number(this.riskscore.replace('%', ''));
-      if (riskScore <= 25)
-      {
-        return "#5CB85C"; // green
-      }
-      else if (riskScore <= 50)
-      {
-        return "#F7D83D"; // green
-      }
-      else
-      {
-        return "#FC4133"; // red
-      }
-    }
-  }
 
   backToPatientSelect(){
     this.router.navigate(['']);
