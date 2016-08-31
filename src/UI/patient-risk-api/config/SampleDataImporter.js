@@ -228,6 +228,7 @@ module.exports = function(admission, comorbid, patient, processed) {
                                 newProcessed.gender = values[12];
                                 newProcessed.dob = values[13];
                                 newProcessed.age = values[14];
+                                //RiskScore
 
 
                                 newProcessed.save(function (error) {

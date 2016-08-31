@@ -20,7 +20,8 @@ var processedPatientSchema = new Schema({
     avg_drg_mortality: Number,
     age: Number,
     dob: Date,
-    gender: String
+    gender: String,
+    riskScore: Number
 });
 
 module.exports = mongoose.model('ProcessedPatients', processedPatientSchema);
