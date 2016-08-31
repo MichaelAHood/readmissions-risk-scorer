@@ -963,6 +963,38 @@ plt.show()
 
 The blue line shows us that the model performs better and better on the training data as the depth is increased. The red line tell us a different story. It shows us that the model perforamnce is increasing slightly until it peaks at a `maxDepth` of 6. After that, the performance on the test data begins to fall off. This is not suprprising because deep trees are getting close to perfectly describing the training dataset but failing to generalize to unseen data. This is the definition of overfitting. 
 
+To avoid overfitting we will perform K-fold cross validation on our data.
+
+```python
+numTrees = [15, 20, 25]
+maxDepths = [4, 6, 8]
+kFolds = 5
+
+# Grid search with corss-validation
+for trees in numTrees:
+    for depth in maxDepths:
+        scores = []
+        for fold in xrange(kFolds):
+            train, test = encodedData.randomSplit([0.8, 0.2])
+            rfc = RandomForestClassifier(labelCol="indexedLabel", featuresCol="features")
+            pipeline = Pipeline(stages=[assembler, labelIndexer, rfc])
+            cvModel = pipeline.fit(train)
+            metrics = score_binary_model(cvModel, test)
+            scores.append(metrics.areaUnderROC)
+
+        print "Trees: ", trees, "Depth: ", depth, "Area Under ROC Curve", float(sum(scores))/len(scores) 
+"""
+Trees:  15 Depth:  4 Area Under ROC Curve 0.634612563366
+Trees:  15 Depth:  6 Area Under ROC Curve 0.627093621433
+Trees:  15 Depth:  8 Area Under ROC Curve 0.64623742931
+Trees:  20 Depth:  4 Area Under ROC Curve 0.640546082305
+Trees:  20 Depth:  6 Area Under ROC Curve 0.643772848557
+Trees:  20 Depth:  8 Area Under ROC Curve 0.636780945107
+Trees:  25 Depth:  4 Area Under ROC Curve 0.627295354386
+Trees:  25 Depth:  6 Area Under ROC Curve 0.63486878647
+Trees:  25 Depth:  8 Area Under ROC Curve 0.626744962968
+"""
+```
 
 
 
