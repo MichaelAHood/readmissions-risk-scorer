@@ -25,6 +25,8 @@ export class ReadmissionRiskResultsComponent implements OnInit {
 
   constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
        this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
+       this.patient = new Patient();
+       this.patient.riskScoreAsPercent = 'Calculating...';
     };
 
     ngOnInit() {
