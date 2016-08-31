@@ -1,8 +1,8 @@
 ---
 applications:
 - name: risk-scorer
-  memory: 4G
-  disk_quota: 2G
+  memory: 2G
+  disk_quota: 1G
   command: bin/server.sh
   timeout: 180
   instances: 1
