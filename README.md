@@ -733,7 +733,7 @@ There is an entire sub-field of data analysis devoted to imputation of missing d
 
 Encode categorical variables as numeric values for ingestion by an algorithm. PySpark has a built-in feature called `StringIndexer` that can be very useful for this purpose. The `StringIndexer` will take as input a column of string valued rows and replace them with numerical values, e.g. all instances `Cat` are replaced with a `0.0` and `Dog` with a `1.0`.
 
-I am choosing to not use this feature because `StringIndexer` will repalce the most frequently encounter value with `0.0` and the next most frequent value with `1.0`, and so on. Since some of my categorical features are very uncommon, they may end up being represented differently between different training and testing splits during cross validation. To deal with this, I will manually encode the catgorical values as numeric values.
+I am choosing to not use this feature because `StringIndexer` will repalce the most frequently encounter value with `0.0` and the next most frequent value with `1.0`, and so on. Since some of my categorical features are very uncommon, they may end up being represented differently between different training and testing splits during cross validation. To ensure consistency in how categorical values are encoded, I will manually manually specify the encodings.
 
 We can use SparkSQL to do this.
 
@@ -905,12 +905,63 @@ labeledPoints.take(5)
  LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1]),
  LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1])]
 """
-* Now we are ready to train the model
-
-
-
 ```
+
+* Now we are ready to train an initial model.
+
+```python
+from pyspark.ml.classification import RandomForestClassifier
+
+rfc = RandomForestClassifier(labelCol="indexedLabel", featuresCol="features")
+```
+
+The Spark `Pipeline` object allows us to string together different transformers and estimators into a pipeline that can be applied over repeatedly to different datasets.
+
+```python
+train, test = encodedData.randomSplit([0.8, 0.2])
+print("We have %d training instances and %d validation instances." % (train.count(), test.count()))
+"""
+We have 19982 training instances and 5074 validation instances.
+"""
+
+from pyspark.ml import Pipeline
+
+rfcPipeline = Pipeline(stages=[assembler, labelIndexer, rfc])
+
+# Create an initial Random Forest model
+initialModel = rfcPipeline.fit(train)
+```
+
+With a trained model let's create a set of predictions and score them.
+
+```python
+# Create an initial set of prediction.
+initialPredictions = initialModel.transform(test)
+
+collected = initialPredictions.select('probability', 'label').collect()
+
+# Creating a list of tuples with probabilities and labels, 
+# e.g. [(prob1, label1), (prob2, label2), ...]. 
+# Be sure to convert the prob value from a numpy flaot to a regular float,
+# otherwise the PySpark BinaryClassificatioMetrics will throw a datatype exception.
+
+scoreLabelPairs = [(float(row[0][1]), row[1]) for row in collected]
+
+# Create an RDD from the scores and labels
+scoresAndLabels = sc.parallelize(scoreLabelPairs, 2)
+
+from pyspark.mllib.evaluation import BinaryClassificationMetrics
+
+metrics = BinaryClassificationMetrics(scoresAndLabels)
+print "Area Under the ROC Curve: ", metrics.areaUnderROC
+"""
+Area Under the ROC Curve:  0.642869055243
+"""
+```
+
 * Model training can take a while depending on the size of your data, how many trees you want in your ensemble, and the depth that you allow your trees to go. In general, you want each tree to be constructed to the maximum depth permissable by your time and computational resources. This will inherently overfit your data on any given tree, but since your are constructing many different trees from random bootstrapped samples of the data, each tree is overfitting in a slightly different way. A given prediction is made when a datapoint is fed through each tree in the forest and the tree votes on the classification for that datapoint. The votes are tallied and then prediciton is made by taking the majority vote of the trees. The end result is that the high variance between individual trees will average out over the entire forest.
+
+
 
 * Now let's make predictions and test the results
 ```python
