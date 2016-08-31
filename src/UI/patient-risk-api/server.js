@@ -181,41 +181,26 @@ router.route('/comorbid-severity-distribution')
 
             var severityDistributions = new ComorbidsDistribution();
             for(var i = 0; i < patients.length; i++){
-                var severity = Number(patients[i].avg_drg_severity);
-                if(severity < Number(0.5)){
-                    severityDistributions.A.push(severity);
-                } else if(severity >= Number(0.5) && severity < Number(1.0)){
-                    severityDistributions.B.push(severity);
-                } else if(severity >= Number(1.0) && severity < Number(1.5)){
-                    severityDistributions.C.push(severity);
-                } else if(severity >= Number(1.5) && severity < Number(2.0)){
-                    severityDistributions.D.push(severity);
-                } else if(severity >= Number(2.0) && severity < Number(2.5)){
-                    severityDistributions.E.push(severity);
-                } else if(severity >= Number(2.5) && severity < Number(3.0)){
-                    severityDistributions.F.push(severity);
-                } else if(severity >= Number(3.0) && severity < Number(3.5)){
-                    severityDistributions.G.push(severity);
-                } else if(severity >= Number(4.0) && severity < Number(4.5)){
-                    severityDistributions.H.push(severity);
-                } else if(severity >= Number(4.5) && severity < Number(5.0)){
-                    severityDistributions.I.push(severity);
-                } else{
-                    severityDistributions.J.push(severity);
+                var severity = patients[i].avg_drg_severity;
+                if(severity >= 0 && severity < 1.0){
+                    severityDistributions.One.push(severity);
+                } else if(severity >=  1.0 && severity < 2.0){
+                    severityDistributions.Two.push(severity);
+                } else if(severity >= 2.0 && severity < 3.0){
+                    severityDistributions.Three.push(severity);
+                } else if(severity >= 3.0 && severity < 4.0){
+                    severityDistributions.Four.push(severity);
+                }else{
+                    severityDistributions.Five.push(severity);
                 }
             }
 
             response.json({
-                ACount: severityDistributions.A.length,
-                BCount: severityDistributions.B.length,
-                CCount: severityDistributions.C.length,
-                DCount: severityDistributions.D.length,
-                ECount: severityDistributions.E.length,
-                FCount: severityDistributions.F.length,
-                GCount: severityDistributions.G.length,
-                HCount: severityDistributions.H.length,
-                ICount: severityDistributions.I.length,
-                JCount: severityDistributions.J.length,
+                OneCount: severityDistributions.One.length,
+                TwoCount: severityDistributions.Two.length,
+                ThreeCount: severityDistributions.Three.length,
+                FourCount: severityDistributions.Four.length,
+                FiveCount: severityDistributions.Five.length,
                 severityDistributions: severityDistributions
             });
         });
@@ -230,42 +215,27 @@ router.route('/comorbid-mortality-distribution')
 
             var mortalityDistributions = new ComorbidsDistribution();
             for(var i = 0; i < patients.length; i++){
-                var severity = Number(patients[i].avg_drg_mortality);
-                if(severity < Number(0.5)){
-                    mortalityDistributions.A.push(severity);
-                } else if(severity >= Number(0.5) && severity < Number(1.0)){
-                    mortalityDistributions.B.push(severity);
-                } else if(severity >= Number(1.0) && severity < Number(1.5)){
-                    mortalityDistributions.C.push(severity);
-                } else if(severity >= Number(1.5) && severity < Number(2.0)){
-                    mortalityDistributions.D.push(severity);
-                } else if(severity >= Number(2.0) && severity < Number(2.5)){
-                    mortalityDistributions.E.push(severity);
-                } else if(severity >= Number(2.5) && severity < Number(3.0)){
-                    mortalityDistributions.F.push(severity);
-                } else if(severity >= Number(3.0) && severity < Number(3.5)){
-                    mortalityDistributions.G.push(severity);
-                } else if(severity >= Number(4.0) && severity < Number(4.5)){
-                    mortalityDistributions.H.push(severity);
-                } else if(severity >= Number(4.5) && severity < Number(5.0)){
-                    mortalityDistributions.I.push(severity);
-                } else{
-                    mortalityDistributions.J.push(severity);
+                var mortality = patients[i].avg_drg_mortality;
+                if(mortality >= 0 && mortality < 1.0){
+                    mortalityDistributions.One.push(mortality);
+                } else if(mortality >=  1.0 && mortality < 2.0){
+                    mortalityDistributions.Two.push(mortality);
+                } else if(mortality >= 2.0 && mortality < 3.0){
+                    mortalityDistributions.Three.push(mortality);
+                } else if(mortality >= 3.0 && mortality < 4.0){
+                    mortalityDistributions.Four.push(mortality);
+                }else{
+                    mortalityDistributions.Five.push(mortality);
                 }
             }
 
             response.json({
-                ACount: mortalityDistributions.A.length,
-                BCount: mortalityDistributions.B.length,
-                CCount: mortalityDistributions.C.length,
-                DCount: mortalityDistributions.D.length,
-                ECount: mortalityDistributions.E.length,
-                FCount: mortalityDistributions.F.length,
-                GCount: mortalityDistributions.G.length,
-                HCount: mortalityDistributions.H.length,
-                ICount: mortalityDistributions.I.length,
-                JCount: mortalityDistributions.J.length,
-                mortalityDistributions: mortalityDistributions
+                OneCount: mortalityDistributions.One.length,
+                TwoCount: mortalityDistributions.Two.length,
+                ThreeCount: mortalityDistributions.Three.length,
+                FourCount: mortalityDistributions.Four.length,
+                FiveCount: mortalityDistributions.Five.length,
+                severityDistributions: mortalityDistributions
             });
         });
     });
@@ -297,14 +267,9 @@ var AgeDistribution = function(){
 var ComorbidsDistribution = function(){
     var self = this;
 
-    self.A = [];
-    self.B = [];
-    self.C = [];
-    self.D = [];
-    self.E = [];
-    self.F = [];
-    self.G = [];
-    self.H = [];
-    self.I = [];
-    self.J = [];
+    self.One = [];
+    self.Two = [];
+    self.Three = [];
+    self.Four = [];
+    self.Five = [];
 };
