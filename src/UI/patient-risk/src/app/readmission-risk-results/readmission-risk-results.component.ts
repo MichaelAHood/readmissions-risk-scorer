@@ -25,7 +25,13 @@ export class ReadmissionRiskResultsComponent implements OnInit {
 
   constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
        this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
+
+       const DASH = '-';
        this.patient = new Patient();
+       this.patient.admission_type = DASH;
+       this.patient.language = DASH;
+       this.patient.gender = DASH;
+       this.patient.ethnicity = DASH;
        this.patient.riskScoreAsPercent = 'Calculating...';
     };
 
