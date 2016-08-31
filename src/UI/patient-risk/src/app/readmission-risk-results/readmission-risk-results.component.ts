@@ -14,7 +14,6 @@ import { CHART_DIRECTIVES } from 'angular2-highcharts';
 })
 export class ReadmissionRiskResultsComponent implements OnInit {
 
-  private riskscore: string = 'Calculating...';
   private patient: Patient;
   private errorMessage: string;
   private admissionId: number;
@@ -26,7 +25,6 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
        this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
        let riskScore = this.activatedRouter.snapshot.params['riskScore'];
-       this.riskscore = (Math.floor(riskScore * 100) + '%');
     };
 
     ngOnInit() {
@@ -34,7 +32,7 @@ export class ReadmissionRiskResultsComponent implements OnInit {
         .subscribe(
           p => {
               this.patient = p.find(patient => patient.hadm_id == this.admissionId);
-
+              this.patient.riskScoreAsPercent = Math.floor(this.patient.riskScore * 100) + '%';
 
             this.patientService.getComorbidsSeverityDistributions()
               .subscribe(
