@@ -645,6 +645,34 @@ sqlContext.sql("""SELECT
 
 The last step we want to take before starting the modeling process is to encode categorical variables. Many classifiers can handle cariables that are categorical as well as continuous. An example of a categorical variables is `GENDER` which -- in this dataset -- can only take the values of `M` or `F`. An example of a continuous variable is `AGE` which can take any value greater than 0. To encode `GENDER`, `M` can be represented by a `0` and `F` can be represented by a `1`. 
 
+```python
+from pyspark.sql.functions import udf
+
+labelBinner = udf(lambda days: 1.0 if (days > 0) and (days <= 30) else 0.0, DoubleType())
+labeledData = data.withColumn('label', labelBinner(data.DAYS_TO_READMISSION))
+```
+
+In this example I have chosen to remove the instances of NEWBORN because I intend to focus on adressing readmissions for adults. My intution is that newborns may have an unexpected effect of boosting accuracy of my classifier in such a way that does not generalize to the adult population.
+
+We will seperate the data into a dataset that can be used training and validation with a holdout set that will not be used for any training purposes. This holdout data will serve as a final sanity check that our validated model generalizes to new data. 
+
+Finally, we save the data.
+
+```python
+adults, holdout = labeledData.filter(labeledData.ADMISSION_TYPE != 'NEWBORN').randomSplit([0.9, 0.1])
+
+# There is a known bug in Spatk 1.5 that causes writing DataFrames to CSV to fail when Tungsten is enabled.
+sqlContext.setConf("spark.sql.tungsten.enabled", "false")
+
+adults.coalesce(1).write.format("com.databricks.spark.csv").\
+                          option("header", "true").\
+                          save("adults.csv")
+        
+holdout.coalesce(1).write.format("com.databricks.spark.csv").\
+                          option("header", "true").\
+                          save("holdout.csv")
+```
+
 We can use SparkSQL to do this.
 
 ```python
@@ -704,93 +732,60 @@ SELECT
 FROM {0}
 
 """
-
-# Let's see a random sample of the data
-encoded.sample(withReplacement=False, fraction=0.1).show(10)
-"""
-+--------------+---------+------+----+------------+-------------+----+----+------+-------------------+
-|admission_type|insurance|gender| age|avg_severity|avg_mortality|ethn|lang|status|days_to_readmission|
-+--------------+---------+------+----+------------+-------------+----+----+------+-------------------+
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|                 13|
-|           1.0|      1.0|   1.0|66.1|         4.0|          4.0| 5.0| 3.0|   4.0|                 13|
-|           1.0|      0.0|   0.0|62.7|         3.0|          3.0| 5.0| 3.0|   3.0|                  3|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
-|           1.0|      1.0|   0.0|80.2|         4.0|          4.0| 5.0| 3.0|   3.0|                 30|
-|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|                 15|
-|           1.0|      0.0|   0.0|43.4|         0.0|          0.0| 5.0| 3.0|   3.0|                 15|
-+--------------+---------+------+----+------------+-------------+----+----+------+-------------------+
-only showing top 10 rows
-
-"""
 ```
-Finally, we save the data.
-
-```python
-# If writing options fail, disable Tungsten by changing this parameter to False.
-sqlContext.setConf("spark.sql.tungsten.enabled", "True")
-
-# Let's pull all the data from each partition into one and save our balanced data.
-encoded.coalesce(1).write.format("com.databricks.spark.csv").\
-                          option("header", "true").\
-                          save("modeling-data.csv")
-```
-
 
 # 4. Training, Testing, Validating, and Deploying a Machine Learning Model
 
 Import the modeling data and do some preliminary checks before we start modeling.
 
 ```python
-df = sqlContext.read.format('com.databricks.spark.csv').\
-                    options(header='true', inferSchema=True).\
-                    load("modeling-data.csv")
+df_adults = sqlContext.read.format('com.databricks.spark.csv').\
+                                options(header='true', inferSchema=True).\
+                                load('adults.csv')
+
+df_holdout = sqlContext.read.format('com.databricks.spark.csv').\
+                                options(header='true', inferSchema=True).\
+                                load('holdout.csv')
 
 # Print the schema to make sure that our data were loaded as the correct type.
-df.printSchema()
+df_adults.printSchema()
 
 """
 root
- |-- admission_type: double (nullable = true)
- |-- insurance: double (nullable = true)
- |-- gender: double (nullable = true)
- |-- age: double (nullable = true)
- |-- avg_severity: double (nullable = true)
- |-- avg_mortality: double (nullable = true)
- |-- ethn: double (nullable = true)
- |-- lang: double (nullable = true)
- |-- status: double (nullable = true)
- |-- days_to_readmission: integer (nullable = true)
+ |-- ADMISSION_TYPE: string (nullable = true)
+ |-- INSURANCE: string (nullable = true)
+ |-- GENDER: string (nullable = true)
+ |-- AGE: double (nullable = true)
+ |-- AVG_DRG_SEVERITY: string (nullable = true)
+ |-- AVG_DRG_MORTALITY: string (nullable = true)
+ |-- ETHN: string (nullable = true)
+ |-- LANG: string (nullable = true)
+ |-- STATUS: string (nullable = true)
+ |-- DAYS_TO_READMISSION: integer (nullable = true)
+ |-- label: double (nullable = true)
 """
-# In this case, everything has been read-in as the correct type. You never know and should always check 
 
-# Run this line to check if there are any null valued rows.
-# If so, then you can use df.fillna() method to ipute any missing values.
-
-print df.where(df.admission_type.isNull()).count()
-print df.where(df.insurance.isNull()).count()
-print df.where(df.gender.isNull()).count()
-print df.where(df.avg_severity.isNull()).count()
-print df.where(df.avg_mortality.isNull()).count()
-print df.where(df.ethn.isNull()).count()
-print df.where(df.lang.isNull()).count()
-print df.where(df.status.isNull()).count()
-print df.where(df.days_to_readmission.isNull()).count()
+print("We have %d training instances and %d holdout instances." % (df_adults.count(), df_holdout.count()))
+"""
+We have 25056 training instances and 2830 holdout instances.
+"""
 ```
 
-We handled any missing values earlier, so the above step just a pre-modleing check. Most algorithms do not handle missing data and will throw an exception -- requireing you to replace those missing values witt something. 
+In this case, `AVG_DRG_SEVERITY` and `AVG_DRG_MORTALITY` have been read in as strings instead of doubles. This will need to be corrected before we do any modeling. You never know and should always check 
 
-There is an entire sub-field of data analysis devoted to imputation of missing data, however, three common methods for imputing missing values are using the mean or median value of a column, replacing it with zero, or dropping it entirely. You can also perform tests to see if the missing values are missing at random or if there is a statisitcally significant number of missing values -- thereby necessitating a prudent imputation stratedgy, e.g. mean, meadian, or fitting a model that can identify a pattern from the other data fields to try and learn what is likely to be in a good value for the missing fields.  
-Next we will create the target column that we are trying to model. We will call it `label`.
+We handled any missing values earlier, so the next step just a pre-modleing check. Most algorithms do not handle missing data and will throw an exception -- requireing you to replace those missing values witt something. 
+
 
 ```python
-from pyspark.sql.functions import udf
+# Prints the name of the column that has any missing values.
+for col in df_adults.columns:
+    if df_adults.where(df_adults[col].isNull()).count() > 0:
+        print col
+```
+There is an entire sub-field of data analysis devoted to imputation of missing data, however, three common methods for imputing missing values are using the mean or median value of a column, replacing it with zero, or dropping it entirely. You can also perform tests to see if the missing values are missing at random or if there is a statisitcally significant number of missing values -- thereby necessitating a prudent imputation stratedgy, e.g. mean, meadian, or fitting a model that can identify a pattern from the other data fields to try and learn what is likely to be in a good value for the missing fields.  
 
-# We will use a 1.0 to denote which patients were readmitted within 30 days and 0.0 to denote which were not.
-labelBinner = udf(lambda days: 1.0 if (days > 0) and (days <= 30) else 0.0, DoubleType())
-dfWithLabel = df.withColumn('label', labelBinner(df.days_to_readmission))
+
+
 ```
 * Now we will try different modeling to see how well we can predict whether or not a patient will be readmitted. First, let's import `RandomForest`.
 ```python
