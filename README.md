@@ -915,14 +915,14 @@ We have 19964 training instances and 5092 validation instances.
 maxDepthSettings = [1, 2, 4, 6, 8, 10, 12, 14]
 
 # Helper function that creates models for every depth in maxDepthSettings
-def createModel(depth, data):
+def create_model(depth, data):
     rfc = RandomForestClassifier(labelCol="indexedLabel", featuresCol="features", maxDepth=depth)
     rfcPipeline = Pipeline(stages=[assembler, labelIndexer, rfc])
     rfcModel = rfcPipeline.fit(trainData)
     return rfcModel
 
 # Function to take a model and score it using Binary Classificaiton Metrics
-def scoreBinaryModel(model, data):
+def score_binary_model(model, data):
     predictions = model.transform(data)
     collected = predictions.select('probability', 'label').collect()
     scoreLabelPairs = [(float(row[0][1]), row[1]) for row in collected]
@@ -931,13 +931,13 @@ def scoreBinaryModel(model, data):
     return metrics
     
 # Create models
-models = map(lambda depth: createModel(depth, trainData), maxDepthSettings)
+models = map(lambda depth: create_model(depth, trainData), maxDepthSettings)
 
 # Calculate AUC-ROC for each model:
-trainMetrics = map(lambda model: scoreBinaryModel(model, trainData), models)
+trainMetrics = map(lambda model: score_binary_model(model, trainData), models)
 trainScoresROC = [metric.areaUnderROC for metric in trainMetrics]
 
-testMetrics = map(lambda model: scoreBinaryModel(model, testData), models)
+testMetrics = map(lambda model: score_binary_model(model, testData), models)
 testScoresROC = [metric.areaUnderROC for metric in testMetrics]
 ```
 
@@ -960,6 +960,11 @@ plt.title('Tuning maxDepth: Evaluation and Overfitting', size=20)
 plt.show()
 ```
 ![Random Forest Overfitting](images/rf-overfitting.png)
+
+The blue line shows us that the model performs better and better on the training data as the depth is increased. The red line tell us a different story. It shows us that the model perforamnce is increasing slightly until it peaks at a `maxDepth` of 6. After that, the performance on the test data begins to fall off. This is not suprprising because deep trees are getting close to perfectly describing the training dataset but failing to generalize to unseen data. This is the definition of overfitting. 
+
+
+
 
 Now we will try different modeling to see how well we can predict whether or not a patient will be readmitted. First, let's import `RandomForest`.
 ```python
