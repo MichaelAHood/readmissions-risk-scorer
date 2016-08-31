@@ -210,7 +210,6 @@ module.exports = function(admission, comorbid, patient, processed) {
 
                             var values = line.split('|');
 
-
                             if (values) {
                                 console.log(values);
                                 newProcessed.hadm_id = values[0];
@@ -228,7 +227,7 @@ module.exports = function(admission, comorbid, patient, processed) {
                                 newProcessed.gender = values[12];
                                 newProcessed.dob = values[13];
                                 newProcessed.age = values[14];
-                                //RiskScore
+                                newProcessed.riskScore = values[15];
 
 
                                 newProcessed.save(function (error) {
