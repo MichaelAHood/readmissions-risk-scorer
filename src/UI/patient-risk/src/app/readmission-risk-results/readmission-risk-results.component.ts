@@ -24,7 +24,9 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   private marker: string = 'url(/app/readmission-risk-results/marker.png)';
 
   constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
-      this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
+       this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
+       let riskScore = this.activatedRouter.snapshot.params['riskScore'];
+       this.riskscore = (Math.floor(riskScore * 100) + '%');
     };
 
     ngOnInit() {
@@ -189,14 +191,6 @@ export class ReadmissionRiskResultsComponent implements OnInit {
           },
           e => this.errorMessage = e
         );
-
-        this.patientService.getRiskScores([this.admissionId]).subscribe(
-          rs => {
-              this.riskscore = Math.floor(rs[0].riskscore * 100) + '%';
-          },
-          e => this.errorMessage = e
-        );
-
     };
 
   backToPatientSelect(){
