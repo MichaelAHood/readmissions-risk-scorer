@@ -193,6 +193,26 @@ export class ReadmissionRiskResultsComponent implements OnInit {
         );
     };
 
+  getriskScoreStyle() {
+    if(this.riskscore == 'Calculating...'){
+      return "#5CB85C"; // green
+    } else {
+      let riskScore = Number(this.riskscore.replace('%', ''));
+      if (riskScore <= 25)
+      {
+        return "#5CB85C"; // green
+      }
+      else if (riskScore <= 50)
+      {
+        return "#F7D83D"; // green
+      }
+      else
+      {
+        return "#FC4133"; // red
+      }
+    }
+  }
+
   backToPatientSelect(){
     this.router.navigate(['']);
   };

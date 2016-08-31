@@ -13,18 +13,17 @@
 .riskscore
 {
   display: block;
-  background-color: #5CB85C;
+  /*background-color: #5CB85C;*/
   text-align: center;
   font-size: 2em;
   color: #ffffff;
   border-radius: 4px;
 }
 
-.patientdata
+s.patientdata
 {
   font-size: 1.5em;
 }
-
 
 .bg1{
   background-color: #eeeeee;
