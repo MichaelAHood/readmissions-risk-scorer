@@ -648,58 +648,62 @@ The last step we want to take before starting the modeling process is to encode 
 We can use SparkSQL to do this.
 
 ```python
-encoded = sqlContext.sql("""
-  SELECT 
-      CASE
-          WHEN ADMISSION_TYPE LIKE 'NEWBORN' THEN 0.0
-          WHEN ADMISSION_TYPE LIKE 'EMERGENCY' THEN 1.0
-          WHEN ADMISSION_TYPE LIKE 'URGENT' THEN 2.0
-          ELSE 3.0
-          END as admission_type,
-      CASE 
-          WHEN INSURANCE LIKE 'Private' THEN 0.0
-          WHEN INSURANCE LIKE 'Medicare' THEN 1.0
-          WHEN INSURANCE LIKE 'Medicaid' THEN 2.0
-          WHEN INSURANCE LIKE 'Government' THEN 3.0
-          WHEN INSURANCE LIKE 'Self Pay' THEN 4.0
-          ELSE 5.0
-          END as insurance,
-      CASE
-          WHEN GENDER LIKE 'M' THEN 0.0
-          WHEN GENDER LIKE 'F' THEN 1.0
-          ELSE 2.0
-          END as gender,
-      IF (AGE > 200, 91, AGE) as age,
-      IF (AVG_DRG_SEVERITY IS NULL, 0, AVG_DRG_SEVERITY) as avg_severity,
-      IF (AVG_DRG_MORTALITY IS NULL, 0, AVG_DRG_MORTALITY) as avg_mortality,
-      CASE
-          WHEN ETHN LIKE 'white/european' THEN 0.0
-          WHEN ETHN LIKE 'black/african' THEN 1.0
-          WHEN ETHN LIKE 'hispanic/latino' THEN 2.0
-          WHEN ETHN LIKE 'mideastern' THEN 3.0
-          WHEN ETHN LIKE 'asian/indian' THEN 4.0
-          ELSE 5.0 
-          END as ethn,
-      CASE 
-        WHEN ADMISSION_TYPE='newborn' THEN 0.0
-        WHEN LANG='engl' THEN 1.0
-        WHEN LANG='' THEN 2.0
+# Encode all categorical variables as numeric
+categoricalEncodingQuery =  """
+
+SELECT 
+    CASE
+        WHEN ADMISSION_TYPE LIKE 'NEWBORN' THEN 0.0
+        WHEN ADMISSION_TYPE LIKE 'EMERGENCY' THEN 1.0
+        WHEN ADMISSION_TYPE LIKE 'URGENT' THEN 2.0
         ELSE 3.0
-        END as lang,
-      CASE
-        WHEN STATUS LIKE 'NEWBORN' THEN 0.0
-        WHEN STATUS LIKE '' OR STATUS LIKE 'LIFE PARTNER' THEN 1.0
-        WHEN STATUS LIKE 'UNKNOWN%' THEN 2.0
-        WHEN STATUS LIKE 'MARRIED' THEN 3.0
-        WHEN STATUS LIKE 'DIVORCED' THEN 4.0
-        WHEN STATUS LIKE 'SINGLE' THEN 5.0
-        WHEN STATUS LIKE 'WIDOWED' THEN 6.0
-        WHEN STATUS LIKE 'SEPARATED' THEN 7.0
-        ELSE 8.0
-        END as status,
-      DAYS_TO_READMISSION as days_to_readmission
-  FROM balanced
-  """)
+        END as admission_type,
+    CASE 
+        WHEN INSURANCE LIKE 'Private' THEN 0.0
+        WHEN INSURANCE LIKE 'Medicare' THEN 1.0
+        WHEN INSURANCE LIKE 'Medicaid' THEN 2.0
+        WHEN INSURANCE LIKE 'Government' THEN 3.0
+        WHEN INSURANCE LIKE 'Self Pay' THEN 4.0
+        ELSE 5.0
+        END as insurance,
+    CASE
+        WHEN GENDER LIKE 'M' THEN 0.0
+        WHEN GENDER LIKE 'F' THEN 1.0
+        ELSE 2.0
+        END as gender,
+    IF (AGE > 200, 91, AGE) as age,
+    IF (AVG_SEVERITY IS NULL, 0, AVG_SEVERITY) as avg_severity,
+    IF (AVG_MORTALITY IS NULL, 0, AVG_MORTALITY) as avg_mortality,
+    CASE
+        WHEN ETHN LIKE 'white/european' THEN 0.0
+        WHEN ETHN LIKE 'black/african' THEN 1.0
+        WHEN ETHN LIKE 'hispanic/latino' THEN 2.0
+        WHEN ETHN LIKE 'mideastern' THEN 3.0
+        WHEN ETHN LIKE 'asian/indian' THEN 4.0
+        ELSE 5.0 
+        END as ethn,
+    CASE 
+      WHEN ADMISSION_TYPE='newborn' THEN 0.0
+      WHEN LANG='english' THEN 1.0
+      WHEN LANG='other' THEN 2.0
+      ELSE 3.0
+      END as lang,
+    CASE
+      WHEN STATUS LIKE 'NEWBORN' THEN 0.0
+      WHEN STATUS LIKE '' OR STATUS LIKE 'LIFE PARTNER' THEN 1.0
+      WHEN STATUS LIKE 'UNKNOWN%' THEN 2.0
+      WHEN STATUS LIKE 'MARRIED' THEN 3.0
+      WHEN STATUS LIKE 'DIVORCED' THEN 4.0
+      WHEN STATUS LIKE 'SINGLE' THEN 5.0
+      WHEN STATUS LIKE 'WIDOWED' THEN 6.0
+      WHEN STATUS LIKE 'SEPARATED' THEN 7.0
+      ELSE 8.0
+      END as status,
+    DAYS_TO_READMISSION as days_to_readmission,
+    label
+FROM {0}
+
+"""
 
 # Let's see a random sample of the data
 encoded.sample(withReplacement=False, fraction=0.1).show(10)
