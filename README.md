@@ -673,6 +673,68 @@ holdout.coalesce(1).write.format("com.databricks.spark.csv").\
                           save("holdout.csv")
 ```
 
+
+
+# 4. Training, Testing, Validating, and Deploying a Machine Learning Model
+
+Import the modeling data and do some preliminary checks before we start modeling.
+
+```python
+df_adults = sqlContext.read.format('com.databricks.spark.csv').\
+                                options(header='true', inferSchema=True).\
+                                load('adults.csv')
+
+df_holdout = sqlContext.read.format('com.databricks.spark.csv').\
+                                options(header='true', inferSchema=True).\
+                                load('holdout.csv')
+
+# Print the schema to make sure that our data were loaded as the correct type.
+df_adults.printSchema()
+
+"""
+root
+ |-- ADMISSION_TYPE: string (nullable = true)
+ |-- INSURANCE: string (nullable = true)
+ |-- GENDER: string (nullable = true)
+ |-- AGE: double (nullable = true)
+ |-- AVG_DRG_SEVERITY: string (nullable = true)
+ |-- AVG_DRG_MORTALITY: string (nullable = true)
+ |-- ETHN: string (nullable = true)
+ |-- LANG: string (nullable = true)
+ |-- STATUS: string (nullable = true)
+ |-- DAYS_TO_READMISSION: integer (nullable = true)
+ |-- label: double (nullable = true)
+"""
+
+print("We have %d training instances and %d holdout instances." % (df_adults.count(), df_holdout.count()))
+"""
+We have 25056 training instances and 2830 holdout instances.
+"""
+```
+
+In this case, `AVG_DRG_SEVERITY` and `AVG_DRG_MORTALITY` have been read in as strings instead of doubles. This will need to be corrected before we do any modeling. You never know and should always check 
+
+```python
+# We will cast these string variables as double types
+intermediateDF = df_adults.withColumn("AVG_SEVERITY", df_adults.AVG_DRG_SEVERITY.cast(DoubleType()))
+adults = intermediateDF.withColumn("AVG_MORTALITY", intermediateDF.AVG_DRG_MORTALITY.cast(DoubleType()))
+```
+
+We handled any missing values earlier, so the next step just a pre-modleing check. Most algorithms do not handle missing data and will throw an exception -- requireing you to replace those missing values witt something. 
+
+
+```python
+# Prints the name of the column that has any missing values.
+for col in df_adults.columns:
+    if df_adults.where(df_adults[col].isNull()).count() > 0:
+        print col
+```
+There is an entire sub-field of data analysis devoted to imputation of missing data, however, three common methods for imputing missing values are using the mean or median value of a column, replacing it with zero, or dropping it entirely. You can also perform tests to see if the missing values are missing at random or if there is a statisitcally significant number of missing values -- thereby necessitating a prudent imputation stratedgy, e.g. mean, meadian, or fitting a model that can identify a pattern from the other data fields to try and learn what is likely to be in a good value for the missing fields.  
+
+Encode categorical variables as numeric values for ingestion by an algorithm. PySpark has a built-in feature called `StringIndexer` that can be very useful for this purpose. The `StringIndexer` will take as input a column of string valued rows and replace them with numerical values, e.g. all instances `Cat` are replaced with a `0.0` and `Dog` with a `1.0`.
+
+I am choosing to not use this feature because `StringIndexer` will repalce the most frequently encounter value with `0.0` and the next most frequent value with `1.0`, and so on. Since some of my categorical features are very uncommon, they may end up being represented differently between different training and testing splits during cross validation. To deal with this, I will manually encode the catgorical values as numeric values.
+
 We can use SparkSQL to do this.
 
 ```python
@@ -732,61 +794,62 @@ SELECT
 FROM {0}
 
 """
+
+# Encode the categorical values.
+sqlContext.registerDataFrameAsTable(adults, "adults")
+encodedData = sqlContext.sql(categoricalEncodingQuery.format("adults"))
+
+encodedData.show(5)
+"""
++--------------+---------+------+----+------------+-------------+----+----+------+-------------------+-----+
+|admission_type|insurance|gender| age|avg_severity|avg_mortality|ethn|lang|status|days_to_readmission|label|
++--------------+---------+------+----+------------+-------------+----+----+------+-------------------+-----+
+|           1.0|      1.0|   1.0|76.3|         2.0|          2.0| 1.0| 1.0|   6.0|                  0|  0.0|
+|           1.0|      0.0|   1.0|49.9|         3.0|          2.0| 0.0| 1.0|   3.0|                 66|  0.0|
+|           3.0|      1.0|   1.0|72.6|         0.0|          0.0| 5.0| 3.0|   3.0|                  0|  0.0|
+|           3.0|      0.0|   1.0|59.5|         2.0|          2.0| 1.0| 1.0|   5.0|                  0|  0.0|
+|           1.0|      1.0|   0.0|73.2|         3.0|          3.0| 4.0| 2.0|   6.0|                  0|  0.0|
++--------------+---------+------+----+------------+-------------+----+----+------+-------------------+-----+
+only showing top 5 rows
+"""
 ```
 
-# 4. Training, Testing, Validating, and Deploying a Machine Learning Model
-
-Import the modeling data and do some preliminary checks before we start modeling.
+* Data preperation for modeling: build the feature vectors and index the label
 
 ```python
-df_adults = sqlContext.read.format('com.databricks.spark.csv').\
-                                options(header='true', inferSchema=True).\
-                                load('adults.csv')
+from pyspark.ml.feature import StringIndexer, VectorAssembler
 
-df_holdout = sqlContext.read.format('com.databricks.spark.csv').\
-                                options(header='true', inferSchema=True).\
-                                load('holdout.csv')
+# Specify the features that we want in the feature vectors
+featureCols = ['admission_type', 'insurance', 'gender', 
+               'ethn', 'lang', 'status', 'avg_severity', 
+               'avg_mortality', 'age']
 
-# Print the schema to make sure that our data were loaded as the correct type.
-df_adults.printSchema()
+# Specify the transformations to use prior to modeling, e.g. assemble a DenseVector of features
+assembler = VectorAssembler(inputCols=featureCols, outputCol='features')
 
+# StringIndexer will numerically encode categorical features.
+labelIndexer = StringIndexer(inputCol='label', outputCol='indexedLabel')
+
+assembled = assembler.transform(encodedData)
+labeledVectors = labelIndexer.fit(encodedData).transform(assembled)
+
+# These are the columns that ML algorithm will need as input for training
+labeledVectors.select("features", "indexedLabel").show(5)
 """
-root
- |-- ADMISSION_TYPE: string (nullable = true)
- |-- INSURANCE: string (nullable = true)
- |-- GENDER: string (nullable = true)
- |-- AGE: double (nullable = true)
- |-- AVG_DRG_SEVERITY: string (nullable = true)
- |-- AVG_DRG_MORTALITY: string (nullable = true)
- |-- ETHN: string (nullable = true)
- |-- LANG: string (nullable = true)
- |-- STATUS: string (nullable = true)
- |-- DAYS_TO_READMISSION: integer (nullable = true)
- |-- label: double (nullable = true)
-"""
-
-print("We have %d training instances and %d holdout instances." % (df_adults.count(), df_holdout.count()))
-"""
-We have 25056 training instances and 2830 holdout instances.
++--------------------+------------+
+|            features|indexedLabel|
++--------------------+------------+
+|[1.0,1.0,1.0,1.0,...|         0.0|
+|[1.0,0.0,1.0,0.0,...|         0.0|
+|[3.0,1.0,1.0,5.0,...|         0.0|
+|[3.0,0.0,1.0,1.0,...|         0.0|
+|[1.0,1.0,0.0,4.0,...|         0.0|
++--------------------+------------+
+only showing top 5 rows
 """
 ```
 
-In this case, `AVG_DRG_SEVERITY` and `AVG_DRG_MORTALITY` have been read in as strings instead of doubles. This will need to be corrected before we do any modeling. You never know and should always check 
 
-We handled any missing values earlier, so the next step just a pre-modleing check. Most algorithms do not handle missing data and will throw an exception -- requireing you to replace those missing values witt something. 
-
-
-```python
-# Prints the name of the column that has any missing values.
-for col in df_adults.columns:
-    if df_adults.where(df_adults[col].isNull()).count() > 0:
-        print col
-```
-There is an entire sub-field of data analysis devoted to imputation of missing data, however, three common methods for imputing missing values are using the mean or median value of a column, replacing it with zero, or dropping it entirely. You can also perform tests to see if the missing values are missing at random or if there is a statisitcally significant number of missing values -- thereby necessitating a prudent imputation stratedgy, e.g. mean, meadian, or fitting a model that can identify a pattern from the other data fields to try and learn what is likely to be in a good value for the missing fields.  
-
-
-
-```
 * Now we will try different modeling to see how well we can predict whether or not a patient will be readmitted. First, let's import `RandomForest`.
 ```python
 rf = RandomForest()
