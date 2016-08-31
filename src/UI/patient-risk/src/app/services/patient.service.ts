@@ -122,7 +122,9 @@ function toPatient(response:any): Patient{
     gender: response.gender,
     admittime: response.admittime,
     dischtime: response.dischtime,
-    dob: response.dob
+    dob: response.dob,
+    riskScore: response.riskScore,
+    riskScoreAsPercent: Math.floor(response.riskScore * 100) + '%'
   });
   //console.log('Parsed patient:', patient);
   return patient;

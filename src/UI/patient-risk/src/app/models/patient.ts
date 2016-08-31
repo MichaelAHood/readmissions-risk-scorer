@@ -17,4 +17,6 @@ export class Patient{
   admittime: Date;
   dischtime: Date;
   dob: Date;
+  riskScore: number;
+  riskScoreAsPercent: string;
 }

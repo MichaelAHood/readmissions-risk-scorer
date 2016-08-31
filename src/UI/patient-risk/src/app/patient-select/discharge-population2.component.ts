@@ -25,7 +25,7 @@ export class DischargePopulation2Component implements OnInit{
     this.displayedPatients = [];
     this.numberOfPages = [];
     this.paginationsButtonsDisplayed = [];
-    this.columns = ['Name', 'Age', 'DOB', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Details'];
+    this.columns = ['Name', 'Age', 'DOB', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Risk Score', 'Details'];
   }
 
   ngOnInit() {
