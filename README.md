@@ -848,13 +848,124 @@ labeledVectors.select("features", "indexedLabel").show(5)
 only showing top 5 rows
 """
 ```
+Now we are ready to train an initial model.
 
+```python
+from pyspark.ml.classification import RandomForestClassifier
 
-* Now we will try different modeling to see how well we can predict whether or not a patient will be readmitted. First, let's import `RandomForest`.
+rfc = RandomForestClassifier(labelCol="indexedLabel", featuresCol="features")
+```
+
+The Spark `Pipeline` object allows us to string together different transformers and estimators into a pipeline that can be applied over repeatedly to different datasets.
+
+```python
+train, test = encodedData.randomSplit([0.8, 0.2])
+print("We have %d training instances and %d validation instances." % (train.count(), test.count()))
+"""
+We have 19982 training instances and 5074 validation instances.
+"""
+
+from pyspark.ml import Pipeline
+
+rfcPipeline = Pipeline(stages=[assembler, labelIndexer, rfc])
+
+# Create an initial Random Forest model
+initialModel = rfcPipeline.fit(train)
+```
+
+With a trained model let's create a set of predictions and score them.
+
+```python
+# Create an initial set of prediction.
+initialPredictions = initialModel.transform(test)
+
+collected = initialPredictions.select('probability', 'label').collect()
+
+# Creating a list of tuples with probabilities and labels, 
+# e.g. [(prob1, label1), (prob2, label2), ...]. 
+# Be sure to convert the prob value from a numpy flaot to a regular float,
+# otherwise the PySpark BinaryClassificatioMetrics will throw a datatype exception.
+
+scoreLabelPairs = [(float(row[0][1]), row[1]) for row in collected]
+
+# Create an RDD from the scores and labels
+scoresAndLabels = sc.parallelize(scoreLabelPairs, 2)
+
+from pyspark.mllib.evaluation import BinaryClassificationMetrics
+
+metrics = BinaryClassificationMetrics(scoresAndLabels)
+print "Area Under the ROC Curve: ", metrics.areaUnderROC
+"""
+Area Under the ROC Curve:  0.642869055243
+"""
+```
+
+Model training can take a while depending on the size of your data, how many trees you want in your ensemble, and the depth that you allow your trees to go. In general, you want each tree to be constructed to the maximum depth permissable by your time and computational resources. This will inherently overfit your data on any given tree, but since your are constructing many different trees from random bootstrapped samples of the data, each tree is overfitting in a slightly different way. A given prediction is made when a datapoint is fed through each tree in the forest and the tree votes on the classification for that datapoint. The votes are tallied and then prediciton is made by taking the majority vote of the trees. The end result is that the high variance between individual trees will average out over the entire forest.
+
+We will now demonstrate how to tune one model paramter while also demonstrating how to prevent overfitting your data.
+
+```python
+trainData, testData = encodedData.randomSplit([0.8, 0.2])
+print("We have %d training instances and %d validation instances." % (trainData.count(), testData.count()))
+"""
+We have 19964 training instances and 5092 validation instances.
+"""
+
+# We will try these settings for maxDepth
+maxDepthSettings = [1, 2, 4, 6, 8, 10, 12, 14]
+
+# Helper function that creates models for every depth in maxDepthSettings
+def createModel(depth, data):
+    rfc = RandomForestClassifier(labelCol="indexedLabel", featuresCol="features", maxDepth=depth)
+    rfcPipeline = Pipeline(stages=[assembler, labelIndexer, rfc])
+    rfcModel = rfcPipeline.fit(trainData)
+    return rfcModel
+
+# Function to take a model and score it using Binary Classificaiton Metrics
+def scoreBinaryModel(model, data):
+    predictions = model.transform(data)
+    collected = predictions.select('probability', 'label').collect()
+    scoreLabelPairs = [(float(row[0][1]), row[1]) for row in collected]
+    scoresAndLabels = sc.parallelize(scoreLabelPairs, 2)
+    metrics = BinaryClassificationMetrics(scoresAndLabels)
+    return metrics
+    
+# Create models
+models = map(lambda depth: createModel(depth, trainData), maxDepthSettings)
+
+# Calculate AUC-ROC for each model:
+trainMetrics = map(lambda model: scoreBinaryModel(model, trainData), models)
+trainScoresROC = [metric.areaUnderROC for metric in trainMetrics]
+
+testMetrics = map(lambda model: scoreBinaryModel(model, testData), models)
+testScoresROC = [metric.areaUnderROC for metric in testMetrics]
+```
+
+With the scores for the models trained with different depth settings we will plot the results.
+
+```python
+import matplotlib.pyplot as plt
+%matplotlib inline
+
+plt.figure(figsize=(12, 8))
+plt.plot(maxDepthSettings, testScoresROC, 'r-', label='Test Performance')
+plt.plot(maxDepthSettings, trainScoresROC, 'b-', label='Train Performance')
+depthAtMaxROC = maxDepthSettings[testScoresROC.index(max(testScoresROC))]
+plt.plot(depthAtMaxROC, max(testScoresROC), linestyle='None', marker="*", color='y', markersize=20)
+plt.xlabel('maxDepth', size=16)
+plt.ylabel('Area Under the ROC Curve', size=16)
+plt.ylim(ymin=0.5, ymax=0.8)
+plt.legend()
+plt.title('Tuning maxDepth: Evaluation and Overfitting', size=20)
+plt.show()
+```
+![Random Forest Overfitting](images/rf-overfitting.png)
+
+Now we will try different modeling to see how well we can predict whether or not a patient will be readmitted. First, let's import `RandomForest`.
 ```python
 rf = RandomForest()
 ```
-* One of the nice properties of Random Forest is the ability to handle categorical variables as well as continuous variables. We can just use the categorical variables as they are right now, e.g. {0, 1, 2, ...}, as the model can work with them, however the model will assume that they are continuous unless otherwise specified. This is exactly what the `categoricalFeaturesInfo` paramter of the `model.train()` method is for. MLlib asks for a data structure called an arity for `categoricalFeaturesInfo`. This just means that we need to give the model a dictionary of the column indexes (0-based) with the number of distinct categorical values in that column.
+One of the nice properties of Random Forest is the ability to handle categorical variables as well as continuous variables. We can just use the categorical variables as they are right now, e.g. {0, 1, 2, ...}, as the model can work with them, however the model will assume that they are continuous unless otherwise specified. This is exactly what the `categoricalFeaturesInfo` paramter of the `model.train()` method is for. MLlib asks for a data structure called an arity for `categoricalFeaturesInfo`. This just means that we need to give the model a dictionary of the column indexes (0-based) with the number of distinct categorical values in that column.
 
 Here is how we construct the arity.
 
@@ -907,59 +1018,7 @@ labeledPoints.take(5)
 """
 ```
 
-* Now we are ready to train an initial model.
 
-```python
-from pyspark.ml.classification import RandomForestClassifier
-
-rfc = RandomForestClassifier(labelCol="indexedLabel", featuresCol="features")
-```
-
-The Spark `Pipeline` object allows us to string together different transformers and estimators into a pipeline that can be applied over repeatedly to different datasets.
-
-```python
-train, test = encodedData.randomSplit([0.8, 0.2])
-print("We have %d training instances and %d validation instances." % (train.count(), test.count()))
-"""
-We have 19982 training instances and 5074 validation instances.
-"""
-
-from pyspark.ml import Pipeline
-
-rfcPipeline = Pipeline(stages=[assembler, labelIndexer, rfc])
-
-# Create an initial Random Forest model
-initialModel = rfcPipeline.fit(train)
-```
-
-With a trained model let's create a set of predictions and score them.
-
-```python
-# Create an initial set of prediction.
-initialPredictions = initialModel.transform(test)
-
-collected = initialPredictions.select('probability', 'label').collect()
-
-# Creating a list of tuples with probabilities and labels, 
-# e.g. [(prob1, label1), (prob2, label2), ...]. 
-# Be sure to convert the prob value from a numpy flaot to a regular float,
-# otherwise the PySpark BinaryClassificatioMetrics will throw a datatype exception.
-
-scoreLabelPairs = [(float(row[0][1]), row[1]) for row in collected]
-
-# Create an RDD from the scores and labels
-scoresAndLabels = sc.parallelize(scoreLabelPairs, 2)
-
-from pyspark.mllib.evaluation import BinaryClassificationMetrics
-
-metrics = BinaryClassificationMetrics(scoresAndLabels)
-print "Area Under the ROC Curve: ", metrics.areaUnderROC
-"""
-Area Under the ROC Curve:  0.642869055243
-"""
-```
-
-* Model training can take a while depending on the size of your data, how many trees you want in your ensemble, and the depth that you allow your trees to go. In general, you want each tree to be constructed to the maximum depth permissable by your time and computational resources. This will inherently overfit your data on any given tree, but since your are constructing many different trees from random bootstrapped samples of the data, each tree is overfitting in a slightly different way. A given prediction is made when a datapoint is fed through each tree in the forest and the tree votes on the classification for that datapoint. The votes are tallied and then prediciton is made by taking the majority vote of the trees. The end result is that the high variance between individual trees will average out over the entire forest.
 
 
 
