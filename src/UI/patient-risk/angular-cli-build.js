@@ -17,9 +17,6 @@ module.exports = function(defaults) {
       'reflect-metadata/**/*.+(ts|js|js.map)',
       'rxjs/**/*.+(js|js.map)',
       '@angular/**/*.+(js|js.map)',
-      'ng2-table/**/*.js',
-      'ng2-bootstrap/**/*.js',
-      'moment/**/*.js',
       'highcharts/**/*.js',
       'angular2-highcharts/**/*.js'
     ]
