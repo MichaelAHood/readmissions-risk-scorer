@@ -6,10 +6,10 @@ import { ROUTER_DIRECTIVES, Router } from '@angular/router';
 @Component({
   moduleId: module.id,
   selector: 'pk-discharge-population2',
-  templateUrl: 'discharge-population2.component.html',
+  templateUrl: 'discharge-population.component.html',
   providers: [PatientService, ROUTER_DIRECTIVES]
 })
-export class DischargePopulation2Component implements OnInit{
+export class DischargePopulationComponent implements OnInit{
   private allPatients: Array<Patient>;
   private displayedPatients: Array<Patient>;
   private columns: Array<string>;
