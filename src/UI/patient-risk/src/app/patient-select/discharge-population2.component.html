@@ -5,7 +5,7 @@
         <table class="table">
           <thead>
           <tr>
-            <th *ngFor="let column of columns">{{column}}</th>
+            <th *ngFor="let column of columns" (click)="sortPatientList(column)">{{column}}</th>
           </tr>
           </thead>
           <tbody>
@@ -25,9 +25,9 @@
         </table>
         <div class="text-center">
           <ul class="pagination">
-            <li id="PreviousPage" [class.disabled]="isPreviousDisabled()"><a (click)="!isPreviousDisabled() && previousPage($event)">&laquo;</a></li>
-            <li id="Page{{page}}" *ngFor="let page of numberOfPages; let isFirst = first" [class.hidden]="hideDisplayButton(page)" [class.active]="isFirst"><a (click)="goToPage(page, $event)">{{page}}</a>
-            <li id="nextPage" [class.disabled]="isNextDisabled()"><a (click)=" !isNextDisabled() && nextPage($event)">&raquo;</a></li>
+            <li id="PreviousPage" [class.disabled]="isPreviousDisabled()"><a (click)="!isPreviousDisabled() && previousPage()">&laquo;</a></li>
+            <li id="Page{{page}}" *ngFor="let page of numberOfPages; let isFirst = first" [class.hidden]="hideDisplayButton(page)" [class.active]="isFirst"><a (click)="goToPage(page)">{{page}}</a>
+            <li id="nextPage" [class.disabled]="isNextDisabled()"><a (click)=" !isNextDisabled() && nextPage()">&raquo;</a></li>
           </ul>
         </div>
       </div>
