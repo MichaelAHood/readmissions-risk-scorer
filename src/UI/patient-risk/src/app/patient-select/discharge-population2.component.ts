@@ -16,6 +16,7 @@ export class DischargePopulation2Component implements OnInit{
   private errorMessage: string;
   private numberOfPages: Array<number>;
   private paginationsButtonsDisplayed: Array<number>;
+  private originalButtonsDisplayed: Array<number>;
   private numberOfPageButtons: number = 5;
   private itemsPerPage: number = 10;
   private currentPage: number = 1;
@@ -25,6 +26,7 @@ export class DischargePopulation2Component implements OnInit{
     this.displayedPatients = [];
     this.numberOfPages = [];
     this.paginationsButtonsDisplayed = [];
+    this.originalButtonsDisplayed = [];
     this.columns = ['Name', 'Age', 'DOB', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Risk Score', 'Details'];
   }
 
@@ -41,18 +43,38 @@ export class DischargePopulation2Component implements OnInit{
                             }
 
                             for(let i = 0; i < this.numberOfPageButtons; i++){
-                               this.paginationsButtonsDisplayed.push(i + 1);
+                               if(i < this.numberOfPageButtons) {
+                                 this.paginationsButtonsDisplayed.push(i + 1);
+                               }
                             }
+                            this.originalButtonsDisplayed = this.paginationsButtonsDisplayed.slice();
                         },
                         e => this.errorMessage = e
                       );
   }
 
-  goToDetails(patient){
+  goToDetails(patient: Patient){
       this.router.navigate(['/details', patient.hadm_id]);
   }
 
-  goToPage(page, event){
+  sortPatientList(columnName: string, asc: boolean){
+    switch(columnName){
+      case this.columns[9]:
+            if(asc){
+              this.allPatients.sort(sortRiskScoreAsc);
+            }else {
+              this.allPatients.sort(sortRiskScoreDesc);
+            }
+            this.goToPage(1);
+            this.resetPagination();
+            break;
+    }
+  }
+  resetPagination(){
+    this.paginationsButtonsDisplayed = this.originalButtonsDisplayed.slice();
+  }
+
+  goToPage(page: number){
     let startingIndex = 0;
     if(page !== 1){
       startingIndex = Math.ceil((page * this.itemsPerPage) - (this.itemsPerPage - 1));
@@ -78,7 +100,7 @@ export class DischargePopulation2Component implements OnInit{
     this.currentPage = page;
   }
 
-  previousPage(event){
+  previousPage(){
     let previousPage = --this.currentPage;
     if(previousPage < 1){
       return;
@@ -90,7 +112,7 @@ export class DischargePopulation2Component implements OnInit{
       this.paginationsButtonsDisplayed.unshift(this.currentPage);
     }
 
-    this.goToPage(this.currentPage, event);
+    this.goToPage(this.currentPage);
   }
 
   isPreviousDisabled(){
@@ -100,7 +122,7 @@ export class DischargePopulation2Component implements OnInit{
     return false;
   }
 
-  nextPage(event){
+  nextPage(){
     let nextPage = ++this.currentPage;
     if(nextPage > this.numberOfPages.length){
       return;
@@ -112,7 +134,7 @@ export class DischargePopulation2Component implements OnInit{
       this.paginationsButtonsDisplayed.push(this.currentPage);
     }
 
-    this.goToPage(this.currentPage, event);
+    this.goToPage(this.currentPage);
   }
 
   isNextDisabled(){
@@ -122,10 +144,17 @@ export class DischargePopulation2Component implements OnInit{
     return false;
   }
 
-  hideDisplayButton(page){
+  hideDisplayButton(page: number){
     if(this.paginationsButtonsDisplayed.indexOf(page) === -1){
       return true;
     }
     return false;
   }
+}
+
+function sortRiskScoreDesc(lhs, rhs){
+  return rhs.riskScore - lhs.riskScore;
+}
+function sortRiskScoreAsc(lhs, rhs){
+  return lhs.riskScore - rhs.riskScore;
 }
