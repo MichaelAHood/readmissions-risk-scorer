@@ -675,7 +675,7 @@ holdout.coalesce(1).write.format("com.databricks.spark.csv").\
 
 
 
-# 4. Training, Testing, Validating, and Deploying a Machine Learning Model
+# 4. Training, Testing, and Validating a Machine Learning Model
 
 Import the modeling data and do some preliminary checks before we start modeling.
 
