@@ -32,9 +32,9 @@ def root():
     response = "I am a record parser running on port " + str(port) + ".\n"
     return Response(response, mimetype='text/plain')
 
-@app.route('/v1/parse', methods=['GET'])
+@app.route('/v1/get-records', methods=['GET'])
 def parse_qs():
-    input = request.args.get('data')
+    input = request.args.get('admissionIDs')
     # Convert the string input from the data payload into a literal array of discharge IDs
     dischargeIDs = ast.literal_eval(input)
     # Run the parse and format scripts
