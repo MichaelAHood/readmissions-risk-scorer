@@ -1,10 +1,11 @@
 An API for getting and processing patient info, deployed on Cloud Foundry using Flask
+
+About
 ================================================================================
 
-This is a sample application showing how to deploy a simple hello world app
-using Cloud Foundry and the Python build pack.
+This API will allow a discharge planning system that has access to the patient `admissionIDs` to pass a list of ids and receive the relevant patient data for display in the a front-end layer.
 
-
+The `record-getter` also makes a call to the `risk-scorer` API to fetch the risk score associated with each patient.
 
 To Use
 ================================================================================
@@ -14,7 +15,7 @@ Navigate into the `record-getter` folder and use:
 
 If your API is at the following url: `http://record-getter.12.345.678.910.nip.io`, and you want to get patient info for admission ids `155684` and `135188` just use the `/v1/parse` ending with the admission ids in an array as the data param, like so: 
 
-`http://record-getter.12.345.678.910.nip.io/v1/parse?data=[155684, 135188]`
+`http://record-getter.12.345.678.910.nip.io/v1/get-records?admissionIDs=[155684, 135188]`
 
 That returns:
 ```python
