@@ -21,7 +21,6 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   private comorbidSeverityOptions: HighchartsOptions;
   private ageOptions: HighchartsOptions;
   private marker: string = 'url(/app/readmission-risk-results/marker.png)';
-  private riskColor: string = '#888888';
 
   constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
        this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
@@ -40,18 +39,8 @@ export class ReadmissionRiskResultsComponent implements OnInit {
         .subscribe(
           p => {
               this.patient = p.find(patient => patient.hadm_id == this.admissionId);
-              this.patient.riskScoreAsPercent = Math.floor(this.patient.riskScore * 100) + '%';
 
-              let riskScore = this.patient.riskScore;
-              if (riskScore <= 0.25){
-                this.riskColor = '#5CB85C'; // green
-              } else if (riskScore <= 0.50){
-                this.riskColor = '#F7D83D'; // yellow
-              }else{
-                this.riskColor = '#FC4133' // red
-              }
-
-            this.patientService.getComorbidsSeverityDistributions()
+              this.patientService.getComorbidsSeverityDistributions()
               .subscribe(
                 csd => {
                   let severityData = [

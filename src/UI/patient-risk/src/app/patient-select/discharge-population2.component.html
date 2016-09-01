@@ -18,7 +18,7 @@
             <td>{{patient.admittime?.split('T')[0]}}</td>
             <td>{{patient.admission_type}}</td>
             <td>{{patient.dischtime?.split('T')[0]}}</td>
-            <td>{{patient.riskScoreAsPercent}}</td>
+            <td [ngStyle]="{color: patient.riskScoreColor }">{{patient.riskScoreAsPercent}}</td>
             <td><a (click)="goToDetails(patient)">Details</a></td>
           </tr>
           </tbody>

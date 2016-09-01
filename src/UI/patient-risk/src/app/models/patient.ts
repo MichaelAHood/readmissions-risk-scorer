@@ -19,4 +19,5 @@ export class Patient{
   dob: Date;
   riskScore: number;
   riskScoreAsPercent: string;
+  riskScoreColor: string;
 }

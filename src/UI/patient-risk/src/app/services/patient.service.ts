@@ -107,6 +107,17 @@ function toRiskScore(response: any): RiskScore{
 }
 
 function toPatient(response:any): Patient{
+  let riskScoreColor: string = '#333333'; //dark grey
+
+  let riskScore = response.riskScore;
+  if (riskScore <= 0.25){
+    riskScoreColor = '#5CB85C'; // green
+  } else if (riskScore <= 0.50){
+    riskScoreColor = '#F7D83D'; // yellow
+  }else{
+    riskScoreColor = '#FC4133' // red
+  }
+
   let patient = <Patient>({
     subject_id: response.subject_id,
     hadm_id: response.hadm_id,
@@ -124,7 +135,8 @@ function toPatient(response:any): Patient{
     dischtime: response.dischtime,
     dob: response.dob,
     riskScore: response.riskScore,
-    riskScoreAsPercent: Math.floor(response.riskScore * 100) + '%'
+    riskScoreAsPercent: Math.floor(response.riskScore * 100) + '%',
+    riskScoreColor: riskScoreColor
   });
   //console.log('Parsed patient:', patient);
   return patient;
