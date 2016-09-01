@@ -1,5 +1,7 @@
 An API for scoring patients about to be discharged, deployed on Cloud Foundry using Flask
 
+About
+
 To Use
 ================================================================================
 Navigate into the `risk-scorer` folder and use:
