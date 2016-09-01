@@ -1,6 +1,10 @@
 An API for scoring patients about to be discharged, deployed on Cloud Foundry using Flask
 
 About
+================================================================================
+This API uses Spark MlLib 1.5 that is packaged in TAP 0.7. 
+
+This particular `risk-scorer` application takes the `RandomForestModel` that was created in the Data Science tutorial and publishes it as a Scoring Engine API. Spark MlLib is designed for doing batch processing and there is a certain amount of startup overhead associated with making predictions, the wall-clock time difference between making one prediction and making many predictions is negligible. The design consequence of this fact means that this API is best used when a larger batch of predictions need to be made at once and then cached for use by a front-end layer.
 
 To Use
 ================================================================================
