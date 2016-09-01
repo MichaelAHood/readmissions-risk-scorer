@@ -114,8 +114,10 @@ function toPatient(response:any): Patient{
     riskScoreColor = '#5CB85C'; // green
   } else if (riskScore <= 0.50){
     riskScoreColor = '#F7D83D'; // yellow
-  }else{
-    riskScoreColor = '#FC4133' // red
+  } else if(riskScore <= 0.75){
+    riskScoreColor = '#FF5A00';
+  } else{
+    riskScoreColor = '#FC4133'; // red
   }
 
   let patient = <Patient>({
