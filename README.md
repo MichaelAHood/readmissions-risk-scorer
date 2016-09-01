@@ -1079,7 +1079,7 @@ trainingData.take(5)
 """
 ```
 
-## Build the production model
+### Build the production model
 
 ```python
 from pyspark.mllib.tree import RandomForest
@@ -1125,7 +1125,7 @@ AUROC of the production model on holdout data:  0.612757116451
 
 ```
 
-## Deploying the Model
+6. Deploying the Model
 Once we are satisified with the performance of our model we want to put it into production. To do that we use the `model.save()` method to serialize the model and write it to HDFS.
 
 ```python
@@ -1135,7 +1135,5 @@ model.save(modelName)
 """
 ```
 
-* Go back to the TAP Console and select Services -> Marketplace -> TAP Scoring Engine.
-* Create a name for your scoring engine instance, e.g. my-model-as-an-api. Ensure that you select the "Add an extra paramter". For `key` enter `uri`. For `value` enter the long HDFS uri that you copied after calling `model.publish()`. In case you forogt to copy it and no longer have your Jupyter notebook up and running, go to the Data Catalog and select the `TAR` format under "Advanced Search". You should see your model here and can click on the filename to get the `targetUri`.
-* Click on "Create new instance"
-* Congratualtions, your model is now available as a REST API that you can pass datapoints to over http!
+With the model saved, we can write a Flask application that instantiates the saved model and deploys it as a restful service via Cloud Foundry. The service can then accept data points over http and return predictions for use in an application. The code and documentation for this can be found at: https://github.com/MichaelAHood/readmissions-risk-scorer/tree/master/src/risk-scorer
+
