@@ -12,7 +12,6 @@
           <tr *ngFor="let patient of displayedPatients; let i = index;">
             <td><a (click)="goToDetails(patient)">{{patient.hadm_id}}</a></td>
             <td>{{patient.age}}</td>
-            <td>{{patient.dob?.split('T')[0]}}</td>
             <td>{{patient.gender}}</td>
             <td>{{patient.marital_status}}</td>
             <td>{{patient.language}}</td>

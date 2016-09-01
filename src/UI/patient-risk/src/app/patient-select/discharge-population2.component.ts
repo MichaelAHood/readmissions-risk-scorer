@@ -25,7 +25,7 @@ export class DischargePopulation2Component implements OnInit{
     this.displayedPatients = [];
     this.numberOfPages = [];
     this.paginationsButtonsDisplayed = [];
-    this.columns = ['Name', 'Age', 'DOB', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Risk Score', 'Details'];
+    this.columns = ['Patient ID', 'Age', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Risk Score', 'Details'];
   }
 
   ngOnInit() {
@@ -36,6 +36,7 @@ export class DischargePopulation2Component implements OnInit{
                             for(let i = 0; i < (this.allPatients.length/this.itemsPerPage); i++){
                               this.numberOfPages.push(i + 1);
                             }
+
                             for(let i = 0; i < this.itemsPerPage; i++) {
                               this.displayedPatients.push(this.allPatients[i]);
                             }
