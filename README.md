@@ -1,17 +1,19 @@
-# readmissions-risk-scorer
-This is a temporary repo for the Intel-TAP readmission risk scoring model reference architecture
-
-# Executive Summary
+# Reducing Hospital Admissions
+A reference architecture for using big data and machine learning to improve patient care with Intel’s Trusted Analytics Platform (TAP) 
 
 ## 1. The Problem
 
-The Affordable Care Act established the Hospital Readmissions Reduction Program (HRRP), which requires the Centers for Medicare & Medicaid Services (CMS) to promote quality health care for Americans. To this end the CMS is required to reduce payments to hospitals with excessive readmissions. Additionally, hospitals incur unnecessary costs when patients are readmitted for conditions that could have been addressed or mitigated during the patient's initial admission. As a result, hospitals are seeking ways to reduce readmission rates.
+The Affordable Care Act established the Hospital Readmissions Reduction Program (HRRP), which requires the Centers for Medicare & Medicaid Services (CMS) to promote quality health care for Americans. To this end the CMS is required to reduce payments to hospitals with excessive readmissions. Additionally, hospitals incur unnecessary costs when patients are readmitted for conditions that could have been addressed or mitigated during the patient's initial admission. As a result, hospitals are seeking ways to reduce readmissions rates.
 
-## 2. Solution Summary
+## 2. Executive Summary
 
-The availability of large patient datasets and the computational resources available via cloud computing enable data scientists to find meaningful patterns in patient readmission data. From these patterns, models can be built which enable hospitals to identify the most at-risk patients before they are discharged and apply an appropriate intervention.  
+The prevalence of large patient datasets and the computational resources now available via cloud computing gives data scientists the ability to find meaningful patterns in patient readmission data. From these patterns, models can be built which enable hospitals to identify the most at-risk patients before they are discharged and apply an appropriate intervention. Below are the specifics points that will be covered to demonstrate how Intel’s Trusted Analytics Platform (TAP) con solve the problem statement from Section 1:
 
-Intel's Trusted Analytics Platform (TAP) uses industry standard Open Source tools (e.g. Cloudera Hadoop, Docker, and CloudFoundry) to create a consolidated platform to quickly develop predictive models from large datasets and then deploy those models for use in applications.
+  *	**Solution Overview**: TAP packages standard Open Source tools (e.g. Cloudera Hadoop, Docker, and Cloud Foundry) to create an integrated platform to quickly develop predictive models from large datasets and then deploy those models for use in applications.
+  *	Reference Architecture: Data sources can be combined to train a predictive model with high accuracy on assessing likelihood of patient readmission. That model can be deployed as a service so that it’s predictions can be consumed by other applications (see figure 1).
+  *	Reference Implementation: We have created a specific implementation of the Reference Architecture using the open source MIMIC-III medical dataset, complete with detailed explanations, walkthrough and code available at https://github.com/MichaelAHood/readmissions-risk-scorer.
+  *	Adoption Plan for Your Own Implementation: The last step is a discussion of how a specific hospital can use the Reference Architecture to create their own implementation with their own data and existing applications. 
+  * Reducing Readmissions Case Study: In conclusion, there is a case study that discusses how Intel helped a large hospital group successfully implement a readmissions reduction program using big data and machine learning.
 
 ![Predictive Modeling Process](images/predictive-modeling-process.png)
 
