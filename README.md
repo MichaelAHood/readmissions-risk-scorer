@@ -809,7 +809,7 @@ only showing top 5 rows
 """
 ```
 
-* Data preperation for modeling: build the feature vectors and index the label
+Data preperation for modeling: build the feature vectors and index the label
 
 ```python
 from pyspark.ml.feature import StringIndexer, VectorAssembler
@@ -958,7 +958,7 @@ plt.show()
 
 The blue line shows us that the model performs better and better on the training data as the depth is increased. The red line tell us a different story. It shows us that the model perforamnce is increasing slightly until it peaks at a `maxDepth` of 6. After that, the performance on the test data begins to fall off. This is not suprprising because deep trees are getting close to perfectly describing the training dataset but failing to generalize to unseen data. This is the definition of overfitting. 
 
-## Build a robust model via Cross Validation
+## Balance the data
 
 To avoid overfitting we will perform K-fold cross validation on our data.
 
@@ -1125,7 +1125,7 @@ AUROC of the production model on holdout data:  0.612757116451
 
 ```
 
-6. Deploying the Model
+# 5. Deploying the Model
 Once we are satisified with the performance of our model we want to put it into production. To do that we use the `model.save()` method to serialize the model and write it to HDFS.
 
 ```python
