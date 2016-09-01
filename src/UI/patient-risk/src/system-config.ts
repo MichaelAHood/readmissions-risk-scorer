@@ -45,7 +45,8 @@ const barrels: string[] = [
   'app/readmission-risk-results',
   'app/dropdown',
   'app/services',
-  'app/models'
+  'app/models',
+  'app/risk-legend',
   /** @cli-barrel */
 ];
 

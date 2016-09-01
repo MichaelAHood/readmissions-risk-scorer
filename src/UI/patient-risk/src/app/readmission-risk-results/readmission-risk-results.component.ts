@@ -3,6 +3,7 @@ import { PatientService } from '../services';
 import { Patient } from "../models/patient";
 import { Router, ActivatedRoute } from '@angular/router';
 import { CHART_DIRECTIVES } from 'angular2-highcharts';
+import { RiskLegendComponent } from '../risk-legend';
 
 @Component({
   moduleId: module.id,
@@ -10,7 +11,7 @@ import { CHART_DIRECTIVES } from 'angular2-highcharts';
   templateUrl: 'readmission-risk-results.component.html',
   styleUrls: ['readmission-risk-results.css'],
   providers: [PatientService],
-  directives: [CHART_DIRECTIVES]
+  directives: [RiskLegendComponent, CHART_DIRECTIVES]
 })
 export class ReadmissionRiskResultsComponent implements OnInit {
 

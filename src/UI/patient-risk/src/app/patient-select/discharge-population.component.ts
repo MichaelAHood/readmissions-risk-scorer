@@ -2,12 +2,13 @@ import { Component, OnInit, ElementRef, Renderer } from '@angular/core';
 import { PatientService } from '../services';
 import { Patient } from '../models/patient';
 import { ROUTER_DIRECTIVES, Router } from '@angular/router';
+import { RiskLegendComponent } from '../risk-legend';
 
 @Component({
   moduleId: module.id,
   selector: 'pk-discharge-population2',
   templateUrl: 'discharge-population.component.html',
-  providers: [PatientService, ROUTER_DIRECTIVES]
+  providers: [PatientService, RiskLegendComponent, ROUTER_DIRECTIVES]
 })
 export class DischargePopulationComponent implements OnInit{
   private allPatients: Array<Patient>;
