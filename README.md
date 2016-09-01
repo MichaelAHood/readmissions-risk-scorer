@@ -958,6 +958,8 @@ plt.show()
 
 The blue line shows us that the model performs better and better on the training data as the depth is increased. The red line tell us a different story. It shows us that the model perforamnce is increasing slightly until it peaks at a `maxDepth` of 6. After that, the performance on the test data begins to fall off. This is not suprprising because deep trees are getting close to perfectly describing the training dataset but failing to generalize to unseen data. This is the definition of overfitting. 
 
+## Build a robust model via Cross Validation
+
 To avoid overfitting we will perform K-fold cross validation on our data.
 
 But before we do that, let's address the imabalanced class problem that we identified earleir. We will use the `imbalanced-learn` python library to write a helper function that takes a PySpark DataFrame, applies `SMOTE` to balance the classes, and returns a new PySpark DataFrame. 
@@ -1077,7 +1079,7 @@ trainingData.take(5)
 """
 ```
 
-Now we will build the production model.
+## Build the production model
 
 ```python
 from pyspark.mllib.tree import RandomForest
@@ -1124,14 +1126,14 @@ AUROC of the production model on holdout data:  0.612757116451
 ```
 
 ## Deploying the Model
-* Once we are satisified with the performance of our model we want to put it into production. To do that we use the `model.publish()` method to serialize the model and write it to HDFS.
+Once we are satisified with the performance of our model we want to put it into production. To do that we use the `model.save()` method to serialize the model and write it to HDFS.
+
 ```python
-model.publish()
-"""
-u'hdfs://nameservice1/org/3344b8a7-f814-4343-903e-ca914317bee3/brokers/userspace/aeab8785-03bb-4ac7-93b1-a5a46abb9a82/atk-intel-be107c9e/models_3fe4c46e705c4bb697e7546cfcbecbc8.tar'
+# Change the modelName to whatever you want the file name to be in HDFS
+modelName = "rf-model-30day.dat"
+model.save(modelName)
 """
 ```
-Be sure to copy the above uri for your model.
 
 * Go back to the TAP Console and select Services -> Marketplace -> TAP Scoring Engine.
 * Create a name for your scoring engine instance, e.g. my-model-as-an-api. Ensure that you select the "Add an extra paramter". For `key` enter `uri`. For `value` enter the long HDFS uri that you copied after calling `model.publish()`. In case you forogt to copy it and no longer have your Jupyter notebook up and running, go to the Data Catalog and select the `TAR` format under "Advanced Search". You should see your model here and can click on the filename to get the `targetUri`.
