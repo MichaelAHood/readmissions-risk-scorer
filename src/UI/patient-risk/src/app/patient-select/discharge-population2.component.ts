@@ -20,12 +20,13 @@ export class DischargePopulation2Component implements OnInit{
   private numberOfPageButtons: number = 5;
   private itemsPerPage: number = 10;
   private currentPage: number = 1;
-
+  private riskScoreSortingDirection: string;
   constructor(private patientService: PatientService, private router: Router, private element: ElementRef, private renderer: Renderer) {
     this.allPatients = [];
     this.displayedPatients = [];
     this.numberOfPages = [];
     this.paginationsButtonsDisplayed = [];
+    this.riskScoreSortingDirection = '';
     this.columns = ['Patient ID', 'Age', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Risk Score', 'Details'];
     this.originalButtonsDisplayed = [];
   }
@@ -58,18 +59,23 @@ export class DischargePopulation2Component implements OnInit{
       this.router.navigate(['/details', patient.hadm_id]);
   }
 
-  sortPatientList(columnName: string, asc: boolean){
-    switch(columnName){
-      case this.columns[9]:
-            if(asc){
-              this.allPatients.sort(sortRiskScoreAsc);
-            }else {
-              this.allPatients.sort(sortRiskScoreDesc);
-            }
-            this.goToPage(1);
-            this.resetPagination();
-            break;
-    }
+  sortPatientList(){
+    const DESCENDING = 'Dsc';
+    const ASCENDING = 'Asc';
+
+     if(this.riskScoreSortingDirection === ''){
+       this.riskScoreSortingDirection = DESCENDING;
+     }
+
+     if(this.riskScoreSortingDirection === ASCENDING){
+        this.allPatients.sort(sortRiskScoreAsc);
+       this.riskScoreSortingDirection = DESCENDING;
+      }else {
+        this.allPatients.sort(sortRiskScoreDesc);
+        this.riskScoreSortingDirection = ASCENDING;
+      }
+      this.goToPage(1);
+      this.resetPagination();
   }
   resetPagination(){
     this.paginationsButtonsDisplayed = this.originalButtonsDisplayed.slice();

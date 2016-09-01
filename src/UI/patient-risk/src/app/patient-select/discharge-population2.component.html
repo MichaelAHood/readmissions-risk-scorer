@@ -5,7 +5,12 @@
         <table class="table">
           <thead>
           <tr>
-            <th *ngFor="let column of columns" (click)="sortPatientList(column)">{{column}}</th>
+            <th *ngFor="let column of columns" (click)="sortPatientList(column)">
+              {{column}}
+              <span *ngIf="column === 'Risk Score' && riskScoreSortingDirection === ''">&#x2195;</span>
+              <span *ngIf="column === 'Risk Score' && riskScoreSortingDirection === 'Dsc'">&#x25B2;</span>
+              <span *ngIf="column === 'Risk Score' && riskScoreSortingDirection === 'Asc'">&#x25BC;</span>
+            </th>
           </tr>
           </thead>
           <tbody>
