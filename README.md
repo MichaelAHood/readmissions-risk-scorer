@@ -997,7 +997,7 @@ numTrees = [15, 20, 25]
 maxDepths = [6, 8, 12]
 kFolds = 5
 
-# Grid search with corss-validation
+# Grid search with cross-validation
 for trees in numTrees:
     for depth in maxDepths:
         scores = []
@@ -1089,7 +1089,7 @@ trainPts = sc.parallelize(trainingData.take(numPts))
 
 # Use the optimized paramters
 trees = 20
-depth = 8
+depth = 6
 
 rfcProd = RandomForest()
 model = rfcProd.trainClassifier(data=trainPts,
