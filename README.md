@@ -743,10 +743,9 @@ categoricalEncodingQuery =  """
 
 SELECT 
     CASE
-        WHEN ADMISSION_TYPE LIKE 'NEWBORN' THEN 0.0
-        WHEN ADMISSION_TYPE LIKE 'EMERGENCY' THEN 1.0
-        WHEN ADMISSION_TYPE LIKE 'URGENT' THEN 2.0
-        ELSE 3.0
+        WHEN ADMISSION_TYPE LIKE 'EMERGENCY' THEN 0.0
+        WHEN ADMISSION_TYPE LIKE 'URGENT' THEN 1.0
+        ELSE 2.0
         END as admission_type,
     CASE 
         WHEN INSURANCE LIKE 'Private' THEN 0.0
@@ -762,8 +761,8 @@ SELECT
         ELSE 2.0
         END as gender,
     IF (AGE > 200, 91, AGE) as age,
-    IF (AVG_SEVERITY IS NULL, 0, AVG_SEVERITY) as avg_severity,
-    IF (AVG_MORTALITY IS NULL, 0, AVG_MORTALITY) as avg_mortality,
+    IF (avg_severity IS NULL, 0, avg_severity) as avg_severity,
+    IF (avg_mortality IS NULL, 0, avg_mortality) as avg_mortality,
     CASE
         WHEN ETHN LIKE 'white/european' THEN 0.0
         WHEN ETHN LIKE 'black/african' THEN 1.0
@@ -773,21 +772,17 @@ SELECT
         ELSE 5.0 
         END as ethn,
     CASE 
-      WHEN ADMISSION_TYPE='newborn' THEN 0.0
-      WHEN LANG='english' THEN 1.0
-      WHEN LANG='other' THEN 2.0
-      ELSE 3.0
+      WHEN LANG='english' THEN 0.0
+      WHEN LANG='other' THEN 1.0
+      ELSE 2.0
       END as lang,
     CASE
-      WHEN STATUS LIKE 'NEWBORN' THEN 0.0
-      WHEN STATUS LIKE '' OR STATUS LIKE 'LIFE PARTNER' THEN 1.0
-      WHEN STATUS LIKE 'UNKNOWN%' THEN 2.0
-      WHEN STATUS LIKE 'MARRIED' THEN 3.0
-      WHEN STATUS LIKE 'DIVORCED' THEN 4.0
-      WHEN STATUS LIKE 'SINGLE' THEN 5.0
-      WHEN STATUS LIKE 'WIDOWED' THEN 6.0
-      WHEN STATUS LIKE 'SEPARATED' THEN 7.0
-      ELSE 8.0
+      WHEN STATUS LIKE 'MARRIED' THEN 0.0
+      WHEN STATUS LIKE 'DIVORCED' THEN 1.0
+      WHEN STATUS LIKE 'SINGLE' THEN 2.0
+      WHEN STATUS LIKE 'WIDOWED' THEN 3.0
+      WHEN STATUS LIKE 'SEPARATED' THEN 4.0
+      ELSE 5.0
       END as status,
     DAYS_TO_READMISSION as days_to_readmission,
     label
@@ -965,9 +960,39 @@ The blue line shows us that the model performs better and better on the training
 
 To avoid overfitting we will perform K-fold cross validation on our data.
 
+But before we do that, let's address the imabalanced class problem that we identified earleir. We will use the `imbalanced-learn` python library to write a helper function that takes a PySpark DataFrame, applies `SMOTE` to balance the classes, and returns a new PySpark DataFrame. 
+
+```python
+!pip install imbalanced-learn
+import pandas as pd
+import numpy as np
+from imblearn.over_sampling import SMOTE
+
+def balance_data(pySparkDataFrame):
+    
+    df = pySparkDataFrame.toPandas()
+    X = df.drop(['days_to_readmission', 'label'], axis=1)
+    y = df['label']
+    sm = SMOTE()
+    X_sampled, y_sampled = sm.fit_sample(X, y)
+
+    # Now we need to convert the synethically generated training data from a numpy array to a pandas DF
+    # and add the column names back in.
+    df_smote = pd.DataFrame(X_sampled, columns=df.columns[:-2])
+    df_smote['label'] = y_sampled
+    # The only thing left to do is to put the column round of the synethically generated categorical variabels.
+
+    for col in categoricalCols:
+        df_smote[col] = np.round(df_smote[col])
+
+    # Now convert back to a Spark DataFrame
+    balancedData = sqlContext.createDataFrame(df_smote)
+    return balancedData
+```
+
 ```python
 numTrees = [15, 20, 25]
-maxDepths = [4, 6, 8]
+maxDepths = [6, 8, 12]
 kFolds = 5
 
 # Grid search with corss-validation
@@ -978,47 +1003,51 @@ for trees in numTrees:
             train, test = encodedData.randomSplit([0.8, 0.2])
             rfc = RandomForestClassifier(labelCol="indexedLabel", featuresCol="features")
             pipeline = Pipeline(stages=[assembler, labelIndexer, rfc])
-            cvModel = pipeline.fit(train)
+            balancedTrain = balance_data(train)
+            cvModel = pipeline.fit(balancedTrain)
             metrics = score_binary_model(cvModel, test)
             scores.append(metrics.areaUnderROC)
 
-        print "Trees: ", trees, "Depth: ", depth, "Area Under ROC Curve", float(sum(scores))/len(scores) 
+        print "Trees: ", trees, "Depth: ", depth, "Area Under ROC Curve", float(sum(scores))/len(scores)  
 """
-Trees:  15 Depth:  4 Area Under ROC Curve 0.634612563366
-Trees:  15 Depth:  6 Area Under ROC Curve 0.627093621433
-Trees:  15 Depth:  8 Area Under ROC Curve 0.64623742931
-Trees:  20 Depth:  4 Area Under ROC Curve 0.640546082305
-Trees:  20 Depth:  6 Area Under ROC Curve 0.643772848557
-Trees:  20 Depth:  8 Area Under ROC Curve 0.636780945107
-Trees:  25 Depth:  4 Area Under ROC Curve 0.627295354386
-Trees:  25 Depth:  6 Area Under ROC Curve 0.63486878647
-Trees:  25 Depth:  8 Area Under ROC Curve 0.626744962968
+Trees:  15 Depth:  6 Area Under ROC Curve 0.634917379935
+Trees:  15 Depth:  8 Area Under ROC Curve 0.629784863693
+Trees:  15 Depth:  12 Area Under ROC Curve 0.636076085984
+Trees:  20 Depth:  6 Area Under ROC Curve 0.653670468249
+Trees:  20 Depth:  8 Area Under ROC Curve 0.634548040507
+Trees:  20 Depth:  12 Area Under ROC Curve 0.630852107304
+Trees:  25 Depth:  6 Area Under ROC Curve 0.63349607053
+Trees:  25 Depth:  8 Area Under ROC Curve 0.634059419228
+Trees:  25 Depth:  12 Area Under ROC Curve 0.629738220373
 """
 ```
 
+Now we will use the optimized paramters to create our production `RandomForest` model using the entire body of training data.
 
-
-Now we will try different modeling to see how well we can predict whether or not a patient will be readmitted. First, let's import `RandomForest`.
-```python
-rf = RandomForest()
-```
-One of the nice properties of Random Forest is the ability to handle categorical variables as well as continuous variables. We can just use the categorical variables as they are right now, e.g. {0, 1, 2, ...}, as the model can work with them, however the model will assume that they are continuous unless otherwise specified. This is exactly what the `categoricalFeaturesInfo` paramter of the `model.train()` method is for. MLlib asks for a data structure called an arity for `categoricalFeaturesInfo`. This just means that we need to give the model a dictionary of the column indexes (0-based) with the number of distinct categorical values in that column.
+One of the nice properties of Random Forest is the ability to handle categorical variables as well as continuous variables. We can just use the categorical variables as they are right now, e.g. {0, 1, 2, ...}, and the model can work with them, however the model will assume that they are continuous unless otherwise specified. This is exactly what the `categoricalFeaturesInfo` paramter of the `model.train()` method is for. MLlib asks for a data structure called an arity for `categoricalFeaturesInfo`. This just means that we need to give the model a dictionary of the column indexes (0-based) with the number of distinct categorical values in that column.
 
 Here is how we construct the arity.
 
 ```python
-categoricalCols = ['admission_type', 
-                   'insurance', 
-                   'gender', 
-                   'ethn', 
-                   'lang', 
-                   'status']
+# Construct the arity for the RDD based classifier
+
+# The features that are assembled into the vector
+featureCols = ['admission_type', 'insurance', 'gender', 'ethn', 'lang', 
+               'status', 'avg_severity', 'avg_mortality', 'age']
+
+# Specifies which features are categorical
+categoricalCols = ['admission_type', 'insurance', 'gender', 'ethn', 'lang', 'status']
 
 catFeatureInfo = {}
 
-for i, col in enumerate(categoricalCols):
-    catFeatureInfo[i] = dfWithLabel.select(col).distinct().count()
+for col in categoricalCols:
+    ix = featureCols.index(col)
+    numVals = encodedData.select(col).distinct().count()
+    catFeatureInfo[ix] = numVals
+    
 print catFeatureInfo
+# The key is the 0-based index of the categorical column and the value is the 
+# number of values the categorical column can take.
 """
 {0: 3, 1: 5, 2: 2, 3: 6, 4: 3, 5: 6}
 """
@@ -1027,60 +1056,72 @@ print catFeatureInfo
 Now we have to build an RDD of LabeledPoints for inut into the `RandomForest`.
 
 ```python
-from pyspark.ml.feature import VectorAssembler
 from pyspark.mllib.regression import LabeledPoint
 
-featureCols = ['admission_type', 
-                'insurance', 
-                'gender', 
-                'ethn', 
-                'lang', 
-                'status', 
-                'avg_severity', 
-                "avg_mortality", 
-                'age']
+# Construct the RDD of labeled points, e.g. a labeled point is an object with a structure like (label, featureVector)
+balancedTrain = balance_data(encodedData)
+vectorsTrain = assembler.transform(labelIndexer.fit(encodedData).transform(balancedTrain))
+labeledPointsTrain = vectorsTrain.select("indexedLabel", "features")
+trainingData = labeledPointsTrain.map(lambda row: LabeledPoint(row.indexedLabel, row.features))
 
-va = VectorAssembler(inputCols=featureCols, outputCol='features')
-
-vectors = va.transform(dfWithLabel)
-labeledPoints = vectors.select("label", "features").map(lambda row: LabeledPoint(row.label, row.features))
-
-labeledPoints.take(5)
+# Show a few of the labeled points.
+trainingData.take(5)
+# The second point looks different because it has multiple zero value and is represented as a SparseVector. 
+# RandomForest works with either DenseVectors or SparseVectors.
 """
-[LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1]),
- LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1]),
- LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1]),
- LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1]),
- LabeledPoint(1.0, [1.0,1.0,1.0,1.0,1.0,4.0,4.0,4.0,66.1])]
+[LabeledPoint(0.0, [0.0,1.0,1.0,1.0,0.0,3.0,2.0,2.0,76.3]),
+ LabeledPoint(0.0, (9,[2,6,7,8],[1.0,3.0,2.0,49.9])),
+ LabeledPoint(0.0, [2.0,1.0,1.0,5.0,2.0,0.0,0.0,0.0,72.6]),
+ LabeledPoint(0.0, [2.0,0.0,1.0,1.0,0.0,2.0,2.0,2.0,59.5]),
+ LabeledPoint(0.0, [0.0,1.0,0.0,4.0,1.0,3.0,3.0,3.0,73.2])]
 """
 ```
 
+Now we will build the production model.
 
-
-
-
-* Now let's make predictions and test the results
 ```python
-predicted_frame = model.predict(testFrame, feature_cols)
+from pyspark.mllib.tree import RandomForest
 
-test_metrics = model.test(predicted_frame, 'target_30', feature_cols)
+numPts = trainingData.count()
+trainPts = sc.parallelize(trainingData.take(numPts))
 
-print test_metrics
+# Use the optimized paramters
+trees = 20
+depth = 8
 
-"""
-Precision: 0.142857142857
-Recall: 0.00917431192661
-Accuracy: 0.95882246704
-FMeasure: 0.0172413793103
-Confusion Matrix: 
-            Predicted_Pos  Predicted_Neg
-Actual_Pos              2            216
-Actual_Neg             12           5307
-"""
+rfcProd = RandomForest()
+model = rfcProd.trainClassifier(data=trainPts,
+                                numClasses=2,
+                                categoricalFeaturesInfo=catFeatureInfo,
+                                numTrees=trees,
+                                maxDepth=depth,
+                                impurity='gini',
+                                seed=42)
 ```
-## Model Hyperparameter Tuning
-* Grid Search and Cross Validation
-This section under construction. 
+
+Now let's make predictions on the final holdout data and validate the results.
+
+```python
+encodedHoldoutData = sqlContext.sql(categoricalEncodingQuery.format("holdout"))
+vectorsHoldout = assembler.transform(labelIndexer.fit(encodedData).transform(encodedHoldoutData))
+labeledPointsHoldout = vectorsHoldout.select("indexedLabel", "features")
+holdoutData = labeledPointsHoldout.map(lambda row: LabeledPoint(row.indexedLabel, row.features))
+probs = predict_proba(model, labeledPointsHoldout)
+
+from pyspark.mllib.evaluation import BinaryClassificationMetrics
+
+labels = labeledPointsHoldout.map(lambda lp: lp.indexedLabel).collect()
+scoreLabelPairs = izip(probs, labels)
+scoresAndLabels = sc.parallelize(scoreLabelPairs, 2)
+metrics = BinaryClassificationMetrics(scoresAndLabels)
+
+print "AUROC of the production model on holdout data: ", metrics.areaUnderROC
+
+"""
+AUROC of the production model on holdout data:  0.612757116451
+"""
+
+```
 
 ## Deploying the Model
 * Once we are satisified with the performance of our model we want to put it into production. To do that we use the `model.publish()` method to serialize the model and write it to HDFS.
