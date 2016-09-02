@@ -115,7 +115,7 @@ function toPatient(response:any): Patient{
   } else if (riskScore <= 0.50){
     riskScoreColor = '#F7D83D'; // yellow
   } else if(riskScore <= 0.75){
-    riskScoreColor = '#FF5A00';
+    riskScoreColor = '#F9A15A'; // orange
   } else{
     riskScoreColor = '#FC4133'; // red
   }

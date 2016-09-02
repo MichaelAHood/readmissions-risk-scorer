@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { DischargePopulationComponent } from './discharge-population.component';
 import { ProportionAtRiskComponent } from './proportion-at-risk.component';
+import { RiskLegendComponent } from '../risk-legend/risk-legend.component';
 
 @Component({
   moduleId: module.id,
   selector: 'pk-patient-select',
   templateUrl: 'patient-select.component.html',
-  directives: [DischargePopulationComponent, ProportionAtRiskComponent]
+  directives: [DischargePopulationComponent, ProportionAtRiskComponent, RiskLegendComponent]
 })
 export class PatientSelectComponent implements OnInit {
 
