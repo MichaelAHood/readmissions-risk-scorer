@@ -3,6 +3,7 @@ import { PatientService } from '../services';
 import { Patient } from '../models/patient';
 import { ROUTER_DIRECTIVES, Router } from '@angular/router';
 import { RiskLegendComponent } from '../risk-legend';
+import { RadioButtonState } from "@angular/common";
 
 @Component({
   moduleId: module.id,
@@ -24,6 +25,7 @@ export class DischargePopulationComponent implements OnInit{
   private currentPage: number;
   private riskScoreSortingDirection: string;
   private ageSliderValue: number;
+  private riskLevel: RadioButtonState;
 
   constructor(private patientService: PatientService, private router: Router, private element: ElementRef, private renderer: Renderer) {
     this.originalPatients = [];
@@ -37,6 +39,7 @@ export class DischargePopulationComponent implements OnInit{
     this.numberOfPageButtons = 5;
     this.itemsPerPage = 10;
     this.currentPage = 1;
+    this.riskLevel = new RadioButtonState(true,  'All');
   }
 
   ngOnInit() {
@@ -171,6 +174,30 @@ export class DischargePopulationComponent implements OnInit{
     this.goToPage(1);
   }
 
+  filterByRiskLevel(level){
+    switch(level){
+      case 'low':
+        this.currentPatients = this.originalPatients.filter(patient => patient.riskScore <= 0.25);
+        break;
+      case 'borderline':
+        this.currentPatients = this.originalPatients.filter(patient => patient.riskScore > 0.25 && patient.riskScore <= 0.50);
+        break;
+      case 'high':
+        this.currentPatients = this.originalPatients.filter(patient => patient.riskScore > 0.50 && patient.riskScore <= 0.75);
+        break;
+      case 'critical':
+        this.currentPatients = this.originalPatients.filter(patient => patient.riskScore > 0.75);
+        break;
+      default:
+        this.currentPatients = this.originalPatients;
+        break;
+    }
+
+    this.displayedPatients = this.currentPatients.slice(0, this.itemsPerPage);
+    this.calculatePaginationButtons();
+    this.goToPage(1);
+  }
+
   calculatePaginationButtons(){
     this.currentPage = 1;
     this.numberOfPages = [];
@@ -186,7 +213,7 @@ export class DischargePopulationComponent implements OnInit{
     }
   }
 
-  clearFilters(){
+  clearFilters() {
     this.currentPatients = this.originalPatients;
     this.displayedPatients = this.currentPatients.slice(0, this.itemsPerPage);
     this.ageSliderValue = 50;

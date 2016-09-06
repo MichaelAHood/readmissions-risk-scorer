@@ -41,7 +41,19 @@
       <div id="Filtering" class="row">
         <p>Filter by max age: <strong>{{ageSliderValue}}</strong></p>
         <input #ageSlider type="range" min="0" max="150" value="{{ageSliderValue}}"(change)="filterByAge(ageSlider.value)"/>
+        <br>
+        <div>
+          <u>Filter by Risk Level:</u><br>
+          <input type="radio" name="riskLevel" value="Low" (change)="filterByRiskLevel('low')">Low<br>
+          <input type="radio" name="riskLevel" value="Borderline" (change)="filterByRiskLevel('borderline')">Borderline<br>
+          <input type="radio" name="riskLevel" value="High"(change)="filterByRiskLevel('high')">High<br>
+          <input type="radio" name="riskLevel" value="Critical" (change)="filterByRiskLevel('critical')">Critical<br>
+          <input type="radio" name="riskLevel" value="All" checked="checked"(change)="filterByRiskLevel('all')">All<br>
+        </div>
+
+        <br>
         <button class="btn primary" (click)="clearFilters()">Clear Filters</button>
+        <br><br>
       </div>
       <div id="Legend" class="row">
         <pk-risk-legend></pk-risk-legend>

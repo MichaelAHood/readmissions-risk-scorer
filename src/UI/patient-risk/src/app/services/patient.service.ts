@@ -2,18 +2,28 @@ import { Injectable } from '@angular/core';
 import { Http, Response, Headers, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 import { Patient, RiskScore, ComorbidsDistribution, AgeDistribution } from '../models';
+import { environment } from '../environment';
 
 @Injectable()
 export class PatientService {
-  private baseUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/';
+  private baseUri: string;
+  private patientUri: string;
+  private ageDistributionsUri: string;
+  private severityDistributionsUri: string;
+  private mortalityDistibutionsUri: string;
 
-  private patientUri = this.baseUri + 'processed-patients';
-  private riskScoreUri = 'http://risk-scorer-jb.52.204.218.231.nip.io/v1/score-patients';
-  private ageDistributionsUri = this.baseUri + 'age-distribution';
-  private severityDistributionsUri = this.baseUri + 'comorbid-severity-distribution';
-  private mortalityDistibutionsUri = this.baseUri + 'comorbid-mortality-distribution';
+  constructor(private http: Http) {
+    if(environment.production){
+      this.baseUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/';
+    }else{
+      this.baseUri = 'http://localhost:9090/api/';
+    }
 
-  constructor(private http: Http) { }
+    this.patientUri  = this.baseUri + 'processed-patients';
+    this.ageDistributionsUri = this.baseUri + 'age-distribution';
+    this.severityDistributionsUri = this.baseUri + 'comorbid-severity-distribution';
+    this.mortalityDistibutionsUri = this.baseUri + 'comorbid-mortality-distribution';
+  }
 
   getAllPatients(): Observable<Patient[]>{
     let patients$ = this.http
@@ -21,17 +31,6 @@ export class PatientService {
       .map(mapPatients)
       .catch(handleError);
     return patients$;
-  }
-
-  getRiskScores(admissionIds): Observable<RiskScore>{
-    let params: URLSearchParams = new URLSearchParams();
-    params.set('admissionIDs', '[' + admissionIds.join() + ']');
-
-    let scores$ = this.http
-      .get(`${this.riskScoreUri}`, {headers: this.getHeaders(), search: params})
-      .map(mapScores)
-      .catch(handleError);
-    return scores$;
   }
 
   getAgeDistributions(): Observable<AgeDistribution>{
@@ -107,8 +106,7 @@ function toRiskScore(response: any): RiskScore{
 }
 
 function toPatient(response:any): Patient{
-  let riskScoreColor: string = '#333333'; //dark grey
-
+  let riskScoreColor = '#333333'; //dark grey
   let riskScore = response.riskScore;
   if (riskScore <= 0.25){
     riskScoreColor = '#5CB85C'; // green
@@ -137,8 +135,8 @@ function toPatient(response:any): Patient{
     dischtime: response.dischtime,
     dob: response.dob,
     riskScore: response.riskScore,
-    riskScoreAsPercent: Math.floor(response.riskScore * 100) + '%',
-    riskScoreColor: riskScoreColor
+    riskScoreColor:riskScoreColor,
+    riskScoreAsPercent: Math.ceil(response.riskScore * 100) + '%'
   });
   //console.log('Parsed patient:', patient);
   return patient;
