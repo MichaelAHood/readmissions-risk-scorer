@@ -108,7 +108,7 @@ export class DischargePopulationComponent implements OnInit{
   }
 
   previousPage(){
-    let previousPage = --this.currentPage;
+    let previousPage = (this.currentPage - 1);
     if(previousPage < 1){
       return;
     }
@@ -130,7 +130,7 @@ export class DischargePopulationComponent implements OnInit{
   }
 
   nextPage(){
-    let nextPage = ++this.currentPage;
+    let nextPage = (this.currentPage + 1);
     if(nextPage > this.numberOfPages.length){
       return;
     }
