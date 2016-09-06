@@ -1,6 +1,6 @@
 <div class="container-fluid">
  <div class="row">
-    <div id="left" class="col-md-10">
+    <div id="left" class="col-md-9">
       <div class="table-responsive">
         <table class="table">
           <thead>
@@ -37,7 +37,7 @@
         </div>
       </div>
     </div>
-    <div id="right" class="col-md-2">
+    <div id="right" class="col-md-3">
       <div id="Filtering" class="row">
         <p>Filter by max age: <strong>{{ageSliderValue}}</strong></p>
         <input #ageSlider type="range" min="0" max="150" value="{{ageSliderValue}}"(change)="filterByAge(ageSlider.value)"/>
@@ -50,7 +50,12 @@
           <input type="radio" name="riskLevel" value="Critical" (change)="filterByRiskLevel('critical')">Critical<br>
           <input type="radio" name="riskLevel" value="All" checked="checked"(change)="filterByRiskLevel('all')">All<br>
         </div>
-
+        <br>
+        Filter Admission Discharge Date (From):
+        <input type="date" #admissionDateFrom [(ngModel)]="filterDataFrom" (change)="filterAdmissionDateFrom(admissionDateFrom.value)">
+        <br>
+        Filter Admission Discharge Date (To):
+        <input type="date" #admissionDateTo [(ngModel)]="filterDataTo" (change)="filterAdmissionDateTo(admissionDateTo.value)">
         <br>
         <button class="btn primary" (click)="clearFilters()">Clear Filters</button>
         <br><br>
