@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Renderer } from '@angular/core';
+import {Component, OnInit, ElementRef, Renderer, ViewChild} from '@angular/core';
 import { PatientService } from '../services';
 import { Patient } from '../models/patient';
 import { ROUTER_DIRECTIVES, Router } from '@angular/router';
@@ -6,51 +6,52 @@ import { RiskLegendComponent } from '../risk-legend';
 
 @Component({
   moduleId: module.id,
-  selector: 'pk-discharge-population2',
+  selector: 'pk-discharge-population',
   templateUrl: 'discharge-population.component.html',
-  providers: [PatientService, RiskLegendComponent, ROUTER_DIRECTIVES]
+  directives: [RiskLegendComponent],
+  providers: [PatientService, ROUTER_DIRECTIVES]
 })
 export class DischargePopulationComponent implements OnInit{
-  private allPatients: Array<Patient>;
+  private originalPatients: Array<Patient>;
+  private currentPatients: Array<Patient>;
   private displayedPatients: Array<Patient>;
   private columns: Array<string>;
   private errorMessage: string;
   private numberOfPages: Array<number>;
   private paginationsButtonsDisplayed: Array<number>;
-  private originalButtonsDisplayed: Array<number>;
-  private numberOfPageButtons: number = 5;
-  private itemsPerPage: number = 10;
-  private currentPage: number = 1;
+  private numberOfPageButtons: number;
+  private itemsPerPage: number;
+  private currentPage: number;
   private riskScoreSortingDirection: string;
+  private ageSliderValue: number;
+
   constructor(private patientService: PatientService, private router: Router, private element: ElementRef, private renderer: Renderer) {
-    this.allPatients = [];
+    this.originalPatients = [];
+    this.currentPatients = [];
     this.displayedPatients = [];
     this.numberOfPages = [];
     this.paginationsButtonsDisplayed = [];
     this.riskScoreSortingDirection = '';
     this.columns = ['Patient ID', 'Age', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Risk Score', 'Details'];
-    this.originalButtonsDisplayed = [];
+    this.ageSliderValue = 100;
+    this.numberOfPageButtons = 5;
+    this.itemsPerPage = 10;
+    this.currentPage = 1;
   }
 
   ngOnInit() {
     this.patientService.getAllPatients()
                       .subscribe(
                         p => {
-                            this.allPatients = p;
-                            for(let i = 0; i < (this.allPatients.length/this.itemsPerPage); i++){
-                              this.numberOfPages.push(i + 1);
-                            }
+                            this.currentPatients = p;
+                            this.originalPatients = p;
+
 
                             for(let i = 0; i < this.itemsPerPage; i++) {
-                              this.displayedPatients.push(this.allPatients[i]);
+                              this.displayedPatients.push(this.currentPatients[i]);
                             }
 
-                            for(let i = 0; i < this.numberOfPageButtons; i++){
-                               if(i < this.numberOfPageButtons) {
-                                 this.paginationsButtonsDisplayed.push(i + 1);
-                               }
-                            }
-                            this.originalButtonsDisplayed = this.paginationsButtonsDisplayed.slice();
+                          this.calculatePaginationButtons();
                         },
                         e => this.errorMessage = e
                       );
@@ -69,18 +70,16 @@ export class DischargePopulationComponent implements OnInit{
      }
 
      if(this.riskScoreSortingDirection === ASCENDING){
-        this.allPatients.sort(sortRiskScoreAsc);
+        this.currentPatients.sort(sortRiskScoreAsc);
        this.riskScoreSortingDirection = DESCENDING;
       }else {
-        this.allPatients.sort(sortRiskScoreDesc);
+        this.currentPatients.sort(sortRiskScoreDesc);
         this.riskScoreSortingDirection = ASCENDING;
       }
       this.goToPage(1);
-      this.resetPagination();
+      this.calculatePaginationButtons();
   }
-  resetPagination(){
-    this.paginationsButtonsDisplayed = this.originalButtonsDisplayed.slice();
-  }
+
 
   goToPage(page: number){
     let startingIndex = 0;
@@ -90,7 +89,7 @@ export class DischargePopulationComponent implements OnInit{
 
     let endingIndex = (startingIndex + (this.itemsPerPage - 1));
 
-    this.displayedPatients = this.allPatients.filter(function(value, index){
+    this.displayedPatients = this.currentPatients.filter(function(value, index){
       if(index >= startingIndex && index <= endingIndex){
         return true;
       }
@@ -157,6 +156,42 @@ export class DischargePopulationComponent implements OnInit{
       return true;
     }
     return false;
+  }
+
+  filterByAge(age: number){
+    this.ageSliderValue = age;
+
+    this.currentPatients = this.originalPatients.filter(patient => patient.age <= this.ageSliderValue);
+
+    this.calculatePaginationButtons();
+
+    this.displayedPatients = this.currentPatients.slice(0, this.itemsPerPage);
+    console.log(this.currentPatients.length);
+
+    this.goToPage(1);
+  }
+
+  calculatePaginationButtons(){
+    this.currentPage = 1;
+    this.numberOfPages = [];
+    for(let i = 0; i < (this.currentPatients.length/this.itemsPerPage); i++){
+      this.numberOfPages.push(i + 1);
+    }
+
+    this.paginationsButtonsDisplayed = [];
+    for(let i = 0; i < this.numberOfPageButtons; i++){
+      if(i < this.numberOfPageButtons) {
+        this.paginationsButtonsDisplayed.push(i + 1);
+      }
+    }
+  }
+
+  clearFilters(){
+    this.currentPatients = this.originalPatients;
+    this.displayedPatients = this.currentPatients.slice(0, this.itemsPerPage);
+    this.ageSliderValue = 50;
+
+    this.calculatePaginationButtons();
   }
 }
 

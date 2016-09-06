@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   moduleId: module.id,
@@ -6,11 +6,7 @@ import { Component, OnInit } from '@angular/core';
   templateUrl: 'risk-legend.component.html',
   styleUrls: ['risk-legend.component.css']
 })
-export class RiskLegendComponent implements OnInit {
+export class RiskLegendComponent {
 
   constructor() { }
-
-  ngOnInit() {
-  }
-
 }
