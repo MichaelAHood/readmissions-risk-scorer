@@ -172,16 +172,16 @@ export class DischargePopulationComponent implements OnInit{
   filterByRiskLevel(level: string){
     switch(level){
       case 'low':
-        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.riskScore <= 0.25));
+        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.readmissionRisk <= 0.25));
         break;
       case 'borderline':
-        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.riskScore > 0.25 && patient.riskScore <= 0.50));
+        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.readmissionRisk > 0.25 && patient.readmissionRisk <= 0.50));
         break;
       case 'high':
-        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.riskScore > 0.50 && patient.riskScore <= 0.75));
+        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.readmissionRisk > 0.50 && patient.readmissionRisk <= 0.75));
         break;
       case 'critical':
-        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.riskScore > 0.75));
+        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.readmissionRisk > 0.75));
         break;
       default:
         this.updateFilterDisplay(this.originalPatients);
@@ -229,8 +229,8 @@ export class DischargePopulationComponent implements OnInit{
 }
 
 function sortRiskScoreDesc(lhs, rhs){
-  return rhs.riskScore - lhs.riskScore;
+  return rhs.readmissionRisk - lhs.readmissionRisk;
 }
 function sortRiskScoreAsc(lhs, rhs){
-  return lhs.riskScore - rhs.riskScore;
+  return lhs.readmissionRisk - rhs.readmissionRisk;
 }

@@ -12,12 +12,14 @@ export class PatientService {
   private severityDistributionsUri: string;
   private mortalityDistibutionsUri: string;
 
-  constructor(private http: Http) {
+  constructor(private http: Http) {/*
     if(environment.production){
       this.baseUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/';
     }else{
       this.baseUri = 'http://localhost:9090/api/';
-    }
+    }*/
+
+    this.baseUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/';
 
     this.patientUri  = this.baseUri + 'processed-patients';
     this.ageDistributionsUri = this.baseUri + 'age-distribution';
@@ -107,7 +109,7 @@ function toRiskScore(response: any): RiskScore{
 
 function toPatient(response:any): Patient{
   let riskScoreColor = '#333333'; //dark grey
-  let riskScore = response.riskScore;
+  let riskScore = response.readmissionRisk;
   if (riskScore <= 0.25){
     riskScoreColor = '#5CB85C'; // green
   } else if (riskScore <= 0.50){
@@ -118,7 +120,7 @@ function toPatient(response:any): Patient{
     riskScoreColor = '#FC4133'; // red
   }
 
-  let patient = <Patient>({
+   let patient = <Patient>({
     subject_id: response.subject_id,
     hadm_id: response.hadm_id,
     admission_type: response.admission_type,
@@ -127,16 +129,16 @@ function toPatient(response:any): Patient{
     insurance: response.insurance,
     language: response.language,
     marital_status: response.marital_status,
-    avg_drg_severity: response.avg_drg_severity,
-    avg_drg_mortality: response.avg_drg_mortality,
+    comorbid_severity: response.comorbid_severity.toFixed(2),
+    comorbid_mortality: response.comorbid_mortality.toFixed(2),
     age: response.age,
     gender: response.gender,
     admittime: response.admittime,
     dischtime: response.dischtime,
     dob: response.dob,
-    riskScore: response.riskScore,
-    riskScoreColor:riskScoreColor,
-    riskScoreAsPercent: Math.ceil(response.riskScore * 100) + '%'
+    readmissionRisk: response.readmissionRisk,
+    readmissionRiskScoreColor: riskScoreColor,
+    readmissionRiskScoreAsPercent: Math.ceil(response.readmissionRisk * 100) + '%'
   });
   //console.log('Parsed patient:', patient);
   return patient;

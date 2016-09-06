@@ -32,7 +32,7 @@ export class ReadmissionRiskResultsComponent implements OnInit {
        this.patient.language = DASH;
        this.patient.gender = DASH;
        this.patient.ethnicity = DASH;
-       this.patient.riskScoreAsPercent = 'Calculating...';
+       this.patient.readmissionRiskScoreAsPercent = 'Calculating...';
     };
 
     ngOnInit() {
@@ -52,7 +52,7 @@ export class ReadmissionRiskResultsComponent implements OnInit {
                     { y: csd.FiveCount, marker: {symbol: 'circle'}}
                   ];
 
-                  let severity = this.patient.avg_drg_severity;
+                  let severity = this.patient.comorbid_severity;
                   if(severity < 1.0){
                     severityData[0].marker.symbol = this.marker;
                   } else if(severity >= 1.0 && severity < 2.0){
@@ -98,7 +98,7 @@ export class ReadmissionRiskResultsComponent implements OnInit {
                     { y: cmd.FiveCount, marker: {symbol: 'circle'}}
                   ];
 
-                  let mortality = this.patient.avg_drg_mortality;
+                  let mortality = this.patient.comorbid_mortality;
                   if(mortality < 1.0){
                     mortalityData[0].marker.symbol = this.marker;
                   } else if(mortality >= 1.0 && mortality < 2.0){

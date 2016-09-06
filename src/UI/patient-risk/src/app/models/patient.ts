@@ -10,14 +10,14 @@ export class Patient{
   insurance: string;
   language: string;
   marital_status: string;
-  avg_drg_severity: number;
-  avg_drg_mortality: number;
+  comorbid_severity: number;
+  comorbid_mortality: number;
   age: number;
   gender: string;
   admittime: Date;
   dischtime: Date;
   dob: Date;
-  riskScore: number;
-  riskScoreAsPercent: string;
-  riskScoreColor: string;
+  readmissionRisk: number;
+  readmissionRiskScoreAsPercent: string;
+  readmissionRiskScoreColor: string;
 }

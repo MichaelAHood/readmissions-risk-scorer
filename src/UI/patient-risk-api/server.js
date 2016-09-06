@@ -181,7 +181,7 @@ router.route('/comorbid-severity-distribution')
 
             var severityDistributions = new ComorbidsDistribution();
             for(var i = 0; i < patients.length; i++){
-                var severity = patients[i].avg_drg_severity;
+                var severity = patients[i].comorbid_severity;
                 if(severity >= 0 && severity < 1.0){
                     severityDistributions.One.push(severity);
                 } else if(severity >=  1.0 && severity < 2.0){
@@ -215,7 +215,7 @@ router.route('/comorbid-mortality-distribution')
 
             var mortalityDistributions = new ComorbidsDistribution();
             for(var i = 0; i < patients.length; i++){
-                var mortality = patients[i].avg_drg_mortality;
+                var mortality = patients[i].comorbid_mortality;
                 if(mortality >= 0 && mortality < 1.0){
                     mortalityDistributions.One.push(mortality);
                 } else if(mortality >=  1.0 && mortality < 2.0){

@@ -4,11 +4,11 @@
       <div class="col-md-6 col-md-offset-1">
         <chart [options]="comorbidSeverityOptions"> </chart>
         <br />
-        <div class="graphcaption"><strong>Comorbidity Severity:</strong> {{patient?.avg_drg_severity}}</div>
+        <div class="graphcaption"><strong>Comorbidity Severity:</strong> {{patient?.comorbid_severity}}</div>
         <br />
         <chart [options]="comorbidMortalityOptions"> </chart>
         <br />
-        <div class="graphcaption"><strong>Comorbidity Mortality:</strong> {{patient?.avg_drg_mortality}}</div>
+        <div class="graphcaption"><strong>Comorbidity Mortality:</strong> {{patient?.comorbid_mortality}}</div>
         <br />
         <chart [options]="ageOptions"> </chart>
         <br />
@@ -36,7 +36,7 @@
         </div>
 
         <hr>
-        <span class="riskscore" [style.background-color]="patient.riskScoreColor"><strong>Risk Score:</strong> {{patient?.riskScoreAsPercent}}</span>
+        <span class="riskscore" [style.background-color]="patient.readmissionRiskScoreColor"><strong>Risk Score:</strong> {{patient?.readmissionRiskScoreAsPercent}}</span>
         <br>
         <button type="button" (click)="backToPatientSelect()" class="btn btn-primary center-block">Back to Patient Select</button>
 
