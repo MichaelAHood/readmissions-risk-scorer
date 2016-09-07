@@ -26,13 +26,14 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
        this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
 
-       const DASH = '-';
+/*       const DASH = '-';
        this.patient = new Patient();
        this.patient.admission_type = DASH;
        this.patient.language = DASH;
        this.patient.gender = DASH;
        this.patient.ethnicity = DASH;
-       this.patient.readmissionRiskScoreAsPercent = 'Calculating...';
+       this.patient.admittime = new Date('9999-99-99T00:00:00.000Z');
+       this.patient.readmissionRiskScoreAsPercent = 'Calculating...';*/
     };
 
     ngOnInit() {
@@ -40,7 +41,7 @@ export class ReadmissionRiskResultsComponent implements OnInit {
         .subscribe(
           p => {
               this.patient = p.find(patient => patient.hadm_id == this.admissionId);
-
+              console.log(this.patient);
               this.patientService.getComorbidsSeverityDistributions()
               .subscribe(
                 csd => {

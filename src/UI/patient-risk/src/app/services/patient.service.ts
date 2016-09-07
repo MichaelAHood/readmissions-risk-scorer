@@ -119,7 +119,6 @@ function toPatient(response:any): Patient{
   } else{
     riskScoreColor = '#FC4133'; // red
   }
-
    let patient = <Patient>({
     subject_id: response.subject_id,
     hadm_id: response.hadm_id,
