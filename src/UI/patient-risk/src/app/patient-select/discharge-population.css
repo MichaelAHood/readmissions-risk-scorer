@@ -1,6 +1,9 @@
 
 .verticalLine {
-  border-left: thin solid #cccccc;
+  border-right: thin solid #cccccc;
+}
+
+.filterpadding {
   padding-left: 2.5em;
 }
 
@@ -8,6 +11,7 @@
 .div-table
 {
   display: table;
+  width: 24em;
 }
 
 .div-table div

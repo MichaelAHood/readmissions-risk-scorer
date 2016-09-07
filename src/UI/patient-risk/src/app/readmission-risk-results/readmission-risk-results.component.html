@@ -1,7 +1,7 @@
 <article>
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="col-md-6 col-md-offset-1">
+      <div class="col-md-6 col-md-offset-1 verticalLine">
         <chart [options]="comorbidSeverityOptions"> </chart>
         <br />
         <div class="graphcaption"><strong>Comorbidity Severity:</strong> {{patient != null ? patient?.comorbid_severity?.toFixed(2) : 0}}</div>
