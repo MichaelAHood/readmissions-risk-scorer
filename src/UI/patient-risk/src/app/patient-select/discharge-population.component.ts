@@ -1,9 +1,8 @@
-import {Component, OnInit, ElementRef, Renderer, ViewChild} from '@angular/core';
+import { Component, OnInit, ElementRef, Renderer } from '@angular/core';
 import { PatientService } from '../services';
 import { Patient } from '../models/patient';
 import { ROUTER_DIRECTIVES, Router } from '@angular/router';
 import { RiskLegendComponent } from '../risk-legend';
-import { RadioButtonState } from "@angular/common";
 
 @Component({
   moduleId: module.id,
@@ -52,7 +51,6 @@ export class DischargePopulationComponent implements OnInit{
                             this.currentPatients = p;
                             this.originalPatients = p;
 
-
                             for(let i = 0; i < this.itemsPerPage; i++) {
                               this.displayedPatients.push(this.currentPatients[i]);
                             }
@@ -77,7 +75,7 @@ export class DischargePopulationComponent implements OnInit{
 
      if(this.riskScoreSortingDirection === ASCENDING){
         this.currentPatients.sort(sortRiskScoreAsc);
-       this.riskScoreSortingDirection = DESCENDING;
+        this.riskScoreSortingDirection = DESCENDING;
       }else {
         this.currentPatients.sort(sortRiskScoreDesc);
         this.riskScoreSortingDirection = ASCENDING;
@@ -85,7 +83,6 @@ export class DischargePopulationComponent implements OnInit{
       this.goToPage(1);
       this.calculatePaginationButtons();
   }
-
 
   goToPage(page: number){
     let startingIndex = 0;
@@ -106,7 +103,6 @@ export class DischargePopulationComponent implements OnInit{
       this.renderer.setElementClass(previousActive, 'active', false);
     }
 
-    //let currentPageElement = this.element.nativeElement.querySelector('#' + event.srcElement.parentElement.id);
     let currentPageElement = this.element.nativeElement.querySelector('#Page' + page);
     if(!currentPageElement){
       return;
@@ -167,38 +163,21 @@ export class DischargePopulationComponent implements OnInit{
     return false;
   }
 
-  filterByAge(age: number){
-    this.ageSliderValue = age;
-    this.updateFilterDisplay(this.originalPatients.filter(patient => patient.age <= this.ageSliderValue));
+  filterByAge(){
+    this.updateFilterDisplay();
   }
 
   filterByRiskLevel(level: string){
     this.currentRiskScoreLevelFilter = level;
-    switch(level){
-      case 'low':
-        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.readmissionRisk <= 0.25));
-        break;
-      case 'borderline':
-        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.readmissionRisk > 0.25 && patient.readmissionRisk <= 0.50));
-        break;
-      case 'high':
-        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.readmissionRisk > 0.50 && patient.readmissionRisk <= 0.75));
-        break;
-      case 'critical':
-        this.updateFilterDisplay(this.originalPatients.filter(patient => patient.readmissionRisk > 0.75));
-        break;
-      default:
-        this.updateFilterDisplay(this.originalPatients);
-        break;
-    }
+    this.updateFilterDisplay();
   }
 
-  filterAdmissionDateFrom(dateString: string){
-    this.updateFilterDisplay(this.originalPatients.filter(patient => new Date(patient.dischtime.toString()) >= new Date(dateString)));
+  filterAdmissionDateFrom(){
+    this.updateFilterDisplay();
   }
 
-  filterAdmissionDateTo(dateString: string){
-    this.updateFilterDisplay(this.originalPatients.filter(patient => new Date(patient.dischtime.toString()) <= new Date(dateString)));
+  filterAdmissionDateTo(){
+    this.updateFilterDisplay();
   }
 
   calculatePaginationButtons(){
@@ -220,12 +199,43 @@ export class DischargePopulationComponent implements OnInit{
     this.currentRiskScoreLevelFilter = 'all';
     this.currentPatients = this.originalPatients;
     this.displayedPatients = this.currentPatients.slice(0, this.itemsPerPage);
-    this.ageSliderValue = 50;
-
+    this.ageSliderValue = 100;
     this.calculatePaginationButtons();
   }
 
-  updateFilterDisplay(filteredPatients: Array<Patient>){
+  updateFilterDisplay(){
+    // Filter by Age
+    let filteredPatients = this.originalPatients.filter(patient => patient.age <= this.ageSliderValue);
+
+    // Filter by Risk Level
+    switch(this.currentRiskScoreLevelFilter){
+      case 'low':
+        filteredPatients = (filteredPatients.filter(patient => patient.readmissionRisk <= 0.25));
+        break;
+      case 'borderline':
+        filteredPatients = (filteredPatients.filter(patient => patient.readmissionRisk > 0.25 && patient.readmissionRisk <= 0.50));
+        break;
+      case 'high':
+        filteredPatients = (filteredPatients.filter(patient => patient.readmissionRisk > 0.50 && patient.readmissionRisk <= 0.75));
+        break;
+      case 'critical':
+        filteredPatients = (filteredPatients.filter(patient => patient.readmissionRisk > 0.75));
+        break;
+      default:
+        //filteredPatients = filteredPatients;
+        break;
+    }
+
+    // Filter by Discharge Date From
+    if (this.filterByAdmissionDateFrom) {
+      filteredPatients = filteredPatients.filter(patient => new Date(patient.dischtime.toString()) >= new Date(this.filterByAdmissionDateFrom));
+    }
+
+    // Filter by Discharge Date To
+    if (this.filterByAdmissionDateTo) {
+      filteredPatients = filteredPatients.filter(patient => new Date(patient.dischtime.toString()) <= new Date(this.filterByAdmissionDateTo));
+    }
+
     this.currentPatients = filteredPatients;
     this.displayedPatients = this.currentPatients.slice(0, this.itemsPerPage);
     this.calculatePaginationButtons();
