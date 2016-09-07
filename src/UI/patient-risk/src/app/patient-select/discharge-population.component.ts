@@ -24,7 +24,9 @@ export class DischargePopulationComponent implements OnInit{
   private itemsPerPage: number;
   private currentPage: number;
   private riskScoreSortingDirection: string;
-  private ageSliderValue: number;
+  private ageSortingDirection: string;
+  private ageMaxSliderValue: number;
+  private ageMinSliderValue: number;
   private filterByAdmissionDateFrom: string;
   private filterByAdmissionDateTo: string;
   private currentRiskScoreLevelFilter: string;
@@ -36,8 +38,10 @@ export class DischargePopulationComponent implements OnInit{
     this.numberOfPages = [];
     this.paginationsButtonsDisplayed = [];
     this.riskScoreSortingDirection = '';
+    this.ageSortingDirection = '';
     this.columns = ['Patient ID', 'Age', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Risk Score', 'Details'];
-    this.ageSliderValue = 100;
+    this.ageMaxSliderValue = 120;
+    this.ageMinSliderValue = 0;
     this.numberOfPageButtons = 5;
     this.itemsPerPage = 15;
     this.currentPage = 1;
@@ -65,24 +69,42 @@ export class DischargePopulationComponent implements OnInit{
       this.router.navigate(['/details', patient.hadm_id]);
   }
 
-  sortPatientList(){
+  sortPatientList(column){
     const DESCENDING = 'Dsc';
     const ASCENDING = 'Asc';
 
-     if(this.riskScoreSortingDirection === ''){
-       this.riskScoreSortingDirection = DESCENDING;
-     }
+    if(column === 'Risk Score') {
+      if (this.riskScoreSortingDirection === '') {
+        this.riskScoreSortingDirection = DESCENDING;
+      }
 
-     if(this.riskScoreSortingDirection === ASCENDING){
+      if (this.riskScoreSortingDirection === ASCENDING) {
         this.currentPatients.sort(sortRiskScoreAsc);
         this.riskScoreSortingDirection = DESCENDING;
-      }else {
+      } else {
         this.currentPatients.sort(sortRiskScoreDesc);
         this.riskScoreSortingDirection = ASCENDING;
       }
-      this.goToPage(1);
-      this.calculatePaginationButtons();
+    }
+
+    if(column === 'Age'){
+      if(this.ageSortingDirection === ''){
+        this.ageSortingDirection = DESCENDING;
+      }
+
+      if(this.ageSortingDirection === ASCENDING){
+        this.currentPatients.sort(sortAgeAsc);
+        this.ageSortingDirection = DESCENDING;
+      } else{
+        this.currentPatients.sort(sortAgeDesc);
+        this.ageSortingDirection = ASCENDING;
+      }
+    }
+
+    this.goToPage(1);
+    this.calculatePaginationButtons();
   }
+
 
   goToPage(page: number){
     let startingIndex = 0;
@@ -199,13 +221,13 @@ export class DischargePopulationComponent implements OnInit{
     this.currentRiskScoreLevelFilter = 'all';
     this.currentPatients = this.originalPatients;
     this.displayedPatients = this.currentPatients.slice(0, this.itemsPerPage);
-    this.ageSliderValue = 100;
+    this.ageMaxSliderValue = 100;
     this.calculatePaginationButtons();
   }
 
   updateFilterDisplay(){
     // Filter by Age
-    let filteredPatients = this.originalPatients.filter(patient => patient.age <= this.ageSliderValue);
+    let filteredPatients = this.originalPatients.filter(patient => patient.age >= this.ageMinSliderValue && patient.age <= this.ageMaxSliderValue);
 
     // Filter by Risk Level
     switch(this.currentRiskScoreLevelFilter){
@@ -248,4 +270,10 @@ function sortRiskScoreDesc(lhs, rhs){
 }
 function sortRiskScoreAsc(lhs, rhs){
   return lhs.readmissionRisk - rhs.readmissionRisk;
+}
+function sortAgeDesc(lhs, rhs){
+  return rhs.age - lhs.age;
+}
+function sortAgeAsc(lhs, rhs){
+  return lhs.age - rhs.age;
 }
