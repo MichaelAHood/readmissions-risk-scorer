@@ -9,6 +9,7 @@ import { RadioButtonState } from "@angular/common";
   moduleId: module.id,
   selector: 'pk-discharge-population',
   templateUrl: 'discharge-population.component.html',
+  styleUrls: ['discharge-population.css'],
   directives: [RiskLegendComponent],
   providers: [PatientService, ROUTER_DIRECTIVES]
 })
@@ -38,7 +39,7 @@ export class DischargePopulationComponent implements OnInit{
     this.columns = ['Patient ID', 'Age', 'Gender', 'Marital Status', 'Language', 'Admission Date', 'Admission Type', 'Discharge Date', 'Risk Score', 'Details'];
     this.ageSliderValue = 100;
     this.numberOfPageButtons = 5;
-    this.itemsPerPage = 10;
+    this.itemsPerPage = 15;
     this.currentPage = 1;
   }
 

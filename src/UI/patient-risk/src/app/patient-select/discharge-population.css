@@ -1,3 +1,9 @@
+
+.verticalLine {
+  border-left: thin solid #cccccc;
+  padding-left: 2.5em;
+}
+
 /*** Div table start ***/
 .div-table
 {
