@@ -4,11 +4,11 @@
       <div class="col-md-6 col-md-offset-1">
         <chart [options]="comorbidSeverityOptions"> </chart>
         <br />
-        <div class="graphcaption"><strong>Comorbidity Severity:</strong> {{patient?.comorbid_severity}}</div>
+        <div class="graphcaption"><strong>Comorbidity Severity:</strong> {{patient != null ? patient?.comorbid_severity.toFixed(2) : 0}}</div>
         <br />
         <chart [options]="comorbidMortalityOptions"> </chart>
         <br />
-        <div class="graphcaption"><strong>Comorbidity Mortality:</strong> {{patient?.comorbid_mortality}}</div>
+        <div class="graphcaption"><strong>Comorbidity Mortality:</strong> {{patient != null ? patient?.comorbid_mortality.toFixed(2) : 0}}</div>
         <br />
         <chart [options]="ageOptions"> </chart>
         <br />

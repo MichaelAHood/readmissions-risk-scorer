@@ -119,6 +119,7 @@ function toPatient(response:any): Patient{
   } else{
     riskScoreColor = '#FC4133'; // red
   }
+
    let patient = <Patient>({
     subject_id: response.subject_id,
     hadm_id: response.hadm_id,
@@ -128,8 +129,8 @@ function toPatient(response:any): Patient{
     insurance: response.insurance,
     language: response.language,
     marital_status: response.marital_status,
-    comorbid_severity: response.comorbid_severity.toFixed(2),
-    comorbid_mortality: response.comorbid_mortality.toFixed(2),
+    comorbid_severity: response.comorbid_severity,
+    comorbid_mortality: response.comorbid_mortality,
     age: response.age,
     gender: response.gender,
     admittime: response.admittime,
