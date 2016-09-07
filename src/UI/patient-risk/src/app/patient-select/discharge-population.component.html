@@ -45,11 +45,11 @@
         <br>
         <div>
           <u>By Risk Level:</u><br>
-          <input type="radio" name="riskLevel" value="Low" (change)="filterByRiskLevel('low')">Low<br>
-          <input type="radio" name="riskLevel" value="Borderline" (change)="filterByRiskLevel('borderline')">Borderline<br>
-          <input type="radio" name="riskLevel" value="High"(change)="filterByRiskLevel('high')">High<br>
-          <input type="radio" name="riskLevel" value="Critical" (change)="filterByRiskLevel('critical')">Critical<br>
-          <input type="radio" name="riskLevel" value="All" checked="checked"(change)="filterByRiskLevel('all')">All<br>
+          <input type="radio" name="riskLevel" value="Low" [attr.checked]="currentRiskScoreLevelFilter === 'low' ? 'checked' : null" (change)="filterByRiskLevel('low')">Low<br>
+          <input type="radio" name="riskLevel" value="Borderline" [attr.checked]="currentRiskScoreLevelFilter === 'borderline' ? 'checked' : null" (change)="filterByRiskLevel('borderline')">Borderline<br>
+          <input type="radio" name="riskLevel" value="High" [attr.checked]="currentRiskScoreLevelFilter === 'high' ? 'checked' : null" (change)="filterByRiskLevel('high')">High<br>
+          <input type="radio" name="riskLevel" value="Critical" [attr.checked]="currentRiskScoreLevelFilter === 'critical' ? 'checked' : null" (change)="filterByRiskLevel('critical')">Critical<br>
+          <input id="defaultRiskLevel" type="radio" name="riskLevel" value="All" [attr.checked]="currentRiskScoreLevelFilter === 'all' ? 'checked' : null" (change)="filterByRiskLevel('all')">All<br>
         </div>
         <br>
         Admission Discharge Date (From):

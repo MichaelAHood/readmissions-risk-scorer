@@ -28,6 +28,7 @@ export class DischargePopulationComponent implements OnInit{
   private ageSliderValue: number;
   private filterByAdmissionDateFrom: string;
   private filterByAdmissionDateTo: string;
+  private currentRiskScoreLevelFilter: string;
 
   constructor(private patientService: PatientService, private router: Router, private element: ElementRef, private renderer: Renderer) {
     this.originalPatients = [];
@@ -41,6 +42,7 @@ export class DischargePopulationComponent implements OnInit{
     this.numberOfPageButtons = 5;
     this.itemsPerPage = 15;
     this.currentPage = 1;
+    this.currentRiskScoreLevelFilter = 'all';
   }
 
   ngOnInit() {
@@ -171,6 +173,7 @@ export class DischargePopulationComponent implements OnInit{
   }
 
   filterByRiskLevel(level: string){
+    this.currentRiskScoreLevelFilter = level;
     switch(level){
       case 'low':
         this.updateFilterDisplay(this.originalPatients.filter(patient => patient.readmissionRisk <= 0.25));
@@ -214,6 +217,7 @@ export class DischargePopulationComponent implements OnInit{
   }
 
   clearFilters() {
+    this.currentRiskScoreLevelFilter = 'all';
     this.currentPatients = this.originalPatients;
     this.displayedPatients = this.currentPatients.slice(0, this.itemsPerPage);
     this.ageSliderValue = 50;
