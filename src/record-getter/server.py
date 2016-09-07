@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from flask import Flask, json, request, Response
-from record_parser import parse_records, dataframe_to_docs
+from record_parser import parse_records, get_risk_score, dataframe_to_docs
 import ast
 import os
 
@@ -17,10 +17,13 @@ port = int(os.getenv('VCAP_APP_PORT', 8080))
 
 # These are the MongoDB api endpoints for the application.
 # These urls are needed to work with the parse_records script.
-admissionsURL = "http://my-app-name.my-tap-domain.io/api/discharge-admissions"
-comorbidsURL = "http://my-app-name.my-tap-domain.io/api/discharge-comorbids"
-patientsURL = "http://my-app-name.my-tap-domain.io/api/discharge-patients"
+
+admissionsURL = "http://patient-risk-api.52.204.218.231.nip.io/api/discharge-admissions"
+comorbidsURL = "http://patient-risk-api.52.204.218.231.nip.io/api/discharge-comorbids"
+patientsURL = "http://patient-risk-api.52.204.218.231.nip.io/api/discharge-patients"
 urls = [admissionsURL, comorbidsURL, patientsURL]
+
+riskScorerAPI = 'http://risk-scorer-jb.52.204.218.231.nip.io/v1/score-patients?admissionIDs={0}'
 
 ########################################################################################################################
 # Routes
@@ -38,7 +41,8 @@ def parse_qs():
     # Convert the string input from the data payload into a literal array of discharge IDs
     dischargeIDs = ast.literal_eval(input)
     # Run the parse and format scripts
-    dataFrame = parse_records(urls, dischargeIDs)
+    records = parse_records(urls, dischargeIDs)
+    dataFrame = get_risk_score(dischargeIDs, records, riskScorerAPI)
     response = dataframe_to_docs(dataFrame)
     print "response: ", response
     return Response(response, mimetype='text/plain')

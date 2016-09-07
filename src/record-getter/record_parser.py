@@ -69,8 +69,15 @@ def parse_records(urls, admissionIDs):
     
     return finalFrame
 
+
+def get_risk_score(admissionIDs, recordsDF, riskScorerAPI):
+    response = requests.get(riskScorerAPI.format(admissionIDs))
+    scoresDF = pd.read_json(response.content)
+    recordsDF['readmissionRisk'] = scoresDF['readmissionRisk']
+    return recordsDF
+
 def dataframe_to_docs(df):
-     '''
+    '''
     Input: a pandas DataFrame
     Output: a json formatted string
     Description: takes the pandas DataFrame and converts it into a json-like document that will
@@ -89,7 +96,7 @@ def dataframe_to_docs(df):
                'patientInfo': docInfo}
         documents.append(doc)
         numDocs += 1
-    
+
     response = {'numberDocsReturned': numDocs,
                 'documents': documents}
     
