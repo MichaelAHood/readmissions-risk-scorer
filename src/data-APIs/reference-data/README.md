@@ -16,9 +16,9 @@ If your API is at the following url: `http://reference-data-api.12.345.678.910.n
 1. `get-reference-data` - Pass the patients `age` like so: `http://reference-data-api.12.345.678.910.nip.io/v1/get-reference-data?age=42`. This will return a JSON object like the one bellow:
 ```python
 {
-  ‘age’: [43.0, 32.0, 48.0, ...],
-  ‘comorbid_mortality’: [1.0, 2.0, 1.5, ...],
-  ‘comorbid_severity’: [1.0, 2.0, 1.5, ...]
+  age: [43.0, 32.0, 48.0, ...],
+  comorbid_mortality: [1.0, 2.0, 1.5, ...],
+  comorbid_severity: [1.0, 2.0, 1.5, ...]
 }
 ```
 
