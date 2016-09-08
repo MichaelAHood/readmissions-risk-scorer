@@ -3,68 +3,20 @@ An API for getting and processing patient info, deployed on Cloud Foundry using 
 About
 ================================================================================
 
-This API will allow a discharge planning system that has access to the patient `admissionIDs` to pass a list of ids and receive the relevant patient data for display in the a front-end layer.
-
-The `record-getter` also makes a call to the `risk-scorer` API to fetch the risk score associated with each patient.
+This app simulates a flow of patients out of the hospital. In any given hospital there is some process that determines when each patient is ready to be discharged. Since, this reference architecture was developed from historical open source data, there is no live discharge process to integerate with. When a `GET` method is called on this app, it randomly selects a new batch of patients, queries the `record-getter`, removes the old patients form `MongoDB` and send the new records to `MongoDB` where they can be consumed by the front-end app.
 
 To Use
 ================================================================================
-Navigate into the `record-getter` folder and use:
+Navigate into the `discharge-planner` folder and use:
 
-`cf push record-getter`
+`cf push discharge-planner`
 
-If your API is at the following url: `http://record-getter.12.345.678.910.nip.io`, and you want to get patient info for admission ids `155684` and `135188` just use the `/v1/parse` ending with the admission ids in an array as the data param, like so: 
+If your API is at the following url: `http://discharge-planner.12.345.678.910.nip.io`, and you want to select a new group of patients for discharge, then query the 'send-records-to-mongo` method, like so: 
+`http://discharge-planner.52.204.218.231.nip.io/v1/send-records-to-mongo`.
 
-`http://record-getter.12.345.678.910.nip.io/v1/get-records?admissionIDs=[155684, 135188]`
+You will receive a response like
 
-That returns:
 ```python
-{
-  numberDocsReturned: 2,
-  documents: [
-              {
-                hadm_id: 135188,
-                patientInfo: {
-                ethnicity: "PATIENT DECLINED TO ANSWER",
-                gender: "F",
-                subject_id: 10431,
-                hadm_id: 135188,
-                comorbid_severity: 0,
-                age: 77,
-                dischtime: "2173-05-18T02:10:00.000Z",
-                dob: "2096-03-01T00:00:00.000Z",
-                insurance: "Medicare",
-                diagnosis: "DUODENAL ULCER",
-                language: "",
-                admission_type: "URGENT",
-                marital_status: "DIVORCED",
-                comorbid_mortality: 0,
-                admittime: "2173-05-05T00:05:00.000Z"
-                          }
-              },
-              {
-                hadm_id: 155684,
-                patientInfo: {
-                ethnicity: "WHITE",
-                gender: "M",
-                subject_id: 29106,
-                hadm_id: 155684,
-                comorbid_severity: 2,
-                age: 45,
-                dischtime: "2132-10-03T15:35:00.000Z",
-                dob: "2087-06-17T00:00:00.000Z",
-                insurance: "Medicaid",
-                diagnosis: "PANCREATITIS;GASTROINTESTINAL BLEED",
-                language: "ENGL",
-                admission_type: "EMERGENCY",
-                marital_status: "SINGLE",
-                comorbid_mortality: 1.3333333333333333,
-                admittime: "2132-09-25T20:26:00.000Z"
-                          }
-            }
-            ]
-}
+80 docs sucessfully sent to mongo!
 ```
-
-Hope this makes things easier!
 
