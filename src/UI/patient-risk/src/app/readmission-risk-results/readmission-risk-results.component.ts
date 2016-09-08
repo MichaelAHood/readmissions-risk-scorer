@@ -5,6 +5,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CHART_DIRECTIVES } from 'angular2-highcharts';
 import { RiskLegendComponent } from '../risk-legend';
 import {ComorbidsDistribution} from "../models/comorbidsDistribution";
+import {AgeDistribution} from "../models/ageDistribution";
 
 @Component({
   moduleId: module.id,
@@ -41,6 +42,7 @@ export class ReadmissionRiskResultsComponent implements OnInit {
                   referenceData =>{
                     this.severityChart(referenceData.comorbidSeverities);
                     this.mortalityChart(referenceData.comorbidMortalities);
+                    this.ageChart(referenceData.ages);
                   },
                   e => this.errorMessage = e
                 );
@@ -54,14 +56,14 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   };
 
   private severityChart(comorbindsSeverities: ComorbidsDistribution) {
-    let severityData = [
+    let severityData: Array<any> = [
       {y: comorbindsSeverities.One.length, marker: {symbol: 'circle'}},
       {y: comorbindsSeverities.Two.length, marker: {symbol: 'circle'}},
       {y: comorbindsSeverities.Three.length, marker: {symbol: 'circle'}},
       {y: comorbindsSeverities.Four.length, marker: {symbol: 'circle'}}
     ];
 
-    let severity = this.patient.comorbid_severity;
+    let severity: number = this.patient.comorbid_severity;
     if (severity < 1.0) {
       severityData[0].marker.symbol = this.marker;
     } else if (severity >= 1.0 && severity < 2.0) {
@@ -92,14 +94,14 @@ export class ReadmissionRiskResultsComponent implements OnInit {
   }
 
   private mortalityChart(comorbidMortalities: ComorbidsDistribution){
-    let mortalityData = [
+    let mortalityData: Array<any> = [
       { y: comorbidMortalities.One.length, marker: {symbol: 'circle'}},
       { y: comorbidMortalities.Two.length, marker: {symbol: 'circle'}},
       { y: comorbidMortalities.Three.length, marker: {symbol: 'circle'}},
       { y: comorbidMortalities.Four.length, marker: {symbol: 'circle'}}
     ];
 
-    let mortality = this.patient.comorbid_mortality;
+    let mortality: number = this.patient.comorbid_mortality;
     if(mortality < 1.0){
       mortalityData[0].marker.symbol = this.marker;
     } else if(mortality >= 1.0 && mortality < 2.0){
@@ -127,5 +129,38 @@ export class ReadmissionRiskResultsComponent implements OnInit {
           data: mortalityData
         }]
     };
+  }
+
+  private ageChart(ages: AgeDistribution){
+
+    let bucketLabels: Array<string> = ages.generateColumns();
+    let ageBuckets: Array<Array<number>> = ages.generateAgeBuckets();
+    let ageData: Array<any> = [];
+    
+    for(let i = 0; i < ageBuckets.length; i++){
+      if(ageBuckets[i].indexOf(this.patient.age) === -1) {
+        ageData.push({y: ageBuckets[i].length, marker: {symbol: 'circle'}});
+      } else{
+        ageData.push({y: ageBuckets[i].length, marker: {symbol: this.marker}});
+      }
+    }
+
+    this.ageOptions = {
+      chart: { type: 'spline', width: 580, height: 230 },
+      title: { text : null },
+      legend: { enabled: false },
+      xAxis: {
+        title: { text: 'Range'},
+        categories: bucketLabels
+      },
+      yAxis: {
+        title: { text: 'Patient Count'}
+      },
+      series: [
+        {
+          name: 'Patient Count',
+          data: ageData
+        }
+      ]};
   }
 }
