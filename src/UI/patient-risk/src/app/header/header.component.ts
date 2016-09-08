@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-
 @Component({
   moduleId: module.id,
   selector: 'pk-header',
@@ -18,5 +17,4 @@ export class HeaderComponent implements OnInit {
   navigateToPatientSelect(){
     this.router.navigate(['']);
   }
-
 }
