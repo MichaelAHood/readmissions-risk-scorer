@@ -1,19 +1,27 @@
-An API for getting and processing patient info, deployed on Cloud Foundry using Flask
+An API for population reference data for creating visualizations, deployed on Cloud Foundry using Flask
 
 About
 ================================================================================
 
-This API will allow a discharge planning system that has access to the patient `admissionIDs` to pass a list of ids and receive the relevant patient data for display in the a front-end layer.
-
-The `record-getter` also makes a call to the `risk-scorer` API to fetch the risk score associated with each patient.
+This API is a lightweight service that returns population reference data for plotting a histogram of the age and different comorbidity scores in the patient specific view of the app. The population reference data is segmented by age range, so each patient's data is displayed in the context of their age range.
 
 To Use
 ================================================================================
-Navigate into the `record-getter` folder and use:
+Navigate into the `reference-data` folder and use:
 
-`cf push record-getter`
+`cf push reference-data`
 
-If your API is at the following url: `http://record-getter.12.345.678.910.nip.io`, and you want to get patient info for admission ids `155684` and `135188` just use the `/v1/parse` ending with the admission ids in an array as the data param, like so: 
+If your API is at the following url: `http://reference-data-api.12.345.678.910.nip.io`, you can use the following two methods:
+
+1. `get-reference-data` - Pass the patients `age` like so: `http://reference-data-api.12.345.678.910.nip.io/v1/get-reference-data?age=42`. This will return a JSON object like the one bellow:
+```python
+{
+‘age’: [43.0, 32.0, 48.0, …],
+‘comorbid_mortality’: [1.0, 2.0, 1.5, …],
+‘comorbid_severity’: [1.0, 2.0, 1.5, …]
+}
+```
+
 
 `http://record-getter.12.345.678.910.nip.io/v1/get-records?admissionIDs=[155684, 135188]`
 
