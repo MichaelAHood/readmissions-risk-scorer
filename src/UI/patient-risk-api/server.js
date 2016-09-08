@@ -63,7 +63,7 @@ router.get('/', function(request, response){
           '/discharge-comorbids GET discharge-comorbid[]',
           '/discharge-patients GET discharge-patient[]',
           '/processed-patients GET processed-patient[]',
-          '/age-distribution GET AgeDistribution[]',
+          '/ages-distribution GET AgeDistribution[]',
           '/comorbid-severity-distribution GET severityDistributions[]',
           '/comorbid-mortality-distribution GET mortalityDistributions[]'
       ]
@@ -122,7 +122,7 @@ router.route('/processed-patients')
         });
     });
 
-router.route('/age-distribution')
+router.route('/ages-distribution')
     .get(function(request, response){
         ProcessedPatient.find(function(error, patients){
             if(error){
@@ -131,7 +131,7 @@ router.route('/age-distribution')
 
             var ageDistributions = new AgeDistribution();
             for(var i = 0; i < patients.length; i++){
-                var age = patients[i].age;
+                var age = patients[i].ages;
                 if(age <= 10){
                     ageDistributions.A.push(age)
                 } else if(age > 10 && age <= 20){

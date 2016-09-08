@@ -65,11 +65,11 @@ export class DischargePopulationComponent implements OnInit{
                       );
   }
 
-  goToDetails(patient: Patient){
+  public goToDetails(patient: Patient){
       this.router.navigate(['/details', patient.hadm_id]);
   }
 
-  sortPatientList(column){
+  public sortPatientList(column){
     const DESCENDING = 'Dsc';
     const ASCENDING = 'Asc';
 
@@ -106,7 +106,7 @@ export class DischargePopulationComponent implements OnInit{
   }
 
 
-  goToPage(page: number){
+  public goToPage(page: number){
     let startingIndex = 0;
     if(page !== 1){
       startingIndex = Math.ceil((page * this.itemsPerPage) - (this.itemsPerPage - 1));
@@ -134,7 +134,7 @@ export class DischargePopulationComponent implements OnInit{
     this.currentPage = page;
   }
 
-  previousPage(){
+  public previousPage(){
     let previousPage = (this.currentPage - 1);
     if(previousPage < 1){
       return;
@@ -149,14 +149,14 @@ export class DischargePopulationComponent implements OnInit{
     this.goToPage(this.currentPage);
   }
 
-  isPreviousDisabled(){
+  public isPreviousDisabled(){
     if(this.currentPage === 1){
       return true;
     }
     return false;
   }
 
-  nextPage(){
+  public nextPage(){
     let nextPage = (this.currentPage + 1);
     if(nextPage > this.numberOfPages.length){
       return;
@@ -171,38 +171,38 @@ export class DischargePopulationComponent implements OnInit{
     this.goToPage(this.currentPage);
   }
 
-  isNextDisabled(){
+  public isNextDisabled(){
     if(this.currentPage === this.numberOfPages.length){
       return true;
     }
     return false;
   }
 
-  hideDisplayButton(page: number){
+  public hideDisplayButton(page: number){
     if(this.paginationsButtonsDisplayed.indexOf(page) === -1){
       return true;
     }
     return false;
   }
 
-  filterByAge(){
+  public filterByAge(){
     this.updateFilterDisplay();
   }
 
-  filterByRiskLevel(level: string){
+  public filterByRiskLevel(level: string){
     this.currentRiskScoreLevelFilter = level;
     this.updateFilterDisplay();
   }
 
-  filterAdmissionDateFrom(){
+  public filterAdmissionDateFrom(){
     this.updateFilterDisplay();
   }
 
-  filterAdmissionDateTo(){
+  public filterAdmissionDateTo(){
     this.updateFilterDisplay();
   }
 
-  calculatePaginationButtons(){
+  public calculatePaginationButtons(){
     this.currentPage = 1;
     this.numberOfPages = [];
     for(let i = 0; i < (this.currentPatients.length/this.itemsPerPage); i++){
@@ -217,7 +217,7 @@ export class DischargePopulationComponent implements OnInit{
     }
   }
 
-  clearFilters() {
+  public clearFilters() {
     this.currentRiskScoreLevelFilter = 'all';
     this.currentPatients = this.originalPatients;
     this.displayedPatients = this.currentPatients.slice(0, this.itemsPerPage);
@@ -225,7 +225,7 @@ export class DischargePopulationComponent implements OnInit{
     this.calculatePaginationButtons();
   }
 
-  updateFilterDisplay(){
+  public updateFilterDisplay(){
     // Filter by Age
     let filteredPatients = this.originalPatients.filter(patient => patient.age >= this.ageMinSliderValue && patient.age <= this.ageMaxSliderValue);
 

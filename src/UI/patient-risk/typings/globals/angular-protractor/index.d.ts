@@ -1506,7 +1506,7 @@ declare namespace protractor {
          * @view
          * <div ng-repeat="cat in pets">
          *   <span>{{cat.name}}</span>
-         *   <span>{{cat.age}}</span>
+         *   <span>{{cat.ages}}</span>
          * </div>
          *
          * <div class="book-img" ng-repeat-start="book in library">
@@ -1527,7 +1527,7 @@ declare namespace protractor {
          *
          * // Returns a promise that resolves to an array of WebElements from a column
          * var ages = element.all(
-         *     by.repeater('cat in pets').column('{{cat.age}}'));
+         *     by.repeater('cat in pets').column('{{cat.ages}}'));
          *
          * // Returns a promise that resolves to an array of WebElements containing
          * // all top level elements repeated by the repeater. For 2 pets rows resolves

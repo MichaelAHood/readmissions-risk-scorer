@@ -4,6 +4,7 @@ import { Patient } from "../models/patient";
 import { Router, ActivatedRoute } from '@angular/router';
 import { CHART_DIRECTIVES } from 'angular2-highcharts';
 import { RiskLegendComponent } from '../risk-legend';
+import {ComorbidsDistribution} from "../models/comorbidsDistribution";
 
 @Component({
   moduleId: module.id,
@@ -14,193 +15,117 @@ import { RiskLegendComponent } from '../risk-legend';
   directives: [RiskLegendComponent, CHART_DIRECTIVES]
 })
 export class ReadmissionRiskResultsComponent implements OnInit {
-
   private patient: Patient;
   private errorMessage: string;
   private admissionId: number;
   private comorbidMortalityOptions: HighchartsOptions;
   private comorbidSeverityOptions: HighchartsOptions;
   private ageOptions: HighchartsOptions;
-  private marker: string = 'url(/app/readmission-risk-results/marker.png)';
+  private marker: string;
+  private comorbidsLabels: Array<string>;
 
   constructor(private patientService: PatientService, private router: Router, private activatedRouter: ActivatedRoute) {
        this.admissionId = this.activatedRouter.snapshot.params['admissionId'];
-
-/*       const DASH = '-';
-       this.patient = new Patient();
-       this.patient.admission_type = DASH;
-       this.patient.language = DASH;
-       this.patient.gender = DASH;
-       this.patient.ethnicity = DASH;
-       this.patient.admittime = new Date('9999-99-99T00:00:00.000Z');
-       this.patient.readmissionRiskScoreAsPercent = 'Calculating...';*/
-    };
+       this.marker = 'url(/app/readmission-risk-results/marker.png)';
+       this.comorbidsLabels = ['&lt;1.0', '1.0 - &lt;2.0', '2.0 - &lt;3.0', '3.0 - &lt;=4.0'];
+  };
 
     ngOnInit() {
       this.patientService.getAllPatients()
         .subscribe(
-          p => {
-              this.patient = p.find(patient => patient.hadm_id == this.admissionId);
-              console.log(this.patient);
-              this.patientService.getComorbidsSeverityDistributions()
-              .subscribe(
-                csd => {
-                  let severityData = [
-                    { y: csd.OneCount, marker: {symbol: 'circle'}},
-                    { y: csd.TwoCount, marker: {symbol: 'circle'}},
-                    { y: csd.ThreeCount, marker: {symbol: 'circle'}},
-                    { y: csd.FourCount, marker: {symbol: 'circle'}},
-                    { y: csd.FiveCount, marker: {symbol: 'circle'}}
-                  ];
+          patients => {
+              this.patient = patients.find(patient => patient.hadm_id == this.admissionId);
 
-                  let severity = this.patient.comorbid_severity;
-                  if(severity < 1.0){
-                    severityData[0].marker.symbol = this.marker;
-                  } else if(severity >= 1.0 && severity < 2.0){
-                    severityData[1].marker.symbol = this.marker;
-                  } else if(severity >= 2.0 && severity < 3.0){
-                    severityData[2].marker.symbol = this.marker;
-                  } else if(severity >= 3.0 && severity < 4.0){
-                    severityData[3].marker.symbol = this.marker;
-                  } else {
-                    severityData[4].marker.symbol = this.marker;
-                  }
-
-                  this.comorbidSeverityOptions = {
-                    chart: { type: 'spline', width: 580, height: 230 },
-                    title: { text : null },
-                    legend: { enabled: false },
-                    xAxis: {
-                      title: { text: 'Range'},
-                      categories: ['&lt;1.0', '1.0 - &lt;2.0', '2.0 - &lt;3.0', '3.0 - &lt;4.0', '4.0 - 5.0']
-                    },
-                    yAxis: {
-                      title: { text: 'Patient Count'}
-                    },
-                    series: [
-                      {
-                        name: 'Patient Count',
-                        data: severityData
-                      }]
-                  };
-                },
-                e => this.errorMessage = e
-              );
-
-            this.patientService.getComorbidsMortalityDistributions()
-              .subscribe(
-                cmd => {
-
-                  let mortalityData = [
-                    { y: cmd.OneCount, marker: {symbol: 'circle'}},
-                    { y: cmd.TwoCount, marker: {symbol: 'circle'}},
-                    { y: cmd.ThreeCount, marker: {symbol: 'circle'}},
-                    { y: cmd.FourCount, marker: {symbol: 'circle'}},
-                    { y: cmd.FiveCount, marker: {symbol: 'circle'}}
-                  ];
-
-                  let mortality = this.patient.comorbid_mortality;
-                  if(mortality < 1.0){
-                    mortalityData[0].marker.symbol = this.marker;
-                  } else if(mortality >= 1.0 && mortality < 2.0){
-                    mortalityData[1].marker.symbol = this.marker;
-                  } else if(mortality >= 2.0 && mortality < 3.0){
-                    mortalityData[2].marker.symbol = this.marker;
-                  } else if(mortality >= 3.0 && mortality < 4.0){
-                    mortalityData[3].marker.symbol = this.marker;
-                  } else {
-                    mortalityData[4].marker.symbol = this.marker;
-                  }
-
-                  this.comorbidMortalityOptions = {
-                    chart: { type: 'spline', width: 580, height: 230 },
-                    title: { text : null },
-                    legend: { enabled: false },
-                    xAxis: {
-                      title: { text: 'Range'},
-                      categories: ['&lt;1.0', '1.0 - &lt;2.0', '2.0 - &lt;3.0', '3.0 - &lt;4.0', '4.0 - 5.0']
-                    },
-                    yAxis: {
-                      title: { text: 'Patient Count'}
-                    },
-                    series: [
-                      {
-                        name: 'Patient Count',
-                        data: mortalityData
-                      }]
-                  };
-                },
-                e => this.errorMessage = e
-              );
-
-            this.patientService.getAgeDistributions()
-              .subscribe(
-                ad => {
-
-                  let ageData = [
-                    { y: ad.ACount, marker: {symbol: 'circle'}},
-                    { y: ad.BCount, marker: {symbol: 'circle'}},
-                    { y: ad.CCount, marker: {symbol: 'circle'}},
-                    { y: ad.DCount, marker: {symbol: 'circle'}},
-                    { y: ad.ECount, marker: {symbol: 'circle'}},
-                    { y: ad.FCount, marker: {symbol: 'circle'}},
-                    { y: ad.GCount, marker: {symbol: 'circle'}},
-                    { y: ad.HCount, marker: {symbol: 'circle'}},
-                    { y: ad.ICount, marker: {symbol: 'circle'}},
-                    { y: ad.JCount, marker: {symbol: 'circle'}}
-                  ];
-
-                  let age = this.patient.age;
-                  if(age < 10){
-                    ageData[0].marker.symbol = this.marker;
-                  } else if(age > 10 && age <= 20){
-                    ageData[1].marker.symbol = this.marker;
-                  } else if(age > 20 && age <= 30){
-                    ageData[2].marker.symbol = this.marker;
-                  } else if(age > 30 && age <= 40){
-                    ageData[3].marker.symbol = this.marker;
-                  } else if(age > 40 && age <= 50){
-                    ageData[4].marker.symbol = this.marker;
-                  } else if(age > 50 && age <= 60){
-                    ageData[5].marker.symbol = this.marker;
-                  } else if(age > 60 && age <= 70){
-                    ageData[6].marker.symbol = this.marker;
-                  } else if(age > 70 && age <= 80){
-                    ageData[7].marker.symbol = this.marker;
-                  } else if(age > 80 && age <= 90){
-                    ageData[8].marker.symbol = this.marker;
-                  } else{
-                    ageData[9].marker.symbol = this.marker;
-                  }
-
-                  this.ageOptions = {
-                    chart: { type: 'spline', width: 580, height: 230 },
-                    title: { text : null },
-                    legend: { enabled: false },
-                    xAxis: {
-                      title: { text: 'Range'},
-                      categories: ['0-10', '11-20', '21-30', '31-40', '41-50', '51-60', '61-70', '71-80', '81-90', '>90']
-                    },
-                    yAxis: {
-                      title: { text: 'Patient Count'}
-                    },
-                    series: [
-                      {
-                        name: 'Patient Count',
-                        data: ageData
-                      }
-                    ]};
-                },
-                e => this.errorMessage = e
-              );
-
+              this.patientService.getReferenceData(this.patient.age)
+                .subscribe(
+                  referenceData =>{
+                    this.severityChart(referenceData.comorbidSeverities);
+                    this.mortalityChart(referenceData.comorbidMortalities);
+                  },
+                  e => this.errorMessage = e
+                );
           },
-          e => this.errorMessage = e
+          error => this.errorMessage = error
         );
     };
 
-  backToPatientSelect(){
+  public backToPatientSelect(){
     this.router.navigate(['']);
   };
 
+  private severityChart(comorbindsSeverities: ComorbidsDistribution) {
+    let severityData = [
+      {y: comorbindsSeverities.One.length, marker: {symbol: 'circle'}},
+      {y: comorbindsSeverities.Two.length, marker: {symbol: 'circle'}},
+      {y: comorbindsSeverities.Three.length, marker: {symbol: 'circle'}},
+      {y: comorbindsSeverities.Four.length, marker: {symbol: 'circle'}}
+    ];
+
+    let severity = this.patient.comorbid_severity;
+    if (severity < 1.0) {
+      severityData[0].marker.symbol = this.marker;
+    } else if (severity >= 1.0 && severity < 2.0) {
+      severityData[1].marker.symbol = this.marker;
+    } else if (severity >= 2.0 && severity < 3.0) {
+      severityData[2].marker.symbol = this.marker;
+    } else if (severity >= 3.0 && severity < 4.0) {
+      severityData[3].marker.symbol = this.marker;
+    }
+
+    this.comorbidSeverityOptions = {
+      chart: {type: 'spline', width: 580, height: 230},
+      title: {text: null},
+      legend: {enabled: false},
+      xAxis: {
+        title: {text: 'Range'},
+        categories: this.comorbidsLabels
+      },
+      yAxis: {
+        title: {text: 'Patient Count'}
+      },
+      series: [
+        {
+          name: 'Patient Count',
+          data: severityData
+        }]
+    }
+  }
+
+  private mortalityChart(comorbidMortalities: ComorbidsDistribution){
+    let mortalityData = [
+      { y: comorbidMortalities.One.length, marker: {symbol: 'circle'}},
+      { y: comorbidMortalities.Two.length, marker: {symbol: 'circle'}},
+      { y: comorbidMortalities.Three.length, marker: {symbol: 'circle'}},
+      { y: comorbidMortalities.Four.length, marker: {symbol: 'circle'}}
+    ];
+
+    let mortality = this.patient.comorbid_mortality;
+    if(mortality < 1.0){
+      mortalityData[0].marker.symbol = this.marker;
+    } else if(mortality >= 1.0 && mortality < 2.0){
+      mortalityData[1].marker.symbol = this.marker;
+    } else if(mortality >= 2.0 && mortality < 3.0){
+      mortalityData[2].marker.symbol = this.marker;
+    } else if(mortality >= 3.0 && mortality < 4.0){
+      mortalityData[3].marker.symbol = this.marker;
+    }
+
+    this.comorbidMortalityOptions = {
+      chart: { type: 'spline', width: 580, height: 230 },
+      title: { text : null },
+      legend: { enabled: false },
+      xAxis: {
+        title: { text: 'Range'},
+        categories: this.comorbidsLabels
+      },
+      yAxis: {
+        title: { text: 'Patient Count'}
+      },
+      series: [
+        {
+          name: 'Patient Count',
+          data: mortalityData
+        }]
+    };
+  }
 }

@@ -2,14 +2,12 @@
  * Created by prokarma on 8/30/2016.
  */
 export class AgeDistribution{
-  ACount: number;
-  BCount: number;
-  CCount: number;
-  DCount: number;
-  ECount: number;
-  FCount: number;
-  GCount: number;
-  HCount: number;
-  ICount: number;
-  JCount: number;
+  private AgeGroupRange: number = 5;
+  public AgeBucket: Array<number> = [];
+
+  public NumberOfColumns(): number{
+    let upper = Math.max.apply(Math, this.AgeBucket);
+    let lower = Math.max.apply(Math, this.AgeBucket);
+    return ((upper - lower) / this.AgeGroupRange);
+  }
 }
