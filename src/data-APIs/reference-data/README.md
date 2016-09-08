@@ -16,9 +16,9 @@ If your API is at the following url: `http://reference-data-api.12.345.678.910.n
 1. `get-reference-data` - Pass the patients `age` like so: `http://reference-data-api.12.345.678.910.nip.io/v1/get-reference-data?age=42`. This will return a JSON object like the one bellow:
 ```python
 {
-‘age’: [43.0, 32.0, 48.0, …],
-‘comorbid_mortality’: [1.0, 2.0, 1.5, …],
-‘comorbid_severity’: [1.0, 2.0, 1.5, …]
+  ‘age’: [43.0, 32.0, 48.0, ...],
+  ‘comorbid_mortality’: [1.0, 2.0, 1.5, ...],
+  ‘comorbid_severity’: [1.0, 2.0, 1.5, ...]
 }
 ```
 
@@ -31,12 +31,12 @@ If your API is at the following url: `http://reference-data-api.12.345.678.910.n
         "2015-09-20",
         ...
         ],
-readmissionRate: [
+  readmissionRate: [
         0.07219130794685127,
         0.06496413693747094,
         0.06812552891285015,
         ...
-        ]
+                  ]
 }
 ```
 
