@@ -54,7 +54,7 @@ def parse_qs():
     jsonResponse = convert_reference_to_json(patientReferenceDF)
     return Response(jsonResponse, mimetype='text/plain')
 
-@app.route('/v2/get-readmission-data', methods=['GET'])
+@app.route('/v1/get-readmission-data', methods=['GET'])
 def return_qs():
     jsonResponse = convert_readmission_to_json(readmissionDF)
     return Response(jsonResponse, mimetype='text/plain')
