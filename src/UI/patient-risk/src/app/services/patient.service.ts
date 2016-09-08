@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { Http, Response, Headers, URLSearchParams } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
-import { Patient, RiskScore, ComorbidsDistribution, AgeDistribution } from '../models';
+import { Patient, ReferenceData, AgeDistribution, ComorbidsDistribution } from '../models';
 import { environment } from '../environment';
 
 @Injectable()
 export class PatientService {
-  private baseUri: string;
+  private basePatientUri: string;
   private patientUri: string;
-  private ageDistributionsUri: string;
-  private severityDistributionsUri: string;
-  private mortalityDistibutionsUri: string;
+
+  private baseRefernceDataUri: string;
+  private getReferenceDataUri: string;
 
   constructor(private http: Http) {/*
     if(environment.production){
@@ -19,15 +19,14 @@ export class PatientService {
       this.baseUri = 'http://localhost:9090/api/';
     }*/
 
-    this.baseUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/';
+    this.basePatientUri = 'http://patient-risk-api.52.204.218.231.nip.io/api/';
 
-    this.patientUri  = this.baseUri + 'processed-patients';
-    this.ageDistributionsUri = this.baseUri + 'age-distribution';
-    this.severityDistributionsUri = this.baseUri + 'comorbid-severity-distribution';
-    this.mortalityDistibutionsUri = this.baseUri + 'comorbid-mortality-distribution';
+    this.patientUri  = this.basePatientUri + 'processed-patients';
+    this.baseRefernceDataUri = 'http://reference-data-api.52.204.218.231.nip.io/v1/';
+    this.getReferenceDataUri = this.baseRefernceDataUri + 'get-reference-data';
   }
 
-  getAllPatients(): Observable<Patient[]>{
+  getAllPatients(): Observable<Array<Patient>>{
     let patients$ = this.http
       .get(`${this.patientUri}`, {headers: this.getHeaders()})
       .map(mapPatients)
@@ -35,28 +34,18 @@ export class PatientService {
     return patients$;
   }
 
-  getAgeDistributions(): Observable<AgeDistribution>{
-    let ageDistributions$ = this.http
-      .get(`${this.ageDistributionsUri}`, {headers: this.getHeaders()})
-      .map(mapAgeDistributions)
-      .catch(handleError);
-    return ageDistributions$;
-  }
+  getReferenceData(age: number): Observable<ReferenceData>{
+    let params: URLSearchParams = new URLSearchParams();
+    params.set('ages', age.toString());
 
-  getComorbidsSeverityDistributions(): Observable<ComorbidsDistribution>{
-    let severityDistributions$ = this.http
-      .get(`${this.severityDistributionsUri}`, {headers: this.getHeaders()})
-      .map(mapComorbidsDistributions)
+    let referenceData$ = this.http
+      .get(`${this.getReferenceDataUri}`, {
+                                            headers: this.getHeaders(),
+                                            search: params
+                                           })
+      .map(toReferenceData)
       .catch(handleError);
-    return severityDistributions$;
-  }
-
-  getComorbidsMortalityDistributions(): Observable<ComorbidsDistribution>{
-    let mortalityDistributions$ = this.http
-      .get(`${this.mortalityDistibutionsUri}`, {headers: this.getHeaders()})
-      .map(mapComorbidsDistributions)
-      .catch(handleError);
-    return mortalityDistributions$;
+    return referenceData$;
   }
 
   private getHeaders(){
@@ -66,48 +55,57 @@ export class PatientService {
   }
 }
 
-//Object Mappers
-function mapScores(response: Response): number[]{
-  let scores = response.json().map(toRiskScore);
-  return scores;
-}
-
 function mapPatients(response: Response): Patient[]{
   let patients = response.json().processedPatients.map(toPatient);
   //console.log(patients);
   return patients;
 }
 
-function mapAgeDistributions(response: Response): AgeDistribution{
-  let ageDistributions = response.json();
-  return ageDistributions;
+function mapReferenceData(response: Response): ReferenceData{
+  let referenceData = response.json().map(toReferenceData);
+  console.log(referenceData);
+  return referenceData;
 }
 
-function mapComorbidsDistributions(response: Response): ComorbidsDistribution{
-  let comorbidsDistributions = response.json();
-  return comorbidsDistributions;
+function toReferenceData(response: any) : ReferenceData{
+  let referenceData = new ReferenceData();
+
+  let responseJson = response.json();
+
+  referenceData.ages.allAges = responseJson.ages; //array of ages
+
+  let severities = responseJson.comorbid_severities;
+  for(let i = 0; i < severities.length; i++){
+    let severity = severities[i];
+    if(severity >= 0 && severity < 1.0){
+      referenceData.comorbidSeverities.One.push(severity);
+    } else if(severity >=  1.0 && severity < 2.0){
+      referenceData.comorbidSeverities.Two.push(severity);
+    } else if(severity >= 2.0 && severity < 3.0){
+      referenceData.comorbidSeverities.Three.push(severity);
+    } else if(severity >= 3.0 && severity < 4.0){
+      referenceData.comorbidSeverities.Four.push(severity);
+    }
+  }
+
+  let mortalities = responseJson.comorbid_mortalities;
+  for(let i = 0; i < mortalities.length; i++){
+    let mortality = mortalities[i];
+    if(mortality >= 0 && mortality < 1.0){
+      referenceData.comorbidMortalities.One.push(mortality);
+    } else if(mortality >=  1.0 && mortality < 2.0){
+      referenceData.comorbidMortalities.Two.push(mortality);
+    } else if(mortality >= 2.0 && mortality < 3.0){
+      referenceData.comorbidMortalities.Three.push(mortality);
+    } else if(mortality >= 3.0 && mortality < 4.0){
+      referenceData.comorbidMortalities.Four.push(mortality);
+    }
+  }
+
+  return referenceData;
 }
 
-function handleError (error: any) {
-  // log error
-  let errorMsg = error.message;
-  console.error(errorMsg);
-
-  // throw an application level error
-  return Observable.throw(errorMsg);
-}
-
-
-//Object converters
-function toRiskScore(response: any): RiskScore{
-  let riskScore = <RiskScore>({
-    hadm_id: response.admissionID,
-    riskscore: response.readmissionRisk
-  });
-  return riskScore;
-}
-
-function toPatient(response:any): Patient{
+function toPatient(response: any): Patient{
   let riskScoreColor = '#333333'; //dark grey
   let riskScore = response.readmissionRisk;
   if (riskScore <= 0.25){
@@ -144,3 +142,11 @@ function toPatient(response:any): Patient{
   return patient;
 }
 
+function handleError (error: any) {
+  // log error
+  let errorMsg = error.message;
+  console.error(errorMsg);
+
+  // throw an application level error
+  return Observable.throw(errorMsg);
+}
