@@ -34,33 +34,33 @@ b. `PATIENTS.csv` - contains features like the patient's id (`SUBJECT_ID`), gend
 
 c. `DRGCODES.csv` - contains the comorbidity features `DRG_MORTALITY` and `DRG_SEVERITY`. These are data that essentially represent how severe, complicated, and dangerous a patient's condition is. 
 
-* Name the files whatever you want to call them and give them any appropriate labels, e.g. Healthcare.
+Name the files whatever you want to call them and give them any appropriate labels, e.g. Healthcare.
 
-* Click "Upload" and wait. 
+Click "Upload" and wait. 
 
-* You will have to do steps 3. and 4. for each file you want to upload to the Data Catalog.
+You will have to do steps 3. and 4. for each file you want to upload to the Data Catalog.
 
 # 2. Create a Jupyter (iPython) notebook and load data into Spark 
 
-* Click on the "Data Science" tab on the right side of the console Dash Board. Click on the "Jupyter" tab.
+Click on the "Data Science" tab on the right side of the console Dash Board. Click on the "Jupyter" tab.
 
 ![Creating a Jupyter Notebook](images/jupyter.png)
 
-* Give your notebook a name and click on the "Create New Instance" button. It can take a few seconds while the Docker host spins up a container running your Jupyter notebook.
+Give your notebook a name and click on the "Create New Instance" button. It can take a few seconds while the Docker host spins up a container running your Jupyter notebook.
 
-* TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that your battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use.
+TAP uses the standard Anaconda distribution for iPython, but you can click on the "Help" tab to verify that a battle tested scientific toolkit (e.g. `pandas`, `numpy`, `scipy`, `sklearn`, `matplotlib` etc.) is available and ready to use.
 
 ![A Brand New Jupyter Notebook](images/ipython.png)
 
-* *Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
+*Note:* If there is a package that you want to use that is not available just run `!pip install myPackage`.
 
-* Start by making some standard `pyspark` imports:
+Start by making some standard `pyspark` imports:
 ```python
 from pyspark import SparkContext, SparkConf
 from pyspark.sql import SQLContext
 ```
 
-* Since we are working with csv files the `spark-csv` package is extremely useful ([spark-csv docs here](https://github.com/databricks/spark-csv)). Specifically, it allows us to read csv files directly into DataFrames and enables labor saving features like automatically inferring schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
+Since we are working with csv files the `spark-csv` package is extremely useful ([spark-csv docs here](https://github.com/databricks/spark-csv)). Specifically, it allows us to read csv files directly into DataFrames and enables labor saving features like automatically inferring schema. The default version of Spark for TAP 0.7 is Spark 1.5.0 which does not have spark-csv as part of the standard toolkit, so it must be passed using the `--packages` parameter of `spark-submit`:
 
 ```python
 import os
@@ -90,9 +90,9 @@ sqlContext.setConf("spark.sql.tungsten.enabled", "true")
 
 * The below URIs are palacehodlers. Copy and paste the **targetUri** for each file in the **Data Catalog** that you want to load:
 ```python
-hdfsPathAdmissions = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/9997ff80-b53f-46c4-9dca-f76cc56c876a/000000_1"
-hdfsPathPatients = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/d82b3a1e-de79-4312-98be-1499e25e25c6/000000_1"
-hdfsPathCodes = "hdfs://nameservice1/org/1fc35ebe-d845-45e3-a2b1-b3effe9483e2/brokers/userspace/9e6d3f28-a119-43d9-ad67-fdbe4860be98/e69a6c0a-5507-4cec-a184-c2a480ee2a6a/000000_1"
+hdfsPathAdmissions = "hdfs://nameservice1/path-to-my-file-1"
+hdfsPathPatients = "hdfs://nameservice1/path-to-my-file-2"
+hdfsPathCodes = "hdfs://nameservice1/path-to-my-file-3"
 ```
 * Use `spark-csv` to load the `CSV` files into Spark DataFrames:
 ```python
@@ -137,23 +137,6 @@ root
 **Note:** If the schema is not what you want, you can always pass an explicit schema, instead of using the inferschema option ([creating a schema](http://spark.apache.org/docs/latest/sql-programming-guide.html#programmatically-specifying-the-schema)).
 Another option is to create new columns of the right type that are derived from the columns that were incorrectly cast. It is important to keep in mind that Spark dataframes and RDDs are immutable objects, so you cannot cast an existing object to a different type, you have to create an entire new column with a different name.
 
-Let's check to see what the `ADMISSIONS` data looks like:
-```python
-df_patients.show(5)
-"""
-+------+----------+------+--------------------+--------------------+--------+--------------------+-----------+
-|ROW_ID|SUBJECT_ID|GENDER|                 DOB|                 DOD|DOD_HOSP|             DOD_SSN|EXPIRE_FLAG|
-+------+----------+------+--------------------+--------------------+--------+--------------------+-----------+
-|   612|       646|     M|2128-01-05 00:00:...|                null|    null|                null|          0|
-|   613|       647|     M|2106-03-24 00:00:...|                null|    null|                null|          0|
-|   614|       648|     M|2139-07-13 00:00:...|                null|    null|                null|          0|
-|   615|       649|     M|2177-06-23 00:00:...|                null|    null|                null|          0|
-|   616|       650|     M|2051-04-15 00:00:...|2111-12-28 00:00:...|    null|2111-12-28 00:00:...|          1|
-+------+----------+------+--------------------+--------------------+--------+--------------------+-----------+
-only showing top 5 rows
-"""
-```
-
 We can register our `ADMISSIONS` dataframe as the table `admissions` -- enabling us to query it with SQL:
 ```python
 sqlContext.registerDataFrameAsTable(df_admissions, "admissions")
@@ -170,11 +153,11 @@ threeRows.show()
 +------+----------+-------+--------------------+--------------------+---------+--------------+--------------------+-------------------+---------+--------+------------+--------------+--------------------+--------------------+--------------------+--------------------+--------------------+-----------------+--------------------+
 """
 ```
-* We have now loaded the data that we intend to work with. In the next section we will begin processing in preparation for modeling.
+We have now loaded the data that we intend to work with. In the next section we will begin processing in preparation for modeling.
 
 # 3. Data Processing
 
-* Looking at our admission table, we know that there is unique entry for each hospital admission. In this table the unique `SUBJECT_ID` can show up multiple times -- corresponding to distinct hospital admissions (`HADM_ID`).
+Looking at our admission table, we know that there is unique entry for each hospital admission. In this table the unique `SUBJECT_ID` can show up multiple times -- corresponding to distinct hospital admissions (`HADM_ID`).
 
 Let's find the number of admissions for each patient.
 ```python
@@ -182,7 +165,7 @@ q1 = """SELECT SUBJECT_ID, COUNT(*) AS NUM_ADMISSIONS
         FROM admissions 
         GROUP BY SUBJECT_ID"""
 ```
-* We can create a new DataFrame `admissionCounts` that is the result of running the above SQL query. Notice, that nothing happens because we have not yet asked Spark to perform any action. We are merely describing a set of transformations that Spark will perform once we actually take an action and ask for a result.
+We can create a new DataFrame `admissionCounts` that is the result of running the above SQL query. Notice, that nothing happens because we have not yet asked Spark to perform any action. We are merely describing a set of transformations that Spark will perform once we actually take an action and ask for a result.
 ```python
 admissionCounts = sqlContext.sql(q1)
 admissionCounts.show(7)
@@ -202,11 +185,11 @@ admissionCounts.show(7)
 only showing top 7 rows
 """
 ```
-* Here I register a new table 'admissionCounts' to keep things simple. SQL subqueries do not always work in SparkSQL, so registering a DataFrame as a table or aliasing is often both easier and the only way to actually subselect in SparkSQL. Also, the "tables" do not occupy any additional memory since they are not created until an action is taken that requires the data.
+Here I register a new table 'admissionCounts' to keep things simple. SQL subqueries do not always work in SparkSQL, so registering a DataFrame as a table or aliasing is often both easier and the only way to actually subselect in SparkSQL. Also, the "tables" do not occupy any additional memory since they are not created until an action is taken that requires the data.
 ```python
 sqlContext.registerDataFrameAsTable(admissionCounts, "admissioncounts")
 ```
-* Let's focus on identifying the patients that were readmitted.
+Let's focus on identifying the patients that were readmitted.
 ```python
 q2 = """SELECT a.ROW_ID, a.SUBJECT_ID, a.HADM_ID, a.ADMITTIME, a.DISCHTIME, b.NUM_ADMISSIONS
         FROM admissions AS a, admissioncounts AS b  
@@ -230,7 +213,7 @@ readmittedPatients.show(5)
 only showing top 5 rows
 """
 ```
-* With the subset of patients who have been admitted more than once we now join each patient's hospital admission data to the hospital admission data immediately proceding it. 
+With the subset of patients who have been admitted more than once we now join each patient's hospital admission data to the hospital admission data immediately proceding it. 
 ```python
 q3 = """SELECT
             a.ROW_ID,
@@ -260,7 +243,7 @@ timeShiftedRows.show(5)
 only showing top 5 rows
 """
 ```
-* From here we can use the datefiff function to find the number of days between the `DISCHTIME` of one admission and the `ADMITTIME` of the next admission for each patient that was discharged and later readmitted.  
+From here we can use the datefiff function to find the number of days between the `DISCHTIME` of one admission and the `ADMITTIME` of the next admission for each patient that was discharged and later readmitted.  
 ```python
 from pyspark.sql.functions import datediff
 
@@ -282,7 +265,7 @@ only showing top 5 rows
 
 sqlContext.registerDataFrameAsTable(df2, "target")
 ```
-* This query explicitly excludes anyone who dies in the hospital -- about 7000 people, in this dataset. It may be the case that you want to include people who die. We also only include people who have chartevents data because we may end up using that data later.
+This query explicitly excludes anyone who dies in the hospital -- about 7000 people, in this dataset. It could be the case that you want to include people who die in your own modeling, but I will. We also only include people who have chartevents data because we may end up using that data later.
 ```python
 q4 = """SELECT 
             a.SUBJECT_ID, 
